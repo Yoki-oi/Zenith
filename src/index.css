@@ -1,0 +1,257 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg0: #060608;
+  --bg1: #0a0a10;
+  --bg2: #0f0f18;
+  --bg3: #13131e;
+  --bg4: #1a1a28;
+  --bg5: #222234;
+
+  /* Lines / borders */
+  --line:  rgba(255, 255, 255, 0.06);
+  --line2: rgba(255, 255, 255, 0.10);
+
+  /* Text */
+  --t1: #f0f0f8;
+  --t2: #9898b8;
+  --t3: #5a5a7a;
+  --t4: #35354a;
+
+  /* Brand accent */
+  --accent:       #e8673c;
+  --accent-border: rgba(232, 103, 60, 0.3);
+
+  /* Status colours */
+  --doing:    #38bdf8;
+  --mastered: #86efac;
+  --revision: #fbbf24;
+  --violet:   #c084fc;
+
+  --radius: 0.75rem;
+}
+
+/* ── Base Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg0);
+  color: var(--t1);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+/* Hide default cursor everywhere */
+*, *::before, *::after {
+  cursor: none !important;
+}
+
+/* ── Typography helpers ────────────────────────────────────────────────────── */
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Custom Cursor ─────────────────────────────────────────────────────────── */
+.cursor-dot {
+  pointer-events: none;
+  position: fixed;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+}
+
+.cursor-dot .dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.cursor-dot .ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(232, 103, 60, 0.4);
+  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.cursor-dot.hovering .ring {
+  width: 40px;
+  height: 40px;
+  border-color: rgba(232, 103, 60, 0.7);
+}
+
+.cursor-dot.hovering .dot {
+  transform: translate(-50%, -50%) scale(1.4);
+}
+
+.cursor-dot.clicking .dot {
+  transform: translate(-50%, -50%) scale(0.7);
+}
+
+.cursor-dot.clicking .ring {
+  width: 22px;
+  height: 22px;
+}
+
+/* ── Page transition ───────────────────────────────────────────────────────── */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Scrollbar styling ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg5);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--line2);
+}
+
+/* ── Shimmer card hover effect ─────────────────────────────────────────────── */
+.shimmer-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.015) 50%,
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.shimmer-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Status pills ──────────────────────────────────────────────────────────── */
+.pill-doing {
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  background: rgba(56, 189, 248, 0.08) !important;
+  color: var(--doing) !important;
+}
+
+.pill-mastered {
+  border: 1px solid rgba(134, 239, 172, 0.35) !important;
+  background: rgba(134, 239, 172, 0.08) !important;
+  color: var(--mastered) !important;
+}
+
+.pill-revision {
+  border: 1px solid rgba(251, 191, 36, 0.35) !important;
+  background: rgba(251, 191, 36, 0.08) !important;
+  color: var(--revision) !important;
+}
+
+/* ── Chapter row drag states ───────────────────────────────────────────────── */
+.chapter-row {
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.chapter-row.dragging {
+  opacity: 0.4;
+  transform: scale(0.99);
+}
+
+.chapter-row.drag-over {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(232, 103, 60, 0.12);
+}
+
+/* ── Drag handle ───────────────────────────────────────────────────────────── */
+.drag-handle {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.chapter-row:hover .drag-handle {
+  opacity: 1;
+}
+
+/* ── Context menu ──────────────────────────────────────────────────────────── */
+.ctx-menu {
+  background: #16161f;
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+}
+
+/* ── Dashed empty state border ─────────────────────────────────────────────── */
+.dashed-border {
+  border: 1.5px dashed var(--line2);
+  border-radius: 16px;
+}
+
+/* ── Input focus styles ────────────────────────────────────────────────────── */
+input:focus {
+  outline: none;
+  border-color: var(--accent-border) !important;
+  box-shadow: 0 0 0 2px rgba(232, 103, 60, 0.08);
+}
+
+input::placeholder {
+  color: var(--t4);
+}
+
+/* ── Selection ─────────────────────────────────────────────────────────────── */
+::selection {
+  background: rgba(232, 103, 60, 0.25);
+  color: var(--t1);
+}
