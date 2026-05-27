@@ -2,85 +2,54 @@
 import { useEffect, useRef } from 'react';
 
 export default function Cursor() {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const dotRef  = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let mouseX = -200, mouseY = -200;
-    let ringX  = -200, ringY  = -200;
-    let raf: number;
+    if (window.matchMedia('(hover:none),(pointer:coarse)').matches) return;
+    const wrap = wrapRef.current;
+    const ring = ringRef.current;
+    if (!wrap || !ring) return;
 
-    const moveDot = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-      }
+    let mx = -300, my = -300, rx = -300, ry = -300, raf = 0;
+
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX; my = e.clientY;
+      wrap.style.transform = `translate(${mx}px,${my}px)`;
     };
-
-    const detectHover = (e: MouseEvent) => {
+    const onOver = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
-      const hoverable = !!(t.closest('button, a, input, [data-hover], [role="button"]'));
-      ringRef.current?.classList.toggle('ring-hover', hoverable);
+      const h = !!(t.closest('button')||t.closest('a')||t.closest('[data-hover]')||
+                   t.closest('input')||t.closest('[role="button"]')||t.closest('select'));
+      wrap.classList.toggle('is-hover', h);
     };
+    const onDown = () => wrap.classList.add('is-click');
+    const onUp   = () => wrap.classList.remove('is-click');
 
-    const onDown = () => dotRef.current?.classList.add('dot-click');
-    const onUp   = () => dotRef.current?.classList.remove('dot-click');
-
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const loop = () => {
-      ringX = lerp(ringX, mouseX, 0.12);
-      ringY = lerp(ringY, mouseY, 0.12);
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${ringX}px, ${ringY}px)`;
-      }
+      rx += (mx - rx) * 0.11; ry += (my - ry) * 0.11;
+      ring.style.transform = `translate(${rx - mx}px,${ry - my}px)`;
       raf = requestAnimationFrame(loop);
     };
-
-    document.addEventListener('mousemove', moveDot,     { passive: true });
-    document.addEventListener('mousemove', detectHover, { passive: true });
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('mouseup',   onUp);
     raf = requestAnimationFrame(loop);
 
+    document.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseover', onOver, { passive: true });
+    document.addEventListener('mousedown', onDown, { passive: true });
+    document.addEventListener('mouseup',   onUp,   { passive: true });
     return () => {
-      document.removeEventListener('mousemove', moveDot);
-      document.removeEventListener('mousemove', detectHover);
+      cancelAnimationFrame(raf);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver);
       document.removeEventListener('mousedown', onDown);
       document.removeEventListener('mouseup',   onUp);
-      cancelAnimationFrame(raf);
     };
   }, []);
 
   return (
-    <>
-      <div ref={dotRef} style={{
-        position: 'fixed', top: 0, left: 0,
-        width: 6, height: 6, borderRadius: '50%',
-        background: 'var(--accent)',
-        pointerEvents: 'none', zIndex: 999999,
-        marginLeft: -3, marginTop: -3,
-        willChange: 'transform',
-      }} className="nx-cursor-dot" />
-
-      <div ref={ringRef} style={{
-        position: 'fixed', top: 0, left: 0,
-        width: 28, height: 28, borderRadius: '50%',
-        border: '1.5px solid rgba(232,103,60,0.45)',
-        pointerEvents: 'none', zIndex: 999998,
-        marginLeft: -14, marginTop: -14,
-        willChange: 'transform',
-        transition: 'width 0.2s ease, height 0.2s ease, margin 0.2s ease, border-color 0.2s ease',
-      }} className="nx-cursor-ring" />
-
-      <style>{`
-        .nx-cursor-dot.dot-click { background: #fff !important; }
-        .nx-cursor-ring.ring-hover {
-          width: 40px !important; height: 40px !important;
-          margin-left: -20px !important; margin-top: -20px !important;
-          border-color: rgba(232,103,60,0.8) !important;
-        }
-      `}</style>
-    </>
+    <div ref={wrapRef} className="nexus-cursor" aria-hidden>
+      <div className="nexus-cursor-dot" />
+      <div ref={ringRef} className="nexus-cursor-ring" />
+    </div>
   );
 }
