@@ -49,12 +49,14 @@
   --r-lg:  16px;
   --r-xl:  20px;
   --r-2xl: 24px;
+
+  /* Navbar height token — used everywhere */
+  --nav-h: 52px;
 }
 
 /* ═══════════════════════ RESET ═══════════════════════ */
 *, *::before, *::after {
   box-sizing: border-box; margin: 0; padding: 0;
-  cursor: none !important;
 }
 
 html, body { height: 100%; }
@@ -71,38 +73,8 @@ body {
 
 .mono { font-family: 'JetBrains Mono', monospace; }
 
-/* ═══════════════════════ CURSOR ═══════════════════════ */
-.nexus-cursor {
-  position: fixed; top: 0; left: 0;
-  pointer-events: none; z-index: 999999;
-  will-change: transform;
-}
-.nexus-cursor-dot {
-  position: absolute;
-  top: -3px; left: -3px;
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  transition: width .12s ease, height .12s ease, top .12s ease, left .12s ease, background .15s ease;
-}
-.nexus-cursor-ring {
-  position: absolute;
-  top: -14px; left: -14px;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  border: 1px solid rgba(232,103,60,0.45);
-  transition: width .2s ease, height .2s ease, top .2s ease, left .2s ease,
-              border-color .2s ease, opacity .2s ease;
-}
-.nexus-cursor.is-hover .nexus-cursor-dot  { width:8px; height:8px; top:-4px; left:-4px; background:#ff8c5a; }
-.nexus-cursor.is-hover .nexus-cursor-ring { width:38px; height:38px; top:-19px; left:-19px; border-color:rgba(232,103,60,0.65); }
-.nexus-cursor.is-click .nexus-cursor-dot  { width:4px; height:4px; top:-2px; left:-2px; opacity:.6; }
-.nexus-cursor.is-click .nexus-cursor-ring { width:20px; height:20px; top:-10px; left:-10px; opacity:.35; }
-
-@media (hover:none),(pointer:coarse) {
-  .nexus-cursor { display:none!important; }
-  *,*::before,*::after { cursor:auto!important; }
-}
+/* Native cursor restored — custom cursor removed */
+*, *::before, *::after { cursor: auto !important; }
 
 /* ═══════════════════════ AMBIENT BACKGROUND ═══════════════════════ */
 .nexus-bg {
@@ -220,7 +192,38 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(.45); curs
   background:currentColor; opacity:.5;
 }
 
+/* ═══════════════════════ RESPONSIVE ═══════════════════════ */
+
+/* ── Tablet (≤768px) ── */
 @media (max-width:768px) {
-  body { overflow:auto; }
-  #root { overflow:auto; height:auto; min-height:100dvh; }
+  :root { --nav-h: 48px; }
+
+  body   { overflow: auto; }
+  #root  { overflow: auto; height: auto; min-height: 100dvh; }
+
+  /* Always show drag handle — no hover on touch */
+  .drag-handle { opacity: 0.45 !important; }
+
+  /* Chapter row: let controls wrap below the title row */
+  .ch-controls-wrap { flex-wrap: wrap; gap: 6px !important; }
+
+  /* Delete-item button always visible on touch */
+  .item-del-btn { opacity: 0.5 !important; }
+}
+
+/* ── Mobile (≤480px) ── */
+@media (max-width:480px) {
+  :root { --nav-h: 44px; }
+
+  /* Tighten horizontal padding site-wide */
+  .px-page { padding-left: 12px !important; padding-right: 12px !important; }
+
+  /* Subject top-bar: hide stat chips, keep just the progress bar */
+  .subj-stat-chips { display: none !important; }
+
+  /* Completion overview: stack the two class-pct values */
+  .overview-pcts { flex-direction: column; align-items: flex-start !important; gap: 4px !important; }
+
+  /* Hero card value: slightly smaller so 4 fit on 2-col grid */
+  .hero-val { font-size: 1.6rem !important; letter-spacing: -0.5px !important; }
 }

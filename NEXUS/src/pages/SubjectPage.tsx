@@ -62,10 +62,10 @@ function ChapterRow({
   dragHandlers:{ onDragStart:(i:number)=>void; onDragOver:(i:number)=>void; onDrop:()=>void; dragging:number|null; dragOver:number|null };
 }) {
   const open = openChId === ch.id;
-  const [addVal, setAddVal]         = useState('');
+  const [addVal, setAddVal]             = useState('');
   const [editingTitle, setEditingTitle] = useState(false);
-  const [titleDraft, setTitleDraft] = useState(ch.title);
-  const [ctxMenu, setCtxMenu]       = useState<{ x:number; y:number; itemId?:string }|null>(null);
+  const [titleDraft, setTitleDraft]     = useState(ch.title);
+  const [ctxMenu, setCtxMenu]           = useState<{ x:number; y:number; itemId?:string }|null>(null);
 
   const { toggleDoing, toggleMastered, changeRevisions, addItem, toggleItem, deleteItem,
           copyItemToChapter, copyItemToAllChapters, deleteChapter, updateChapter, subjects } = useStore();
@@ -105,10 +105,10 @@ function ChapterRow({
         }}>
 
         {/* Header row */}
-        <div className="ch-head flex items-center gap-3 px-4 py-3.5 select-none" data-hover
+        <div className="ch-head flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 select-none" data-hover
           onClick={()=>onToggleOpen(ch.id)}>
 
-          <div className="drag-handle text-xs shrink-0" style={{ color:'var(--t4)' }}
+          <div className="drag-handle text-xs shrink-0" style={{ color:'var(--t4)', opacity:0.45 }}
             onMouseDown={e=>e.stopPropagation()}>⠿</div>
 
           <span className="mono text-xs shrink-0 w-6 text-right" style={{ color:'var(--t4)' }}>
@@ -130,21 +130,21 @@ function ChapterRow({
             {ch.desc && <p className="text-xs mono mt-0.5 truncate" style={{ color:'var(--t3)' }}>{ch.desc}</p>}
           </div>
 
-          {/* Controls */}
-          <div className="flex items-center gap-2 shrink-0" onClick={e=>e.stopPropagation()}>
+          {/* Controls — wrap on small screens */}
+          <div className="ch-controls-wrap flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end" onClick={e=>e.stopPropagation()}>
             <button data-hover onClick={()=>toggleDoing(subId,ch.id)}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${ch.doing?'pill-doing':''}`}
+              className={`px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${ch.doing?'pill-doing':''}`}
               style={!ch.doing?{border:'1px solid var(--glass-border)',color:'var(--t3)'}:{}}>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1 sm:gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full inline-block"
                   style={{ background:ch.doing?'var(--doing)':'var(--t4)', boxShadow:ch.doing?'0 0 6px var(--doing)':'none' }} />
                 Doing
               </span>
             </button>
             <button data-hover onClick={()=>toggleMastered(subId,ch.id)}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${ch.mastered?'pill-mastered':''}`}
+              className={`px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${ch.mastered?'pill-mastered':''}`}
               style={!ch.mastered?{border:'1px solid var(--glass-border)',color:'var(--t3)'}:{}}>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1 sm:gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full inline-block"
                   style={{ background:ch.mastered?'var(--mastered)':'var(--t4)', boxShadow:ch.mastered?'0 0 6px var(--mastered)':'none' }} />
                 Mastered
@@ -155,7 +155,7 @@ function ChapterRow({
               onDec={()=>changeRevisions(subId,ch.id,-1)} />
             {/* Tasks toggle */}
             <button data-hover onClick={e=>{ e.stopPropagation(); onToggleOpen(ch.id); }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200"
               style={{ border:open?`1px solid ${accentColor}55`:'1px solid var(--glass-border)',
                        color:open?accentColor:'var(--t3)', background:open?accentColor+'12':'transparent' }}>
               ☑ Tasks
@@ -181,7 +181,7 @@ function ChapterRow({
 
         {/* Tasks body */}
         {open && (
-          <div className="px-4 pb-4 pt-2" style={{ borderTop:'1px solid var(--line)' }}>
+          <div className="px-3 sm:px-4 pb-4 pt-2" style={{ borderTop:'1px solid var(--line)' }}>
             <p className="text-xs mono mb-2.5" style={{ color:'var(--t4)', letterSpacing:'1px', textTransform:'uppercase', fontSize:9 }}>Study Tasks</p>
             {ch.items.length===0 ? (
               <p className="text-xs mono py-2 italic" style={{ color:'var(--t4)' }}>No tasks yet — add one below</p>
@@ -203,8 +203,9 @@ function ChapterRow({
                     <span className="flex-1 text-xs" style={{ color:it.done?'var(--t4)':'var(--t2)', textDecoration:it.done?'line-through':'none' }}>
                       {it.label}
                     </span>
+                    {/* Always visible delete on touch; hover-only on desktop */}
                     <button data-hover onClick={()=>deleteItem(subId,ch.id,it.id)}
-                      className="opacity-0 group-hover/item:opacity-40 hover:!opacity-100 text-xs transition-opacity"
+                      className="item-del-btn opacity-0 group-hover/item:opacity-40 hover:!opacity-100 text-xs transition-opacity"
                       style={{ color:'#f87171' }}>×</button>
                   </div>
                 ))}
@@ -309,29 +310,29 @@ export default function SubjectPage() {
     <div className="h-full flex flex-col" style={{ background:'transparent' }}>
 
       {/* Top bar */}
-      <div className="shrink-0 px-6 py-3 flex items-center gap-4"
+      <div className="shrink-0 px-3 sm:px-6 py-2 sm:py-3 flex items-center gap-2 sm:gap-4 flex-wrap"
         style={{ borderBottom:'1px solid var(--glass-border)', background:'rgba(8,11,20,0.7)', backdropFilter:'blur(20px)' }}>
         <button data-hover onClick={()=>setPage('home')}
-          className="text-xs mono px-3 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1.5"
+          className="text-xs mono px-2.5 sm:px-3 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1.5 shrink-0"
           style={{ color:'var(--t3)', border:'1px solid var(--glass-border)' }}
           onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.color='var(--t1)'; (e.currentTarget as HTMLElement).style.borderColor='var(--glass-border-bright)'; }}
           onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.color='var(--t3)'; (e.currentTarget as HTMLElement).style.borderColor='var(--glass-border)'; }}>
           ← Back
         </button>
 
-        <div style={{ width:1, height:20, background:'var(--line)' }} />
+        <div className="hidden sm:block" style={{ width:1, height:20, background:'var(--line)' }} />
 
-        <div className="flex items-center gap-3 flex-1">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-sm sm:text-base shrink-0"
             style={{ background:`${s.color}22`, color:s.color }}>{s.icon}</div>
-          <div>
-            <p className="font-semibold text-sm" style={{ color:'var(--t1)' }}>{s.name}</p>
-            <p className="text-xs mono" style={{ color:'var(--t3)' }}>Class {s.classNum} · {chapters.length} chapters</p>
+          <div className="min-w-0">
+            <p className="font-semibold text-sm truncate" style={{ color:'var(--t1)' }}>{s.name}</p>
+            <p className="text-xs mono" style={{ color:'var(--t3)' }}>Class {s.classNum} · {chapters.length} ch</p>
           </div>
         </div>
 
-        {/* Stats chips */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Stats chips — hidden on mobile to save space */}
+        <div className="subj-stat-chips hidden sm:flex items-center gap-2 flex-wrap">
           {[
             { label:'Doing',     val:st.doing,   color:'var(--doing)' },
             { label:'Mastered',  val:st.mastered, color:'var(--mastered)' },
@@ -351,17 +352,26 @@ export default function SubjectPage() {
             <span className="text-xs mono font-bold" style={{ color:s.color }}>{st.pct}%</span>
           </div>
         </div>
+
+        {/* Compact progress on mobile */}
+        <div className="flex sm:hidden items-center gap-2 ml-auto">
+          <div className="w-14 h-1.5 rounded-full overflow-hidden" style={{ background:'rgba(255,255,255,0.07)' }}>
+            <div className="h-full rounded-full transition-all duration-700"
+              style={{ width:`${st.pct}%`, background:`linear-gradient(90deg,var(--doing),${s.color})` }} />
+          </div>
+          <span className="text-xs mono font-bold" style={{ color:s.color }}>{st.pct}%</span>
+        </div>
       </div>
 
       {/* Chem tabs */}
       {isChem && (
-        <div className="shrink-0 flex px-6" style={{ borderBottom:'1px solid var(--glass-border)', background:'rgba(8,11,20,0.5)' }}>
+        <div className="shrink-0 flex px-2 sm:px-6 overflow-x-auto" style={{ borderBottom:'1px solid var(--glass-border)', background:'rgba(8,11,20,0.5)' }}>
           {CHEM_SECTIONS.map((sec, i) => {
             const cols = ['var(--doing)', 'var(--mastered)', 'var(--violet)'];
             const isAct = activeSec === sec;
             return (
               <button key={sec} data-hover onClick={()=>openSec(s.id, sec)}
-                className="px-5 py-3 text-xs font-medium border-b-2 transition-all duration-200"
+                className="px-3 sm:px-5 py-2.5 sm:py-3 text-xs font-medium border-b-2 transition-all duration-200 whitespace-nowrap shrink-0"
                 style={{ borderColor:isAct?cols[i]:'transparent', color:isAct?'var(--t1)':'var(--t3)' }}>
                 {CHEM_LABELS[sec]}
               </button>
@@ -371,15 +381,15 @@ export default function SubjectPage() {
       )}
 
       {/* Chapter list */}
-      <div className="flex-1 overflow-y-auto px-6 py-5">
-        <div className="flex items-center gap-4 mb-4 text-xs mono" style={{ color:'var(--t3)' }}>
+      <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-5">
+        <div className="flex items-center gap-3 sm:gap-4 mb-4 text-xs mono flex-wrap" style={{ color:'var(--t3)' }}>
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full inline-block" style={{ background:'var(--doing)' }} />Doing = 50%
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full inline-block" style={{ background:'var(--mastered)' }} />Mastered = 100%
           </span>
-          <span className="ml-auto opacity-60">drag ⠿ to reorder · ⋯ to manage</span>
+          <span className="hidden sm:inline ml-auto opacity-60">drag ⠿ to reorder · ⋯ to manage</span>
         </div>
 
         {chapters.length===0 ? (
@@ -395,8 +405,8 @@ export default function SubjectPage() {
           ))
         )}
 
-        {/* Add chapter */}
-        <div className="flex gap-2 mt-4">
+        {/* Add chapter — stack on mobile */}
+        <div className="flex flex-col sm:flex-row gap-2 mt-4">
           <input value={addTitle} onChange={e=>setAddTitle(e.target.value)}
             onKeyDown={e=>{ if(e.key==='Enter') handleAdd(); }}
             placeholder="Add new chapter…"

@@ -56,14 +56,14 @@ function Countdown() {
 /* ── Big Stat Card ─────────────────────────────────────────────── */
 function HeroCard({ label, value, sub, color, icon }: { label:string; value:string|number; sub?:string; color:string; icon:string }) {
   return (
-    <div className="rounded-xl p-5 relative overflow-hidden card-lift"
+    <div className="rounded-xl p-4 sm:p-5 relative overflow-hidden card-lift"
       style={{ background:'linear-gradient(140deg,rgba(255,255,255,0.055) 0%,rgba(255,255,255,0.015) 100%)', border:'1px solid var(--glass-border)', backdropFilter:'blur(16px)' }}>
       <div className="absolute top-0 left-0 right-0 h-px" style={{ background:`linear-gradient(90deg,transparent,${color}88,transparent)` }} />
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex items-start justify-between mb-2 sm:mb-3">
         <p className="text-xs mono" style={{ color:'var(--t3)', letterSpacing:'1px', textTransform:'uppercase' }}>{label}</p>
-        <span className="text-lg">{icon}</span>
+        <span className="text-base sm:text-lg">{icon}</span>
       </div>
-      <p className="text-3xl font-bold tracking-tight mb-1" style={{ color, fontFamily:'Space Grotesk', letterSpacing:'-1px' }}>{value}</p>
+      <p className="hero-val text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color, fontFamily:'Space Grotesk', letterSpacing:'-1px' }}>{value}</p>
       {sub && <p className="text-xs mono" style={{ color:'var(--t3)' }}>{sub}</p>}
     </div>
   );
@@ -179,15 +179,15 @@ export default function HomePage() {
 
   return (
     <div className="h-full overflow-y-auto" style={{ background:'transparent' }}>
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-8">
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
+        <div className="flex items-start justify-between mb-6 sm:mb-8 flex-wrap gap-3 sm:gap-4">
           <div>
             <p className="text-xs mono mb-1.5" style={{ color:'var(--t3)', letterSpacing:'2px', textTransform:'uppercase' }}>
               {greeting}, {user?.name?.split(' ')[0] || 'Ranker'} 👋
             </p>
-            <h1 className="text-3xl font-bold mb-2" style={{ fontFamily:'Space Grotesk', letterSpacing:'-1px', color:'var(--t1)' }}>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2" style={{ fontFamily:'Space Grotesk', letterSpacing:'-1px', color:'var(--t1)' }}>
               Your{' '}
               <span style={{ background:'linear-gradient(90deg,var(--accent),var(--pink))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
                 Command Center
@@ -198,23 +198,23 @@ export default function HomePage() {
           <Countdown />
         </div>
 
-        {/* Hero stats — Protocol-style big cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* Hero stats — 2-col on mobile, 4-col on md+ */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <HeroCard label="Overall Score" value={`${gs.pct}%`}  sub={`${gs.scored}/${gs.total*2} pts`} color="var(--accent)"   icon="🎯" />
           <HeroCard label="In Progress"   value={gs.doing}       sub="chapters active"                  color="var(--doing)"    icon="⚡" />
           <HeroCard label="Mastered"      value={gs.mastered}    sub={`${gs.total?Math.round(gs.mastered/gs.total*100):0}% of syllabus`} color="var(--mastered)" icon="🏆" />
           <HeroCard label="Revisions"     value={gs.revTotal}    sub={`avg ${gs.total?(gs.revTotal/gs.total).toFixed(1):0}/ch`}          color="var(--revision)" icon="🔄" />
         </div>
 
-        {/* Completion overview bar — Protocol wide-card style */}
-        <div className="rounded-xl p-5 mb-8"
+        {/* Completion overview bar */}
+        <div className="rounded-xl p-4 sm:p-5 mb-6 sm:mb-8"
           style={{ background:'linear-gradient(140deg,rgba(255,255,255,0.055) 0%,rgba(255,255,255,0.015) 100%)', border:'1px solid var(--glass-border)', backdropFilter:'blur(16px)' }}>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-start sm:items-center justify-between mb-4 flex-wrap gap-2">
             <div>
               <p className="text-sm font-semibold" style={{ color:'var(--t1)' }}>Overall Completion</p>
               <p className="text-xs mono" style={{ color:'var(--t3)' }}>{gs.total} chapters total across all subjects</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="overview-pcts flex items-center gap-4">
               {[
                 { label:'Class XI',  val:`${c11.pct}%`, color:'var(--doing)' },
                 { label:'Class XII', val:`${c12.pct}%`, color:'var(--mastered)' },
@@ -232,7 +232,7 @@ export default function HomePage() {
             <div style={{ flex:gs.doing,    background:'var(--doing)',    transition:'flex .8s ease', minWidth:gs.doing?2:0 }} />
             <div style={{ flex:Math.max(0, gs.total - gs.mastered - gs.doing) }} />
           </div>
-          <div className="flex items-center gap-5 mt-3">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-5 mt-3">
             {[
               { label:'Mastered', color:'var(--mastered)', val:gs.mastered },
               { label:'In Progress', color:'var(--doing)', val:gs.doing },
@@ -247,7 +247,7 @@ export default function HomePage() {
         </div>
 
         {/* Class XI */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ background:'var(--doing)' }} />
@@ -256,7 +256,8 @@ export default function HomePage() {
             <div className="flex-1 h-px" style={{ background:'var(--line)' }} />
             <span className="text-xs mono" style={{ color:'var(--t3)' }}>{c11.pct}% · {c11.total} chapters</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* 1-col on mobile, 2-col on sm, 3-col on md+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {subjects.filter(s => s.classNum === 11).map(s => (
               <SubjectCard key={s.id} s={s} onClick={() => openSubject(s.id, s.type==='chemistry'?'Physical':null)} />
             ))}
@@ -273,7 +274,7 @@ export default function HomePage() {
             <div className="flex-1 h-px" style={{ background:'var(--line)' }} />
             <span className="text-xs mono" style={{ color:'var(--t3)' }}>{c12.pct}% · {c12.total} chapters</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {subjects.filter(s => s.classNum === 12).map(s => (
               <SubjectCard key={s.id} s={s} onClick={() => openSubject(s.id, s.type==='chemistry'?'Physical':null)} />
             ))}
