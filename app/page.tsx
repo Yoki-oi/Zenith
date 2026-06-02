@@ -8,8 +8,6 @@ import SubjectsPage from '@/components/subjects-page';
 import SubjectDetailPage from '@/components/subject-detail-page';
 import AnalyticsPage from '@/components/analytics-page';
 
-const PAGES: Record<string, React.ReactNode> = {};
-
 function PageWrapper({ children, isActive }: { children: React.ReactNode; isActive: boolean }) {
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(isActive);
@@ -44,6 +42,10 @@ function PageWrapper({ children, isActive }: { children: React.ReactNode; isActi
 
 export default function Home() {
   const page = useStore(s => s.page);
+
+  useEffect(() => {
+    useStore.persist.rehydrate();
+  }, []);
 
   return (
     <>

@@ -1,4 +1,3 @@
-'use client';
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -327,7 +326,7 @@ export const useStore = create<Store>()(
           };
         }),
     }),
-    { name: 'nexus-jee-v7' }
+    { name: 'nexus-jee-v7', skipHydration: true }
   )
 );
 
