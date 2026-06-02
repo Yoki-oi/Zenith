@@ -1,0 +1,260 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Base backgrounds - Deep dark blue */
+  --background: #0a0d14;
+  --foreground: #e8ecf4;
+  
+  /* Card surfaces */
+  --card: #0f1219;
+  --card-foreground: #e8ecf4;
+  --card-border: rgba(255, 255, 255, 0.08);
+  
+  /* Popover */
+  --popover: #0f1219;
+  --popover-foreground: #e8ecf4;
+  
+  /* Primary - Purple accent */
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  
+  /* Secondary */
+  --secondary: #1a1f2e;
+  --secondary-foreground: #e8ecf4;
+  
+  /* Muted */
+  --muted: #1a1f2e;
+  --muted-foreground: #6b7280;
+  
+  /* Accent */
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+  
+  /* Destructive */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  /* Border and input */
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #8b5cf6;
+  
+  /* Status colors */
+  --doing: #3b82f6;
+  --mastered: #22c55e;
+  --revision: #f59e0b;
+  --tasks: #8b5cf6;
+  
+  /* Text hierarchy */
+  --text-primary: #e8ecf4;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  /* Charts */
+  --chart-1: #8b5cf6;
+  --chart-2: #3b82f6;
+  --chart-3: #22c55e;
+  --chart-4: #f59e0b;
+  --chart-5: #ef4444;
+  
+  --radius: 0.75rem;
+  
+  /* Sidebar */
+  --sidebar: #0a0d14;
+  --sidebar-foreground: #e8ecf4;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1a1f2e;
+  --sidebar-accent-foreground: #e8ecf4;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #8b5cf6;
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Wave background for login */
+.wave-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.03) 50%, rgba(139, 92, 246, 0.08) 100%);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23fff' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+  mask-size: cover;
+  mask-position: bottom;
+}
+
+/* Status pill styles */
+.pill-doing {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.pill-mastered {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.pill-revision {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.pill-tasks {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #8b5cf6;
+}
+
+/* Card glow effect */
+.card-glow {
+  position: relative;
+}
+
+.card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Subject icons */
+.subject-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+/* Animation for page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ── Font system ─────────────────────────────────────────── */
+/* DM Sans as primary UI font — geometric, clean, premium    */
+/* Inter as fallback for body text                           */
+
+@theme inline {
+  --font-sans: var(--font-dm-sans), var(--font-inter), 'Inter', system-ui, sans-serif;
+}
+
+/* Nexus wordmark — DM Sans bold, wide tracking */
+.font-nexus {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Display numbers — large stats like 178, 42% */
+.font-display {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Serif display — used for "Syllabus" large heading */
+.font-heading-serif {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+
+/* UI labels — uppercase tracking */
+.font-label {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+/* Smooth font rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

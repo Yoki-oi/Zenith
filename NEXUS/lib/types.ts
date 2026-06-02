@@ -1,5 +1,3 @@
-// src/types/index.ts
-
 export type ChemSection = 'Physical' | 'Organic' | 'Inorganic';
 
 export interface SubTopic {
@@ -30,10 +28,13 @@ export interface Subject {
   chapters: Chapter[];
 }
 
-export type Page = 'login' | 'home' | 'subject' | 'analytics';
+export type Page = 'login' | 'home' | 'subjects' | 'subject' | 'analytics';
 
-export interface AppState {
-  page: Page;
-  currentSubId: string | null;
-  currentChemSection: ChemSection | null;
+export interface User {
+  name: string;
+  email: string;
+  photo?: string;
+  examName?: string;
+  examDate?: string; // ISO date string e.g. "2026-01-22"
+  targetDate?: string;
 }

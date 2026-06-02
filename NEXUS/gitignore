@@ -1,0 +1,15 @@
+# Dependencies
+node_modules
+
+# Next.js build output
+.next/
+
+# Environment variables
+.env*.local
+
+# Build artifacts
+tsconfig.tsbuildinfo
+pnpm-lock.yaml
+
+# OS
+.DS_Store
