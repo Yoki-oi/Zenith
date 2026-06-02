@@ -2,6 +2,14 @@
 
 import { useState } from 'react';
 import { useStore } from '@/lib/store';
+import { auth } from '@/lib/firebase';
+
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth';
+
 import { Mail, Lock, Eye, EyeOff, BarChart3, Target, TrendingUp, User } from 'lucide-react';
 
 export default function LoginPage() {
@@ -12,22 +20,57 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email && !password) return;
-    setLoading(true);
-    setTimeout(() => {
-      setUser({ name: name.trim() || 'User', email: email || 'user@example.com' });
+
+    if (!email || !password) return;
+
+    try {
+      setLoading(true);
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+
+      setUser({
+        name: user.displayName || name || 'User',
+        email: user.email || '',
+      });
+    } catch (error) {
+      console.error(error);
+      alert('Invalid email or password');
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setUser({ name: name.trim() || 'User', email: 'user@gmail.com' });
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(
+        auth,
+        provider
+      );
+
+      const user = result.user;
+
+      setUser({
+        name: user.displayName || 'User',
+        email: user.email || '',
+      });
+    } catch (error) {
+      console.error(error);
+      alert('Google sign-in failed');
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (
