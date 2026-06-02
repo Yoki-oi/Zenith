@@ -31,6 +31,7 @@ export interface Subject {
 export type Page = 'login' | 'home' | 'subjects' | 'subject' | 'analytics';
 
 export interface User {
+  uid?: string;
   name: string;
   email: string;
   photo?: string;

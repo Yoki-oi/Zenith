@@ -37,6 +37,7 @@ export default function LoginPage() {
       const user = userCredential.user;
 
       setUser({
+        uid: user.uid,
         name: user.displayName || name || 'User',
         email: user.email || '',
       });
@@ -62,6 +63,7 @@ export default function LoginPage() {
       const user = result.user;
 
       setUser({
+        uid: user.uid,
         name: user.displayName || 'User',
         email: user.email || '',
       });

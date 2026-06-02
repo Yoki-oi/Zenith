@@ -62,6 +62,7 @@ interface Store {
 
   // Analytics
   recordProgressSnapshot: () => void;
+  
 }
 
 export const useStore = create<Store>()(
