@@ -109,19 +109,35 @@ export default function SubjectsPage() {
               onClick={() => openSubject(subject.id, subject.type === 'chemistry' ? 'Physical' : null)}
               className="w-full bg-[#0f1219] border border-white/5 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 hover:border-white/10 transition-all group text-left"
             >
-              {/* Icon box */}
-              <div
-                className="w-16 h-16 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: `${subject.color}12` }}
-              >
-                <SubjectIcon name={subject.name} className="w-9 h-9 sm:w-14 sm:h-14" style={{ color: subject.color }} />
+              {/* Mobile: top row — icon + name + progress + arrow */}
+              <div className="flex items-center gap-4 sm:contents">
+                {/* Icon box */}
+                <div
+                  className="w-14 h-14 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center shrink-0"
+                  style={{ background: `${subject.color}12` }}
+                >
+                  <SubjectIcon name={subject.name} className="w-8 h-8 sm:w-14 sm:h-14" style={{ color: subject.color }} />
+                </div>
+
+                {/* Name — mobile: in top row, desktop: in middle column */}
+                <div className="flex-1 min-w-0 sm:hidden">
+                  <h3 className="text-lg font-semibold text-white leading-tight">{subject.name}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${subject.pct}%`, background: subject.color }} />
+                    </div>
+                    <span className="text-white font-bold text-sm shrink-0">{subject.pct}%</span>
+                  </div>
+                </div>
+
+                {/* Arrow — mobile only, in top row */}
+                <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-white transition-all sm:hidden shrink-0" />
               </div>
 
-              {/* Name + description + stats */}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-1">{subject.name}</h3>
-                <p className="text-gray-500 text-sm mb-4 sm:mb-5">{descriptions[subject.name]}</p>
-
+              {/* Name + description + stats — desktop middle column */}
+              <div className="flex-1 min-w-0 hidden sm:block">
+                <h3 className="text-2xl font-semibold text-white mb-1">{subject.name}</h3>
+                <p className="text-gray-500 text-sm mb-5">{descriptions[subject.name]}</p>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                   <div className="flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-gray-500 shrink-0" />
@@ -141,16 +157,32 @@ export default function SubjectsPage() {
                 </div>
               </div>
 
-              {/* Progress + arrow */}
-              <div className="flex items-center gap-4 sm:gap-5 shrink-0">
+              {/* Stats row — mobile only, below top row */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 sm:hidden">
+                <div className="flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                  <span className="text-gray-300 text-xs font-medium">{subject.mastered} / {subject.allChapters}</span>
+                  <span className="text-gray-600 text-xs">Mastered</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                  <span className="text-gray-300 text-xs font-medium">{subject.topicsDone} / {subject.topicsTotal}</span>
+                  <span className="text-gray-600 text-xs">Topics</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <ClipboardList className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                  <span className="text-gray-300 text-xs font-medium">{subject.revTotal}</span>
+                  <span className="text-gray-600 text-xs">Revisions</span>
+                </div>
+              </div>
+
+              {/* Progress + arrow — desktop right column only */}
+              <div className="hidden sm:flex items-center gap-5 shrink-0">
                 <div className="text-right">
                   <p className="text-gray-500 text-xs mb-1">Progress</p>
                   <p className="text-white font-bold text-xl">{subject.pct}%</p>
-                  <div className="w-24 sm:w-32 h-1.5 bg-white/5 rounded-full overflow-hidden mt-2">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${subject.pct}%`, background: subject.color }}
-                    />
+                  <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden mt-2">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${subject.pct}%`, background: subject.color }} />
                   </div>
                 </div>
                 <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
