@@ -81,12 +81,12 @@ export default function SubjectsPage() {
         {/* ── Header row ── */}
         <div className="flex flex-col sm:flex-row sm:items-stretch sm:justify-between gap-6 mb-10">
           <div className="flex flex-col justify-center">
-            <h1 className="font-display text-5xl text-white mb-2" style={{ letterSpacing: '-0.03em' }}>Syllabus</h1>
+            <h1 className="font-display text-4xl sm:text-5xl text-white mb-2" style={{ letterSpacing: '-0.03em' }}>Syllabus</h1>
             <p className="text-gray-400 text-sm">Access your subjects and track your syllabus progress.</p>
           </div>
 
           {/* Overall progress card */}
-          <div className="bg-[#0f1219] border border-white/5 rounded-2xl px-6 py-4 min-w-[300px]">
+          <div className="bg-[#0f1219] border border-white/5 rounded-2xl px-6 py-4 sm:min-w-[300px]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Overall Syllabus Progress</span>
               <span className="text-purple-400 font-bold text-base">{overallPct}%</span>
@@ -107,22 +107,22 @@ export default function SubjectsPage() {
             <button
               key={subject.name}
               onClick={() => openSubject(subject.id, subject.type === 'chemistry' ? 'Physical' : null)}
-              className="w-full bg-[#0f1219] border border-white/5 rounded-2xl p-6 flex items-center gap-6 hover:border-white/10 transition-all group text-left"
+              className="w-full bg-[#0f1219] border border-white/5 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 hover:border-white/10 transition-all group text-left"
             >
               {/* Icon box */}
               <div
-                className="w-28 h-28 rounded-2xl flex items-center justify-center shrink-0"
+                className="w-16 h-16 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center shrink-0"
                 style={{ background: `${subject.color}12` }}
               >
-                <SubjectIcon name={subject.name} className="w-14 h-14" style={{ color: subject.color }} />
+                <SubjectIcon name={subject.name} className="w-9 h-9 sm:w-14 sm:h-14" style={{ color: subject.color }} />
               </div>
 
               {/* Name + description + stats */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-2xl font-semibold text-white mb-1">{subject.name}</h3>
-                <p className="text-gray-500 text-sm mb-5">{descriptions[subject.name]}</p>
+                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-1">{subject.name}</h3>
+                <p className="text-gray-500 text-sm mb-4 sm:mb-5">{descriptions[subject.name]}</p>
 
-                <div className="flex items-center gap-8">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                   <div className="flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-gray-500 shrink-0" />
                     <span className="text-gray-300 text-sm font-medium">{subject.mastered} / {subject.allChapters}</span>
@@ -142,11 +142,11 @@ export default function SubjectsPage() {
               </div>
 
               {/* Progress + arrow */}
-              <div className="flex items-center gap-5 shrink-0">
+              <div className="flex items-center gap-4 sm:gap-5 shrink-0">
                 <div className="text-right">
                   <p className="text-gray-500 text-xs mb-1">Progress</p>
                   <p className="text-white font-bold text-xl">{subject.pct}%</p>
-                  <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden mt-2">
+                  <div className="w-24 sm:w-32 h-1.5 bg-white/5 rounded-full overflow-hidden mt-2">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{ width: `${subject.pct}%`, background: subject.color }}

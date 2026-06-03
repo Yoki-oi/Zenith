@@ -335,7 +335,7 @@ export const useStore = create<Store>()(
             }
           ),
         }));
-        setTimeout(() => get().saveToCloud(), 0);
+        setTimeout(() => { get().recordProgressSnapshot(); get().saveToCloud(); }, 0);
       },
 
       deleteItem: (subId, chId, itemId) => {

@@ -124,11 +124,11 @@ export default function LoginPage() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#0a0c13]">
+    <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-4 py-8 bg-[#0a0c13]">
       <div className="w-full max-w-4xl flex rounded-2xl overflow-hidden border border-white/8 shadow-2xl">
 
         {/* ── Left Panel ── */}
-        <div className="hidden md:flex flex-col w-5/12 p-10 relative overflow-hidden bg-[#0d1018]">
+        <div className="hidden md:flex flex-col w-5/12 p-8 lg:p-10 relative overflow-hidden bg-[#0d1018]">
           <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none">
             <svg viewBox="0 0 400 220" className="w-full h-full" preserveAspectRatio="none">
               <defs>
@@ -146,7 +146,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <div className="relative z-10">
-            <h1 className="font-nexus text-4xl text-white mb-3">Nexus</h1>
+            <h1 className="font-nexus text-3xl lg:text-4xl text-white mb-3">Nexus</h1>
             <div className="w-10 h-0.5 bg-purple-500 rounded mb-5" />
             <p className="text-gray-400 text-base leading-relaxed">
               Syllabus Tracking Platform<br />for JEE Aspirants
@@ -161,7 +161,7 @@ export default function LoginPage() {
         </div>
 
         {/* ── Right Panel ── */}
-        <div className="w-full md:w-7/12 bg-[#0f1219] flex flex-col justify-center p-10">
+        <div className="w-full md:w-7/12 bg-[#0f1219] flex flex-col justify-center p-6 sm:p-8 md:p-10">
           <div className="max-w-sm mx-auto w-full">
 
             {/* Back button for signup / forgot */}
@@ -175,7 +175,7 @@ export default function LoginPage() {
             )}
 
             {/* Title */}
-            <h2 className="text-2xl font-bold text-white mb-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
               {mode === 'login' && 'Welcome Back'}
               {mode === 'signup' && 'Create Account'}
               {mode === 'forgot' && 'Reset Password'}
@@ -342,8 +342,8 @@ export default function LoginPage() {
 
 // ── Shared sub-components ─────────────────────────────────────────────────────
 
-const inputCls = "w-full pl-11 pr-4 py-3 bg-[#1a1f2e] border border-white/8 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all";
-const submitCls = "w-full py-3.5 bg-[#3730a3] hover:bg-[#4338ca] text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-1";
+const inputCls = "w-full pl-11 pr-4 py-3 sm:py-3 bg-[#1a1f2e] border border-white/8 rounded-xl text-white text-base sm:text-sm placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all";
+const submitCls = "w-full py-3.5 sm:py-3.5 bg-[#3730a3] hover:bg-[#4338ca] text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-1";
 
 function Field({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (

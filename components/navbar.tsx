@@ -3,16 +3,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useStore } from '@/lib/store';
-import { Pencil, Download, Upload, X, LogOut as LogOutIcon, Menu } from 'lucide-react';
+import { Pencil, Download, Upload, X, LogOut as LogOutIcon } from 'lucide-react';
 
 interface NavBarProps {
   activeTab?: 'Dashboard' | 'Subjects' | 'Analytics';
 }
 
 export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
-  const { setPage, user, logout, updateUser, resetAllProgress } = useStore();
+  const { setPage, user, logout, updateUser, resetAllProgress, syncPending } = useStore();
   const [showProfile, setShowProfile] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -38,16 +37,12 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
 
   return (
     <>
-      {/* ── Header bar ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 px-4 sm:px-8 flex items-center justify-between bg-[#0a0d14]/95 backdrop-blur-xl border-b border-white/5">
-
-        {/* Left: logo + desktop nav */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 px-8 flex items-center justify-between bg-[#0a0d14]/95 backdrop-blur-xl border-b border-white/5">
         <div className="flex items-center gap-12">
-          <button onClick={() => { setPage('home'); setMobileOpen(false); }} className="font-nexus text-2xl text-white">
+          <button onClick={() => setPage('home')} className="font-nexus text-2xl text-white">
             Nexus
           </button>
-          {/* Desktop nav — hidden on mobile */}
-          <nav className="hidden sm:flex items-center gap-1">
+          <nav className="flex items-center gap-1">
             {tabs.map((tab) => (
               <button
                 key={tab.label}
@@ -65,10 +60,8 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
           </nav>
         </div>
 
-        {/* Right: desktop countdown + avatar | mobile hamburger */}
         <div className="flex items-center gap-3">
-          {/* Countdown pill — desktop only */}
-          <div className="hidden sm:flex items-center gap-3 px-4 py-1.5 bg-[#13161f] rounded-lg border border-white/5">
+          <div className="flex items-center gap-3 px-4 py-1.5 bg-[#13161f] rounded-lg border border-white/5">
             <svg className="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
@@ -80,10 +73,16 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
             </div>
           </div>
 
-          {/* Avatar button — desktop only */}
+          <div className="flex items-center gap-2">
+            {syncPending && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 rounded-full">
+                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                <span className="text-gray-500 text-[11px]">Saving</span>
+              </div>
+            )}
           <button
             onClick={() => setShowProfile(true)}
-            className="hidden sm:flex items-center gap-2.5 pl-1 pr-3 py-1.5 rounded-xl hover:bg-white/5 transition-colors"
+            className="flex items-center gap-2.5 pl-1 pr-3 py-1.5 rounded-xl hover:bg-white/5 transition-colors"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm shrink-0">
               {user?.name?.[0]?.toUpperCase() || 'A'}
@@ -93,67 +92,9 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-
-          {/* Hamburger — mobile only */}
-          <button
-            onClick={() => setMobileOpen((o) => !o)}
-            className="sm:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          </div>
         </div>
       </header>
-
-      {/* ── Mobile drawer ── */}
-      {mobileOpen && (
-        <div className="sm:hidden fixed top-16 left-0 right-0 z-40 bg-[#0a0d14]/98 backdrop-blur-xl border-b border-white/5 px-4 py-4 space-y-1">
-          {/* Nav tabs */}
-          {tabs.map((tab) => (
-            <button
-              key={tab.label}
-              onClick={() => { setPage(tab.page); setMobileOpen(false); }}
-              className={`w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                activeTab === tab.label
-                  ? 'bg-white/8 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {tab.label}
-              {activeTab === tab.label && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/70" />
-              )}
-            </button>
-          ))}
-
-          {/* Divider */}
-          <div className="h-px bg-white/5 my-2" />
-
-          {/* Countdown pill */}
-          <div className="flex items-center gap-3 px-4 py-3 bg-[#13161f] rounded-xl border border-white/5">
-            <svg className="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-            </svg>
-            <div className="leading-tight">
-              <p className="text-gray-400 text-[11px] font-medium">{examName}</p>
-              <p className="text-white font-bold text-sm tracking-wide">
-                {isPast ? 'Exam Day!' : `${diffDays}D ${String(hours).padStart(2, '0')}H ${String(mins).padStart(2, '0')}M`}
-              </p>
-            </div>
-          </div>
-
-          {/* Profile button */}
-          <button
-            onClick={() => { setMobileOpen(false); setShowProfile(true); }}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors"
-          >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm shrink-0">
-              {user?.name?.[0]?.toUpperCase() || 'A'}
-            </div>
-            <span className="text-white text-sm font-medium">{user?.name || 'Yoki'}</span>
-          </button>
-        </div>
-      )}
 
       {showProfile && typeof document !== 'undefined' && createPortal(
         <ProfileModal
@@ -254,7 +195,7 @@ function ProfileModal({
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative bg-[#0f1219] border border-white/10 rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-[#0f1219] border border-white/10 rounded-2xl shadow-2xl w-full max-w-lg mx-4">
 
         {/* Sync indicator */}
         {syncPending && (

@@ -174,12 +174,6 @@ export default function AnalyticsPage() {
           <div className={`${card} p-6`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <p className="text-xs text-gray-500 uppercase tracking-wider">Topic Completion Over Time</p>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1a1f2e] border border-white/8 rounded-lg">
-                <span className="text-gray-300 text-sm">Topics Completed</span>
-                <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
             </div>
 
             <div className="h-52 sm:h-64">

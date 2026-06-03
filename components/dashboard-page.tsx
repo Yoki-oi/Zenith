@@ -62,14 +62,16 @@ export default function DashboardPage() {
     // Mastered chapter = all its tasks count as done
     const topicsDone = allChapters.reduce((a, c) =>
       a + (c.mastered ? c.items.length : c.items.filter((i) => i.done).length), 0);
-    const pct = allChapters.length ? Math.round((allChapters.filter((c) => c.mastered).length / allChapters.length) * 100) : 0;
+    const pct = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
     return { name, color: first.color, type: first.type, id: first.id, topicsTotal, topicsDone, pct, total: allChapters.length, mastered: allChapters.filter((c) => c.mastered).length };
   }).filter(Boolean) as NonNullable<ReturnType<typeof subjectNames.map>[0]>[];
 
   // Overall progress based on mastered chapters (matches what users actively track)
   const totalChapters = combinedSubjects.reduce((a, s) => a + s.total, 0);
   const totalMastered = combinedSubjects.reduce((a, s) => a + s.mastered, 0);
-  const overallPct = totalChapters ? Math.round((totalMastered / totalChapters) * 100) : 0;
+  const totalTopicsDone = combinedSubjects.reduce((a, s) => a + s.topicsDone, 0);
+  const totalTopicsTotal = combinedSubjects.reduce((a, s) => a + s.topicsTotal, 0);
+  const overallPct = totalTopicsTotal ? Math.round((totalTopicsDone / totalTopicsTotal) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-[#0a0d14] relative">
