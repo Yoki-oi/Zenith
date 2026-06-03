@@ -381,7 +381,8 @@ export function subjectStats(s: Subject, chemSection?: ChemSection | null) {
   const chs = chemSection ? s.chapters.filter((c) => c.chemSection === chemSection) : s.chapters;
   const revTotal = chs.reduce((acc, c) => acc + (c.revisions || 0), 0);
   const topicsTotal = chs.reduce((acc, c) => acc + c.items.length, 0);
-  const topicsDone = chs.reduce((acc, c) => acc + c.items.filter((i) => i.done).length, 0);
+  // Mastered chapter = all its tasks count as done
+  const topicsDone = chs.reduce((acc, c) => acc + (c.mastered ? c.items.length : c.items.filter((i) => i.done).length), 0);
   return {
     total: chs.length,
     doing: chs.filter((c) => c.doing).length,
