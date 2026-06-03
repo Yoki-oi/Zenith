@@ -22,6 +22,7 @@ export default function SubjectsPage() {
       a + (c.mastered ? c.items.length : c.items.filter((i) => i.done).length), 0);
     const mastered = allChapters.filter((c) => c.mastered).length;
     const revTotal = allChapters.reduce((a, c) => a + (c.revisions || 0), 0);
+    const needsRevision = allChapters.filter((c) => (c.doing || c.mastered) && (c.revisions || 0) === 0).length;
     const taskPct = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
     const chapterPct = allChapters.length ? Math.round((mastered / allChapters.length) * 100) : 0;
     // Show task completion as primary progress — reflects actual work done even before mastering
@@ -36,6 +37,7 @@ export default function SubjectsPage() {
       topicsTotal,
       topicsDone,
       revTotal,
+      needsRevision,
       pct,
       taskPct,
     };
@@ -134,7 +136,7 @@ export default function SubjectsPage() {
                   <div className="flex items-center gap-2">
                     <ClipboardList className="w-4 h-4 text-gray-500 shrink-0" />
                     <span className="text-gray-300 text-sm font-medium">{subject.revTotal}</span>
-                    <span className="text-gray-600 text-sm">Pending Revisions</span>
+                    <span className="text-gray-600 text-sm">Total Revisions</span>
                   </div>
                 </div>
               </div>

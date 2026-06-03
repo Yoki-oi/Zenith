@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 </div>
                 <button
                   onClick={() => openSubject(activeEntry.subjectId, activeEntry.chemSection ?? null)}
-                  className="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-white text-sm font-medium rounded-xl transition-colors mt-auto"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-white text-sm font-medium rounded-xl transition-colors mt-auto w-fit"
                 >
                   Continue Studying <ArrowRight className="w-4 h-4" />
                 </button>
