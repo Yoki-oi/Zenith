@@ -20,7 +20,10 @@ export default function SubjectsPage() {
     const topicsDone = allChapters.reduce((a, c) => a + c.items.filter((i) => i.done).length, 0);
     const mastered = allChapters.filter((c) => c.mastered).length;
     const revTotal = allChapters.reduce((a, c) => a + (c.revisions || 0), 0);
-    const pct = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
+    const taskPct = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
+    const chapterPct = allChapters.length ? Math.round((mastered / allChapters.length) * 100) : 0;
+    // Show chapter mastery as primary progress — it's what users actively track
+    const pct = chapterPct;
     return {
       name,
       color: first.color,
@@ -32,10 +35,16 @@ export default function SubjectsPage() {
       topicsDone,
       revTotal,
       pct,
+      taskPct,
     };
   }).filter(Boolean) as NonNullable<ReturnType<typeof subjectNames.map>[0]>[];
 
   const completedSubjects = combined.filter((s) => s.pct === 100).length;
+
+  // Overall progress = mastered chapters across all subjects (matches what users track)
+  const totalChapters = combined.reduce((a, s) => a + s.allChapters, 0);
+  const totalMastered = combined.reduce((a, s) => a + s.mastered, 0);
+  const overallPct = totalChapters ? Math.round((totalMastered / totalChapters) * 100) : 0;
 
   const descriptions: Record<string, string> = {
     Physics: 'Explore the fundamental laws of nature and understand how the universe works.',
@@ -74,10 +83,10 @@ export default function SubjectsPage() {
           <div className="bg-[#0f1219] border border-white/5 rounded-2xl px-6 py-4 min-w-[300px]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Overall Syllabus Progress</span>
-              <span className="text-purple-400 font-bold text-base">{gs.pct}%</span>
+              <span className="text-purple-400 font-bold text-base">{overallPct}%</span>
             </div>
             <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mb-2">
-              <div className="h-full rounded-full transition-all bg-purple-500" style={{ width: `${gs.pct}%` }} />
+              <div className="h-full rounded-full transition-all bg-purple-500" style={{ width: `${overallPct}%` }} />
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />

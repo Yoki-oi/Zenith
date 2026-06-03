@@ -60,9 +60,14 @@ export default function DashboardPage() {
     const allChapters = matching.flatMap((s) => s.chapters);
     const topicsTotal = allChapters.reduce((a, c) => a + c.items.length, 0);
     const topicsDone = allChapters.reduce((a, c) => a + c.items.filter((i) => i.done).length, 0);
-    const pct = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
+    const pct = allChapters.length ? Math.round((allChapters.filter((c) => c.mastered).length / allChapters.length) * 100) : 0;
     return { name, color: first.color, type: first.type, id: first.id, topicsTotal, topicsDone, pct, total: allChapters.length, mastered: allChapters.filter((c) => c.mastered).length };
   }).filter(Boolean) as NonNullable<ReturnType<typeof subjectNames.map>[0]>[];
+
+  // Overall progress based on mastered chapters (matches what users actively track)
+  const totalChapters = combinedSubjects.reduce((a, s) => a + s.total, 0);
+  const totalMastered = combinedSubjects.reduce((a, s) => a + s.mastered, 0);
+  const overallPct = totalChapters ? Math.round((totalMastered / totalChapters) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-[#0a0d14] relative">
@@ -84,7 +89,7 @@ export default function DashboardPage() {
 
       <NavBar activeTab="Dashboard" />
 
-      <main className="relative pt-20 pb-10 px-6 xl:px-10 space-y-4">
+      <main className="relative pt-20 pb-10 px-4 sm:px-6 xl:px-10 space-y-4">
 
         {/* ── Row 1: Current Chapter + Exam Countdown ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -100,7 +105,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-gray-400 text-sm">{activeEntry.subjectName}</p>
-                    <h3 className="text-white font-semibold text-xl leading-tight">{activeEntry.title}</h3>
+                    <h3 className="text-white font-semibold text-lg sm:text-xl leading-tight">{activeEntry.title}</h3>
                   </div>
                   <button className="text-gray-500 hover:text-white transition-colors text-lg leading-none mt-1">•••</button>
                 </div>
@@ -123,7 +128,7 @@ export default function DashboardPage() {
                 </div>
                 <button
                   onClick={() => openSubject(activeEntry.subjectId, activeEntry.subjectType === 'chemistry' ? 'Physical' : null)}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-white text-sm font-medium rounded-xl transition-colors"
+                  className="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-white text-sm font-medium rounded-xl transition-colors"
                 >
                   Continue Studying <ArrowRight className="w-4 h-4" />
                 </button>
@@ -147,8 +152,8 @@ export default function DashboardPage() {
             <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
             <h3 className="text-white font-semibold text-lg mb-2">{examName}</h3>
             <div className="flex items-end gap-3 mb-3">
-              <span className="font-display text-[4.5rem] text-white leading-none">{diffDays}</span>
-              <span className="text-2xl text-gray-400 mb-2">Days Left</span>
+              <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">{diffDays}</span>
+              <span className="text-xl sm:text-2xl text-gray-400 mb-2">Days Left</span>
             </div>
             <div className="flex items-center gap-2 text-gray-400 text-sm">
               <Calendar className="w-4 h-4" />
@@ -180,11 +185,11 @@ export default function DashboardPage() {
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="lg:w-52 shrink-0">
               <p className="text-gray-400 text-sm mb-1">Overall Progress</p>
-              <p className="font-display text-6xl text-white leading-none mb-1">{gs.pct}<span className="text-3xl">%</span></p>
-              <p className="text-gray-500 text-sm mt-2">{gs.topicsDone} / {gs.topicsTotal} Topics Completed</p>
+              <p className="font-display text-5xl sm:text-6xl text-white leading-none mb-1">{overallPct}<span className="text-2xl sm:text-3xl">%</span></p>
+              <p className="text-gray-500 text-sm mt-2">{totalMastered} / {totalChapters} Chapters Mastered</p>
               <div className="flex items-center gap-1.5 mt-2">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
-                <span className="text-green-400 text-xs">{gs.pct >= 60 ? 'Excellent pace!' : gs.pct >= 35 ? 'On Track' : 'Keep going!'}</span>
+                <span className="text-green-400 text-xs">{overallPct >= 60 ? 'Excellent pace!' : overallPct >= 35 ? 'On Track' : 'Keep going!'}</span>
               </div>
             </div>
             <div className="flex-1 flex flex-col justify-center space-y-5">
@@ -198,7 +203,7 @@ export default function DashboardPage() {
                     <div className="h-full rounded-full transition-all" style={{ width: `${subject.pct}%`, background: subject.color }} />
                   </div>
                   <span className="text-gray-300 text-sm w-10 text-right shrink-0">{subject.pct}%</span>
-                  <span className="text-gray-500 text-xs w-16 text-right shrink-0">{subject.topicsDone} / {subject.topicsTotal}</span>
+                  <span className="hidden sm:block text-gray-500 text-xs w-16 text-right shrink-0">{subject.topicsDone} / {subject.topicsTotal}</span>
                   <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-white transition-colors shrink-0" />
                 </button>
               ))}
@@ -207,8 +212,8 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Row 3: Stat cards ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Completion %" value={`${gs.pct}%`} subtext="Overall Syllabus Completed" icon={<TrendingUp className="w-5 h-5" />} color="purple" sparkColor="#8b5cf6" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <StatCard label="Completion %" value={`${overallPct}%`} subtext="Chapters Mastered" icon={<TrendingUp className="w-5 h-5" />} color="purple" sparkColor="#8b5cf6" />
           <StatCard label="Revision Count" value={gs.revTotal.toString()} subtext="Total Revisions" icon={<RotateCcw className="w-5 h-5" />} color="green" sparkColor="#22c55e" />
           <StatCard label="Active Subject" value={activeSubjectName} subtext="Currently in Focus" icon={<Target className="w-5 h-5" />} color="blue" sparkColor="#3b82f6" />
 
@@ -234,7 +239,7 @@ export default function DashboardPage() {
         {/* ── Row 4: Subjects Overview — one outer card, 3 inner floating cards ── */}
         <div className={`${card} p-5`}>
           <p className="font-label text-gray-500 mb-4">Subjects Overview</p>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {combinedSubjects.map((subject) => (
               <button
                 key={subject.name}
@@ -273,7 +278,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Footer */}
-        <footer className="pt-5 border-t border-white/5 flex items-center justify-between text-sm text-gray-500">
+        <footer className="pt-5 border-t border-white/5 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left">
           <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>
@@ -288,13 +293,13 @@ function StatCard({ label, value, subtext, icon, color, sparkColor }: {
 }) {
   const textColors = { purple: 'text-purple-400', green: 'text-green-400', blue: 'text-blue-400' };
   return (
-    <div className="bg-[#0f1219]/80 backdrop-blur-sm border border-white/[0.07] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] p-5 flex flex-col justify-between">
+    <div className="bg-[#0f1219]/80 backdrop-blur-sm border border-white/[0.07] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] p-4 sm:p-5 flex flex-col justify-between">
       <div className="flex items-center justify-between mb-3">
-        <p className="font-label text-gray-500">{label}</p>
-        <span className={textColors[color]}>{icon}</span>
+        <p className="font-label text-gray-500 truncate pr-2">{label}</p>
+        <span className={`${textColors[color]} shrink-0`}>{icon}</span>
       </div>
-      <p className="font-display text-3xl text-white mb-1">{value}</p>
-      <p className="text-gray-500 text-xs">{subtext}</p>
+      <p className="font-display text-2xl sm:text-3xl text-white mb-1 truncate">{value}</p>
+      <p className="text-gray-500 text-xs leading-snug">{subtext}</p>
       <div className="mt-3 -mx-1"><Sparkline color={sparkColor} /></div>
     </div>
   );
