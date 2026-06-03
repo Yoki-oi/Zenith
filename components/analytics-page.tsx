@@ -112,13 +112,13 @@ export default function AnalyticsPage() {
 
       <NavBar activeTab="Analytics" />
 
-      <main className="relative pt-20 pb-10 px-6 xl:px-10 space-y-5">
+      <main className="relative pt-20 pb-10 px-4 sm:px-6 xl:px-10 space-y-5">
 
         {/* ── Header + 4 Stat Cards ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-4 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-4 items-stretch">
           {/* Title block */}
-          <div className="flex flex-col justify-center pr-4">
-            <h1 className="text-4xl font-bold text-white mb-2">Analytics</h1>
+          <div className="flex flex-col justify-center sm:col-span-2 lg:col-span-1 pr-0 lg:pr-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Analytics</h1>
             <p className="text-gray-400 text-sm leading-snug">
               Track your preparation<br />and focus on what matters.
             </p>
@@ -168,11 +168,11 @@ export default function AnalyticsPage() {
         </div>
 
         {/* ── Charts Row ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-5">
 
           {/* Line Chart — Topic Completion Over Time */}
           <div className={`${card} p-6`}>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <p className="text-xs text-gray-500 uppercase tracking-wider">Topic Completion Over Time</p>
               <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1a1f2e] border border-white/8 rounded-lg">
                 <span className="text-gray-300 text-sm">Topics Completed</span>
@@ -182,7 +182,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            <div className="h-64">
+            <div className="h-52 sm:h-64">
               {hasChartData ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -241,7 +241,7 @@ export default function AnalyticsPage() {
 
             <div className="flex flex-col items-center flex-1 justify-between">
               {/* Donut */}
-              <div className="relative w-52 h-52">
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -312,7 +312,7 @@ export default function AnalyticsPage() {
           onWheel={e => e.preventDefault()}
           onTouchMove={e => e.preventDefault()}
         >
-          <div className="bg-[#0f1219] border border-white/10 rounded-2xl w-[340px] shadow-2xl">
+          <div className="bg-[#0f1219] border border-white/10 rounded-2xl w-[calc(100vw-2rem)] max-w-[340px] shadow-2xl">
             {/* Icon + title */}
             <div className="pt-7 px-6 pb-5 flex flex-col items-center gap-3 text-center">
               <div className="w-10 h-10 rounded-full bg-red-500/15 border border-red-500/40 flex items-center justify-center">
@@ -379,7 +379,7 @@ export default function AnalyticsPage() {
       {/* ── Reset Success Modal ── */}
       {showResetSuccess && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#0f1219] border border-white/10 rounded-2xl w-[340px] shadow-2xl text-center">
+          <div className="bg-[#0f1219] border border-white/10 rounded-2xl w-[calc(100vw-2rem)] max-w-[340px] shadow-2xl text-center">
             <div className="pt-8 px-7 pb-8 flex flex-col items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center">
                 <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -469,11 +469,11 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
         </div>
 
         {/* 5 stats */}
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {/* Total */}
           <div className="text-center">
             <p className="text-gray-500 text-sm mb-2">Total</p>
-            <p className="text-3xl font-bold text-white">{totalChapters}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-white">{totalChapters}</p>
           </div>
           {/* Mastered */}
           <div className="text-center">
@@ -481,9 +481,9 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
               <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
               <p className="text-gray-500 text-sm">Mastered</p>
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-xl sm:text-2xl font-bold text-white">
               {masteredCount}{' '}
-              <span className="text-gray-500 text-base font-normal">({pct(masteredCount)}%)</span>
+              <span className="text-gray-500 text-xs sm:text-base font-normal">({pct(masteredCount)}%)</span>
             </p>
           </div>
           {/* In Progress */}
@@ -492,9 +492,9 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
               <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
               <p className="text-gray-500 text-sm">In Progress</p>
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-xl sm:text-2xl font-bold text-white">
               {inProgressCount}{' '}
-              <span className="text-gray-500 text-base font-normal">({pct(inProgressCount)}%)</span>
+              <span className="text-gray-500 text-xs sm:text-base font-normal">({pct(inProgressCount)}%)</span>
             </p>
           </div>
           {/* Need Practice */}
@@ -503,27 +503,27 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
               <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
               <p className="text-gray-500 text-sm">Need Practice</p>
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-xl sm:text-2xl font-bold text-white">
               {needPracticeCount}{' '}
-              <span className="text-gray-500 text-base font-normal">({pct(needPracticeCount)}%)</span>
+              <span className="text-gray-500 text-xs sm:text-base font-normal">({pct(needPracticeCount)}%)</span>
             </p>
           </div>
           {/* Not Started */}
-          <div className="text-center">
+          <div className="text-center col-span-2 sm:col-span-1">
             <div className="flex items-center justify-center gap-1.5 mb-2">
               <span className="w-2 h-2 rounded-full bg-gray-600 shrink-0" />
               <p className="text-gray-500 text-sm">Not Started</p>
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-xl sm:text-2xl font-bold text-white">
               {notStartedCount}{' '}
-              <span className="text-gray-500 text-base font-normal">({pct(notStartedCount)}%)</span>
+              <span className="text-gray-500 text-xs sm:text-base font-normal">({pct(notStartedCount)}%)</span>
             </p>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="pt-5 border-t border-white/5 flex items-center justify-between text-sm text-gray-500">
+      <footer className="pt-5 border-t border-white/5 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left">
         <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
         
         <span>Designed &amp; Developed by Yoki</span>
@@ -578,14 +578,14 @@ function ChapterListCard({ title, subtitle, chapters, barColor, viewLabel, openS
 
                 {/* Progress bar + count */}
                 <div className="flex items-center gap-2 shrink-0">
-                  <div className="w-20 h-1.5 bg-white/8 rounded-full overflow-hidden">
+                  <div className="hidden sm:block w-20 h-1.5 bg-white/8 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{ width: `${pct}%`, background: barColor }}
                     />
                   </div>
-                  <span className="text-gray-400 text-xs w-16 text-right whitespace-nowrap">
-                    {done} / {total} Topics
+                  <span className="text-gray-400 text-xs text-right whitespace-nowrap">
+                    {done}/{total}
                   </span>
                 </div>
               </button>
@@ -606,13 +606,13 @@ function StatCard({ icon, iconBg, label, value, subtext }: {
   icon: React.ReactNode; iconBg: string; label: string; value: number; subtext: string;
 }) {
   return (
-    <div className="bg-[#0f1219]/80 backdrop-blur-sm border border-white/[0.07] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] p-5 flex items-start gap-4">
-      <div className={`w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
+    <div className="bg-[#0f1219]/80 backdrop-blur-sm border border-white/[0.07] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] p-4 sm:p-5 flex items-start gap-3 sm:gap-4">
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
         {icon}
       </div>
-      <div>
-        <p className="text-gray-400 text-sm mb-1">{label}</p>
-        <p className="text-4xl font-bold text-white leading-none mb-1">{value}</p>
+      <div className="min-w-0">
+        <p className="text-gray-400 text-xs sm:text-sm mb-1 leading-snug">{label}</p>
+        <p className="text-3xl sm:text-4xl font-bold text-white leading-none mb-1">{value}</p>
         <p className="text-gray-500 text-xs">{subtext}</p>
       </div>
     </div>

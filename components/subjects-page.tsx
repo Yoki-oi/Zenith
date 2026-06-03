@@ -72,7 +72,7 @@ export default function SubjectsPage() {
       </div>
       <NavBar activeTab="Subjects" />
 
-      <main className="relative pt-20 px-6 xl:px-10 flex flex-col min-h-screen">
+      <main className="relative pt-20 px-4 sm:px-6 xl:px-10 flex flex-col min-h-screen">
 
         {/* ── Header row ── */}
         <div className="flex flex-col sm:flex-row sm:items-stretch sm:justify-between gap-6 mb-10">
@@ -158,7 +158,7 @@ export default function SubjectsPage() {
         {/* Footer */}
         <div className="flex-1" />
 
-        <footer className="mt-auto pt-6 pb-6 border-t border-white/5 flex items-center justify-between text-sm text-gray-500">
+        <footer className="mt-auto pt-6 pb-6 border-t border-white/5 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left">
           <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>
