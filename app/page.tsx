@@ -31,7 +31,7 @@ function PageWrapper({ children, isActive }: { children: React.ReactNode; isActi
   if (!mounted) return null;
 
   return (
-    <div style={{ transition: 'opacity 200ms ease, transform 200ms ease', opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(8px)' }}>
+    <div style={{ transition: 'opacity 200ms ease', opacity: visible ? 1 : 0 }}>
       {children}
     </div>
   );
