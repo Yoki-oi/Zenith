@@ -94,10 +94,10 @@ export default function DashboardPage() {
       <main className="relative pt-20 pb-10 px-4 sm:px-6 xl:px-10 space-y-4">
 
         {/* ── Row 1: Current Chapter + Exam Countdown ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
 
           {/* Current Chapter */}
-          <div className={`${card} p-5`}>
+          <div className={`${card} p-5 flex flex-col`}>
             <p className="font-label text-gray-500 mb-3">Current Chapter</p>
             {activeEntry ? (
               <>
@@ -121,7 +121,7 @@ export default function DashboardPage() {
                       <div className="h-full rounded-full transition-all" style={{ width: `${activePct}%`, background: activeEntry.subjectColor }} />
                     </div>
                   </div>
-                  <div className="overflow-y-auto max-h-36 space-y-1.5 pr-1 scrollbar-thin">
+                  <div className="overflow-y-auto max-h-32 space-y-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {activeEntry.items.map((item) => (
                       <div key={item.id} className="flex items-center justify-between text-sm">
                         <span className="text-gray-400">{item.label}</span>
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 </div>
                 <button
                   onClick={() => openSubject(activeEntry.subjectId, activeEntry.chemSection ?? null)}
-                  className="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-white text-sm font-medium rounded-xl transition-colors"
+                  className="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-white text-sm font-medium rounded-xl transition-colors mt-auto"
                 >
                   Continue Studying <ArrowRight className="w-4 h-4" />
                 </button>
@@ -152,7 +152,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Exam Countdown */}
-          <div className={`${card} p-5 relative overflow-hidden`}>
+          <div className={`${card} p-5 relative overflow-hidden flex flex-col`}>
             <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
             <h3 className="text-white font-semibold text-lg mb-2">{examName}</h3>
             <div className="flex items-end gap-3 mb-3">
