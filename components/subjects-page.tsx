@@ -24,8 +24,8 @@ export default function SubjectsPage() {
     const revTotal = allChapters.reduce((a, c) => a + (c.revisions || 0), 0);
     const taskPct = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;
     const chapterPct = allChapters.length ? Math.round((mastered / allChapters.length) * 100) : 0;
-    // Show chapter mastery as primary progress — it's what users actively track
-    const pct = chapterPct;
+    // Show task completion as primary progress — reflects actual work done even before mastering
+    const pct = taskPct;
     return {
       name,
       color: first.color,
@@ -43,10 +43,12 @@ export default function SubjectsPage() {
 
   const completedSubjects = combined.filter((s) => s.pct === 100).length;
 
-  // Overall progress = mastered chapters across all subjects (matches what users track)
+  // Overall progress = task completion across all subjects
   const totalChapters = combined.reduce((a, s) => a + s.allChapters, 0);
   const totalMastered = combined.reduce((a, s) => a + s.mastered, 0);
-  const overallPct = totalChapters ? Math.round((totalMastered / totalChapters) * 100) : 0;
+  const totalTopicsDone = combined.reduce((a, s) => a + s.topicsDone, 0);
+  const totalTopicsTotal = combined.reduce((a, s) => a + s.topicsTotal, 0);
+  const overallPct = totalTopicsTotal ? Math.round((totalTopicsDone / totalTopicsTotal) * 100) : 0;
 
   const descriptions: Record<string, string> = {
     Physics: 'Explore the fundamental laws of nature and understand how the universe works.',

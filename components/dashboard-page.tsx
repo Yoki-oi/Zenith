@@ -40,7 +40,7 @@ export default function DashboardPage() {
   const activeDone = activeEntry?.items?.filter((i) => i.done).length ?? 0;
   const activeTotal = activeEntry?.items?.length ?? 0;
   const activePct = activeTotal > 0 ? Math.round((activeDone / activeTotal) * 100) : 0;
-  const activeSubjectName = activeEntry?.subjectName ?? 'Physics';
+  const activeSubjectName = activeEntry?.subjectName ?? 'None';
 
   const examDateStr = user?.examDate || '2027-01-20';
   const jeeDate = new Date(`${examDateStr}T00:00:00`);
@@ -109,7 +109,7 @@ export default function DashboardPage() {
                     <p className="text-gray-400 text-sm">{activeEntry.subjectName}</p>
                     <h3 className="text-white font-semibold text-lg sm:text-xl leading-tight">{activeEntry.title}</h3>
                   </div>
-                  <button className="text-gray-500 hover:text-white transition-colors text-lg leading-none mt-1">•••</button>
+                  <span className="text-gray-600 text-lg leading-none mt-1 cursor-default select-none">•••</span>
                 </div>
                 <div className="space-y-2.5 mb-4">
                   <div>
@@ -121,15 +121,17 @@ export default function DashboardPage() {
                       <div className="h-full rounded-full transition-all" style={{ width: `${activePct}%`, background: activeEntry.subjectColor }} />
                     </div>
                   </div>
-                  {activeEntry.items.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">{item.label}</span>
-                      <span className={item.done ? 'text-green-400' : 'text-yellow-400'}>{item.done ? 'Done' : 'Pending'}</span>
-                    </div>
-                  ))}
+                  <div className="overflow-y-auto max-h-36 space-y-1.5 pr-1 scrollbar-thin">
+                    {activeEntry.items.map((item) => (
+                      <div key={item.id} className="flex items-center justify-between text-sm">
+                        <span className="text-gray-400">{item.label}</span>
+                        <span className={item.done ? 'text-green-400' : 'text-yellow-400'}>{item.done ? 'Done' : 'Pending'}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <button
-                  onClick={() => openSubject(activeEntry.subjectId, activeEntry.subjectType === 'chemistry' ? 'Physical' : null)}
+                  onClick={() => openSubject(activeEntry.subjectId, activeEntry.chemSection ?? null)}
                   className="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-white text-sm font-medium rounded-xl transition-colors"
                 >
                   Continue Studying <ArrowRight className="w-4 h-4" />
@@ -217,7 +219,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <StatCard label="Completion %" value={`${overallPct}%`} subtext="Chapters Mastered" icon={<TrendingUp className="w-5 h-5" />} color="purple" sparkColor="#8b5cf6" />
           <StatCard label="Revision Count" value={gs.revTotal.toString()} subtext="Total Revisions" icon={<RotateCcw className="w-5 h-5" />} color="green" sparkColor="#22c55e" />
-          <StatCard label="Active Subject" value={activeSubjectName} subtext="Currently in Focus" icon={<Target className="w-5 h-5" />} color="blue" sparkColor="#3b82f6" />
+          <StatCard label="Active Subject" value={activeSubjectName} subtext={activeEntry ? "Currently in Focus" : "No active chapter"} icon={<Target className="w-5 h-5" />} color="blue" sparkColor="#3b82f6" />
 
           {/* Analytics CTA */}
           <div className={`${card} p-5 flex flex-col gap-4`}>
