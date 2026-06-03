@@ -17,7 +17,9 @@ export default function SubjectsPage() {
     if (!first) return null;
     const allChapters = matching.flatMap((s) => s.chapters);
     const topicsTotal = allChapters.reduce((a, c) => a + c.items.length, 0);
-    const topicsDone = allChapters.reduce((a, c) => a + c.items.filter((i) => i.done).length, 0);
+    // Mastered chapter = all its tasks count as done
+    const topicsDone = allChapters.reduce((a, c) =>
+      a + (c.mastered ? c.items.length : c.items.filter((i) => i.done).length), 0);
     const mastered = allChapters.filter((c) => c.mastered).length;
     const revTotal = allChapters.reduce((a, c) => a + (c.revisions || 0), 0);
     const taskPct = topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0;

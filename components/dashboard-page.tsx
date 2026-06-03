@@ -59,7 +59,9 @@ export default function DashboardPage() {
     if (!first) return null;
     const allChapters = matching.flatMap((s) => s.chapters);
     const topicsTotal = allChapters.reduce((a, c) => a + c.items.length, 0);
-    const topicsDone = allChapters.reduce((a, c) => a + c.items.filter((i) => i.done).length, 0);
+    // Mastered chapter = all its tasks count as done
+    const topicsDone = allChapters.reduce((a, c) =>
+      a + (c.mastered ? c.items.length : c.items.filter((i) => i.done).length), 0);
     const pct = allChapters.length ? Math.round((allChapters.filter((c) => c.mastered).length / allChapters.length) * 100) : 0;
     return { name, color: first.color, type: first.type, id: first.id, topicsTotal, topicsDone, pct, total: allChapters.length, mastered: allChapters.filter((c) => c.mastered).length };
   }).filter(Boolean) as NonNullable<ReturnType<typeof subjectNames.map>[0]>[];
@@ -256,16 +258,16 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="text-white font-semibold text-sm">{subject.name}</p>
-                    <p className="text-gray-500 text-xs">{subject.topicsDone} / {subject.topicsTotal} Topics Completed</p>
+                    <p className="text-gray-500 text-xs">{subject.topicsDone} / {subject.topicsTotal} Tasks Completed</p>
                   </div>
                 </div>
 
-                {/* Progress bar + % on right */}
+                {/* Progress bar + % on right — task completion */}
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${subject.pct}%`, background: subject.color }} />
+                    <div className="h-full rounded-full" style={{ width: `${subject.topicsTotal ? Math.round((subject.topicsDone / subject.topicsTotal) * 100) : 0}%`, background: subject.color }} />
                   </div>
-                  <span className="text-gray-400 text-xs font-medium shrink-0">{subject.pct}%</span>
+                  <span className="text-gray-400 text-xs font-medium shrink-0">{subject.topicsTotal ? Math.round((subject.topicsDone / subject.topicsTotal) * 100) : 0}%</span>
                 </div>
 
                 {/* View Chapters */}
