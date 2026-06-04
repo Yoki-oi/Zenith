@@ -53,8 +53,16 @@ export default function DashboardPage() {
   const examName = user?.examName || 'JEE Main 2027';
   const targetDateRaw = user?.targetDate || '';
   const targetDate = targetDateRaw
-    ? new Date(`${targetDateRaw}T00:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-    : 'Not set';
+    ? new Date(`${targetDateRaw}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : null;
+  // Days until target finish
+  const targetDiffDays = targetDateRaw
+    ? Math.max(0, Math.ceil((new Date(`${targetDateRaw}T00:00:00`).getTime() - Date.now()) / 86400000))
+    : null;
+  // Timeline progress: how far today is between target finish and exam
+  const timelinePct = targetDateRaw && diffDays > 0
+    ? Math.min(100, Math.max(0, Math.round(((diffDays - targetDiffDays!) / diffDays) * 100)))
+    : null;
 
   const subjectNames = ['Physics', 'Chemistry', 'Mathematics'];
   const combinedSubjects = subjectNames.map((name) => {
@@ -181,14 +189,46 @@ export default function DashboardPage() {
           <div className={`${card} p-5 relative overflow-hidden flex flex-col`}>
             <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
             <h3 className="text-white font-semibold text-lg mb-2">{examName}</h3>
-            <div className="flex items-end gap-3 mb-3">
+            <div className="flex items-end gap-3 mb-4">
               <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">{diffDays}</span>
               <span className="text-xl sm:text-2xl text-gray-400 mb-2">Days Left</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <Calendar className="w-4 h-4" />
-              <span>Target Finish: {targetDate}</span>
-            </div>
+
+            {targetDate ? (
+              <>
+                {/* Two-stat row */}
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="flex-1 bg-white/5 rounded-xl px-3 py-2">
+                    <p className="text-gray-500 text-xs mb-0.5">Target Finish</p>
+                    <p className="text-white text-sm font-semibold">{targetDiffDays}d left</p>
+                    <p className="text-gray-600 text-xs">{targetDate}</p>
+                  </div>
+                  <div className="flex-1 bg-white/5 rounded-xl px-3 py-2">
+                    <p className="text-gray-500 text-xs mb-0.5">Exam Date</p>
+                    <p className="text-white text-sm font-semibold">{diffDays}d left</p>
+                    <p className="text-gray-600 text-xs">{examName}</p>
+                  </div>
+                </div>
+                {/* Timeline bar: Today ──●── Target ──── Exam */}
+                <div>
+                  <div className="relative h-1.5 bg-white/5 rounded-full overflow-hidden mb-1.5">
+                    <div className="absolute left-0 top-0 h-full bg-purple-500 rounded-full transition-all" style={{ width: `${timelinePct}%` }} />
+                    {/* Target marker */}
+                    <div className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white border-2 border-purple-400" style={{ left: `calc(${timelinePct}% - 4px)` }} />
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-600">
+                    <span>Today</span>
+                    <span>Target</span>
+                    <span>Exam</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 text-gray-500 text-sm">
+                <Calendar className="w-4 h-4" />
+                <span>Set a target finish date in your profile</span>
+              </div>
+            )}
 
             {/* Calendar illustration — positioned bottom-right, properly contained */}
             <div className="absolute bottom-4 right-6 opacity-[0.12] pointer-events-none">
