@@ -194,31 +194,18 @@ export default function DashboardPage() {
               </div>
             ) : (
               <>
-                <div className="flex items-end gap-3 mb-1">
+                <div className="flex items-end gap-3 mb-4">
                   <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">{diffDays}</span>
                   <span className="text-xl sm:text-2xl text-gray-400 mb-2">Days Left</span>
-                </div>
-                {/* H / M breakdown */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-white font-semibold text-lg">{String(hours).padStart(2, '0')}</span>
-                    <span className="text-gray-500 text-xs">hrs</span>
-                  </div>
-                  <span className="text-gray-700">·</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-white font-semibold text-lg">{String(mins).padStart(2, '0')}</span>
-                    <span className="text-gray-500 text-xs">min</span>
-                  </div>
                 </div>
               </>
             )}
 
-            {/* Target finish — above stats */}
-            <div className="flex items-center gap-2 text-sm mb-3">
+            <div className="flex items-center gap-2 mb-3">
               <Calendar className="w-4 h-4 text-gray-500 shrink-0" />
               {targetDate
-                ? <span className="text-gray-400">Target: <span className="text-white font-medium">{targetDate}</span> <span className="text-gray-600">({targetDiffDays}d left)</span></span>
-                : <span className="text-gray-600">Set a target finish date in your profile</span>
+                ? <span className="text-gray-400 text-sm">Target: <span className="text-white font-semibold text-base">{targetDate}</span> <span className="text-gray-500 text-sm">({targetDiffDays}d left)</span></span>
+                : <span className="text-gray-600 text-sm">Set a target finish date in your profile</span>
               }
             </div>
 
@@ -249,9 +236,9 @@ export default function DashboardPage() {
               );
             })()}
 
-            {/* Calendar illustration — top right */}
-            <div className="absolute top-4 right-6 opacity-[0.10] pointer-events-none">
-              <svg width="110" height="110" viewBox="0 0 140 140" fill="none">
+            {/* Calendar illustration — bottom right */}
+            <div className="absolute bottom-4 right-5 opacity-[0.13] pointer-events-none">
+              <svg width="130" height="130" viewBox="0 0 140 140" fill="none">
                 <rect x="10" y="24" width="120" height="106" rx="14" fill="white" />
                 <rect x="10" y="24" width="120" height="38" rx="14" fill="white" />
                 <rect x="36" y="10" width="10" height="24" rx="5" fill="white" />

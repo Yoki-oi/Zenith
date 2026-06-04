@@ -553,7 +553,7 @@ function ChapterListCard({ title, subtitle, chapters, barColor, viewLabel, openS
       </div>
 
       {/* Chapter rows — fixed height, invisible scroll */}
-      <div className="overflow-y-auto flex-1 space-y-4 max-h-[280px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="overflow-y-auto flex-1 space-y-4 max-h-[244px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {chapters.length === 0 ? (
           <p className="text-gray-600 text-sm py-8 text-center">None yet</p>
         ) : (
