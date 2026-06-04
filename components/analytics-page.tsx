@@ -53,13 +53,24 @@ export default function AnalyticsPage() {
     (acc, c) => acc + c.items.filter((i: any) => !i.done).length, 0
   );
 
-  // ── Line chart data ───────────────────────────────────────────────────────
-  // Only use real progress history — no fake seed data
-  const hasChartData = progressHistory.length >= 2;
-  const chartData: { date: string; topics: number }[] = progressHistory.map(p => ({
+  // ── Line chart data — history + live today point ─────────────────────────
+  const todayLabel = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const liveTodayDone = allChapters.reduce(
+    (a: number, c: any) => a + (c.mastered ? c.items.length : c.items.filter((i: any) => i.done).length), 0
+  );
+
+  const historyData: { date: string; tasks: number }[] = progressHistory.map((p: any) => ({
     date: new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    topics: p.topicsDone,
+    tasks: p.topicsDone,
   }));
+
+  // Merge: if today already in history replace it with live count, else append
+  const lastInHistory = historyData[historyData.length - 1];
+  const chartData = lastInHistory?.date === todayLabel
+    ? [...historyData.slice(0, -1), { date: todayLabel, tasks: liveTodayDone }]
+    : [...historyData, { date: todayLabel, tasks: liveTodayDone }];
+
+  const hasChartData = chartData.length >= 1;
 
   // ── Donut chart data ──────────────────────────────────────────────────────
   const subjectNames = ['Physics', 'Chemistry', 'Mathematics'];
@@ -70,15 +81,15 @@ export default function AnalyticsPage() {
   };
 
   const donutData = subjectNames.map(name => {
-    const matching = subjects.filter(s => s.name === name);
-    const topicsDone = matching.flatMap(s => s.chapters).reduce(
-      (a, c) => a + c.items.filter((i: any) => i.done).length, 0
+    const matching = subjects.filter((s: any) => s.name === name);
+    const tasksDone = matching.flatMap((s: any) => s.chapters).reduce(
+      (a: number, c: any) => a + (c.mastered ? c.items.length : c.items.filter((i: any) => i.done).length), 0
     );
     const color = matching[0]?.color ?? donutColors[name];
-    return { name, value: topicsDone, color };
+    return { name, value: tasksDone, color };
   }).filter(d => d.value > 0);
 
-  const totalTopicsDone = donutData.reduce((a, d) => a + d.value, 0);
+  const totalTasksDone = donutData.reduce((a, d) => a + d.value, 0);
 
   // Custom tooltip for line chart
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -88,7 +99,7 @@ export default function AnalyticsPage() {
         <p className="text-gray-400 text-xs mb-1">{label}</p>
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-purple-500" />
-          <p className="text-white text-sm font-medium">Topics Completed: {payload[0].value}</p>
+          <p className="text-white text-sm font-medium">Tasks Completed: {payload[0].value}</p>
         </div>
       </div>
     );
@@ -133,11 +144,11 @@ export default function AnalyticsPage() {
             </button>
           </div>
 
-          {/* Topics Completed */}
+          {/* Tasks Completed */}
           <StatCard
             icon={<BookOpen className="w-6 h-6 text-purple-300" />}
             iconBg="bg-purple-500/15"
-            label="Topics Completed"
+            label="Tasks Completed"
             value={gs.topicsDone}
             subtext="Across all subjects"
           />
@@ -149,12 +160,12 @@ export default function AnalyticsPage() {
             value={gs.mastered}
             subtext="Keep up the great work!"
           />
-          {/* Topics To Revise */}
+          {/* Chapters To Revise */}
           <StatCard
             icon={<RotateCcw className="w-6 h-6 text-purple-300" />}
             iconBg="bg-purple-500/15"
-            label="Topics To Revise"
-            value={topicsToRevise}
+            label="Chapters To Revise"
+            value={chaptersToRevise.length}
             subtext="Need more attention"
           />
           {/* Chapters To Practice */}
@@ -173,7 +184,7 @@ export default function AnalyticsPage() {
           {/* Line Chart — Topic Completion Over Time */}
           <div className={`${card} p-6`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Topic Completion Over Time</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Task Completion Over Time</p>
             </div>
 
             <div className="h-52 sm:h-64">
@@ -206,7 +217,7 @@ export default function AnalyticsPage() {
                     <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(139,92,246,0.3)', strokeWidth: 1 }} />
                     <Area
                       type="monotone"
-                      dataKey="topics"
+                      dataKey="tasks"
                       stroke="#8b5cf6"
                       strokeWidth={2}
                       fill="url(#areaGrad)"
@@ -223,7 +234,7 @@ export default function AnalyticsPage() {
                     </svg>
                   </div>
                   <p className="text-gray-500 text-sm">No data yet</p>
-                  <p className="text-gray-600 text-xs max-w-[180px] leading-relaxed">Mark some topics as done and come back tomorrow to see your progress chart.</p>
+                  <p className="text-gray-600 text-xs max-w-[180px] leading-relaxed">Complete some tasks and the chart will update in real time.</p>
                 </div>
               )}
             </div>
@@ -231,7 +242,7 @@ export default function AnalyticsPage() {
 
           {/* Donut Chart — Subject Wise Topic Completion */}
           <div className={`${card} p-6 flex flex-col`}>
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-6">Subject Wise Topic Completion</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider mb-6">Subject Wise Task Completion</p>
 
             <div className="flex flex-col items-center flex-1 justify-between">
               {/* Donut */}
@@ -257,8 +268,8 @@ export default function AnalyticsPage() {
                 </ResponsiveContainer>
                 {/* Center label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-4xl font-bold text-white leading-none">{totalTopicsDone}</span>
-                  <span className="text-gray-400 text-sm mt-1">Total Topics</span>
+                  <span className="text-4xl font-bold text-white leading-none">{totalTasksDone}</span>
+                  <span className="text-gray-400 text-sm mt-1">Total Tasks</span>
                 </div>
               </div>
 
@@ -268,7 +279,7 @@ export default function AnalyticsPage() {
                   const d = donutData.find(x => x.name === name);
                   const value = d?.value ?? 0;
                   const color = d?.color ?? '#4c1d95';
-                  const pct = totalTopicsDone > 0 ? Math.round((value / totalTopicsDone) * 100) : 0;
+                  const pct = totalTasksDone > 0 ? Math.round((value / totalTasksDone) * 100) : 0;
                   return (
                     <div key={name} className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
