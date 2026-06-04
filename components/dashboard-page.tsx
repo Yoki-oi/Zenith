@@ -50,6 +50,9 @@ export default function DashboardPage() {
   const jeeDate = new Date(`${examDateStr}T00:00:00`);
   const diffMs = jeeDate.getTime() - Date.now();
   const diffDays = Math.max(0, Math.ceil(diffMs / 86400000));
+  const hours = Math.floor((diffMs % 86400000) / 3600000);
+  const mins = Math.floor((diffMs % 3600000) / 60000);
+  const isPast = diffMs <= 0;
   const examName = user?.examName || 'JEE Main 2027';
   const targetDateRaw = user?.targetDate || '';
   const targetDate = targetDateRaw
@@ -185,15 +188,62 @@ export default function DashboardPage() {
           <div className={`${card} p-5 relative overflow-hidden flex flex-col`}>
             <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
             <h3 className="text-white font-semibold text-lg mb-2">{examName}</h3>
-            <div className="flex items-end gap-3 mb-4">
-              <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">{diffDays}</span>
-              <span className="text-xl sm:text-2xl text-gray-400 mb-2">Days Left</span>
-            </div>
+            {isPast ? (
+              <div className="flex items-end gap-3 mb-4">
+                <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">Exam Day!</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-end gap-3 mb-1">
+                  <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">{diffDays}</span>
+                  <span className="text-xl sm:text-2xl text-gray-400 mb-2">Days Left</span>
+                </div>
+                {/* H / M breakdown */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-white font-semibold text-lg">{String(hours).padStart(2, '0')}</span>
+                    <span className="text-gray-500 text-xs">hrs</span>
+                  </div>
+                  <span className="text-gray-700">·</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-white font-semibold text-lg">{String(mins).padStart(2, '0')}</span>
+                    <span className="text-gray-500 text-xs">min</span>
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <Calendar className="w-4 h-4" />
+            {/* Divider */}
+            <div className="h-px bg-white/5 mb-4" />
+
+            {/* Stats row */}
+            {(() => {
+              const totalChapters = subjects.reduce((a, s) => a + s.chapters.length, 0);
+              const mastered = subjects.reduce((a, s) => a + s.chapters.filter(c => c.mastered).length, 0);
+              const remaining = totalChapters - mastered;
+              const chapsPerDay = (targetDiffDays && targetDiffDays > 0) ? (remaining / targetDiffDays).toFixed(2) : diffDays > 0 ? (remaining / diffDays).toFixed(2) : '0';
+              return (
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="text-center">
+                    <p className="text-white font-bold text-xl">{mastered}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">Mastered</p>
+                  </div>
+                  <div className="text-center border-x border-white/5">
+                    <p className="text-white font-bold text-xl">{remaining}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">Remaining</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-white font-bold text-xl">{chapsPerDay}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">Ch/day to target</p>
+                  </div>
+                </div>
+              );
+            })()}
+
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
+              <Calendar className="w-4 h-4 shrink-0" />
               {targetDate
-                ? <span>Target Finish: <span className="text-white font-medium">{targetDate}</span> <span className="text-gray-500">({targetDiffDays}d left)</span></span>
+                ? <span>Target Finish: <span className="text-white font-medium">{targetDate}</span> <span className="text-gray-600">({targetDiffDays}d left)</span></span>
                 : <span className="text-gray-600">Set a target finish date in your profile</span>
               }
             </div>
