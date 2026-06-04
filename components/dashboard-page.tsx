@@ -186,10 +186,25 @@ export default function DashboardPage() {
 
           {/* Exam Countdown */}
           <div className={`${card} p-5 relative flex flex-col`}>
-            <div className="pr-24">
-              <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
-              <h3 className="text-white font-semibold text-lg mb-2">{examName}</h3>
+
+            {/* Calendar icon — top right, clean and visible */}
+            <div className="absolute top-4 right-4 opacity-[0.25] pointer-events-none">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="3" />
+                <path d="M16 2v4M8 2v4M3 10h18" />
+                <circle cx="8" cy="15" r="1" fill="white" stroke="none" />
+                <circle cx="12" cy="15" r="1" fill="white" stroke="none" />
+                <circle cx="16" cy="15" r="1" fill="white" stroke="none" />
+                <circle cx="8" cy="19" r="1" fill="white" stroke="none" />
+                <circle cx="12" cy="19" r="1" fill="white" stroke="none" />
+              </svg>
             </div>
+
+            <div className="pr-12">
+              <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
+              <h3 className="text-white font-semibold text-lg mb-3">{examName}</h3>
+            </div>
+
             {isPast ? (
               <div className="flex items-end gap-3 mb-4">
                 <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">Exam Day!</span>
@@ -201,7 +216,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <div className="flex items-start gap-2 mb-3">
+            <div className="flex items-start gap-2 mb-4">
               <Calendar className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
               {targetDate
                 ? <span className="text-gray-400 text-sm leading-snug">Target: <span className="text-white font-semibold text-base">{targetDate}</span> <span className="text-gray-500 text-sm">({targetDiffDays}d left)</span></span>
@@ -210,9 +225,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-white/5 mb-3" />
+            <div className="h-px bg-white/5 mb-4" />
 
-            {/* Stats row */}
+            {/* Stats row with icons */}
             {(() => {
               const totalChapters = subjects.reduce((a, s) => a + s.chapters.length, 0);
               const mastered = subjects.reduce((a, s) => a + s.chapters.filter(c => c.mastered).length, 0);
@@ -220,38 +235,30 @@ export default function DashboardPage() {
               const chapsPerDay = (targetDiffDays && targetDiffDays > 0) ? (remaining / targetDiffDays).toFixed(2) : diffDays > 0 ? (remaining / diffDays).toFixed(2) : '0';
               return (
                 <div className="grid grid-cols-3 gap-3 mt-auto">
-                  <div className="text-center">
+                  <div>
+                    <div className="w-9 h-9 rounded-full bg-blue-500/15 flex items-center justify-center mb-2">
+                      <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0121 19.5H3a12.083 12.083 0 012.84-8.922L12 14z"/></svg>
+                    </div>
                     <p className="text-white font-bold text-xl">{mastered}</p>
                     <p className="text-gray-500 text-xs mt-0.5">Mastered</p>
                   </div>
-                  <div className="text-center border-x border-white/5">
+                  <div className="border-x border-white/5 px-3">
+                    <div className="w-9 h-9 rounded-full bg-green-500/15 flex items-center justify-center mb-2">
+                      <RotateCcw className="w-4 h-4 text-green-400" />
+                    </div>
                     <p className="text-white font-bold text-xl">{remaining}</p>
                     <p className="text-gray-500 text-xs mt-0.5">Remaining</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-white font-bold text-xl">{chapsPerDay}</p>
-                    <p className="text-gray-500 text-xs mt-0.5">Ch/day to target</p>
+                  <div className="pl-1">
+                    <div className="w-9 h-9 rounded-full bg-purple-500/15 flex items-center justify-center mb-2">
+                      <TrendingUp className="w-4 h-4 text-purple-400" />
+                    </div>
+                    <p className="text-white font-bold text-xl">{chapsPerDay}<span className="text-gray-500 text-sm font-normal">/day</span></p>
+                    <p className="text-gray-500 text-xs mt-0.5">Pace to target</p>
                   </div>
                 </div>
               );
             })()}
-
-            {/* Calendar illustration — top right, safely padded */}
-            <div className="absolute top-4 right-4 opacity-[0.13] pointer-events-none">
-              <svg width="80" height="80" viewBox="0 0 140 140" fill="none">
-                <rect x="10" y="24" width="120" height="106" rx="14" fill="white" />
-                <rect x="10" y="24" width="120" height="38" rx="14" fill="white" />
-                <rect x="36" y="10" width="10" height="24" rx="5" fill="white" />
-                <rect x="94" y="10" width="10" height="24" rx="5" fill="white" />
-                <rect x="26" y="80" width="14" height="12" rx="3" fill="#aaa" />
-                <rect x="50" y="80" width="14" height="12" rx="3" fill="#aaa" />
-                <rect x="74" y="80" width="14" height="12" rx="3" fill="#aaa" />
-                <rect x="98" y="80" width="14" height="12" rx="3" fill="#aaa" />
-                <rect x="26" y="104" width="14" height="12" rx="3" fill="#999" />
-                <rect x="50" y="104" width="14" height="12" rx="3" fill="#888" />
-                <rect x="74" y="104" width="14" height="12" rx="3" fill="#777" />
-              </svg>
-            </div>
           </div>
         </div>
 
