@@ -59,9 +59,18 @@ export default function DashboardPage() {
   const targetDiffDays = targetDateRaw
     ? Math.max(0, Math.ceil((new Date(`${targetDateRaw}T00:00:00`).getTime() - Date.now()) / 86400000))
     : null;
-  // Timeline progress: how far today is between target finish and exam
-  const timelinePct = targetDateRaw && diffDays > 0
-    ? Math.min(100, Math.max(0, Math.round(((diffDays - targetDiffDays!) / diffDays) * 100)))
+  // Timeline: % of time elapsed from exam-registration start toward target finish
+  // Simpler: just show target as a marker, fill = days elapsed / total exam days
+  const totalExamDays = targetDateRaw && diffDays > 0
+    ? Math.ceil((jeeDate.getTime() - new Date(`${targetDateRaw}T00:00:00`).getTime()) / 86400000) + (targetDiffDays ?? 0)
+    : 0;
+  const daysElapsed = totalExamDays - diffDays;
+  const timelinePct = totalExamDays > 0
+    ? Math.min(100, Math.max(0, Math.round((daysElapsed / totalExamDays) * 100)))
+    : null;
+  // Target marker position on the bar
+  const targetMarkerPct = totalExamDays > 0 && targetDiffDays != null
+    ? Math.min(100, Math.max(0, Math.round(((totalExamDays - targetDiffDays) / totalExamDays) * 100)))
     : null;
 
   const subjectNames = ['Physics', 'Chemistry', 'Mathematics'];
@@ -209,16 +218,19 @@ export default function DashboardPage() {
                     <p className="text-gray-600 text-xs">{examName}</p>
                   </div>
                 </div>
-                {/* Timeline bar: Today ──●── Target ──── Exam */}
+                {/* Timeline bar: Today's progress, target marker, exam end */}
                 <div>
-                  <div className="relative h-1.5 bg-white/5 rounded-full overflow-hidden mb-1.5">
+                  <div className="relative h-1.5 bg-white/5 rounded-full overflow-visible mb-1.5">
+                    {/* Elapsed fill */}
                     <div className="absolute left-0 top-0 h-full bg-purple-500 rounded-full transition-all" style={{ width: `${timelinePct}%` }} />
-                    {/* Target marker */}
-                    <div className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white border-2 border-purple-400" style={{ left: `calc(${timelinePct}% - 4px)` }} />
+                    {/* Target marker dot */}
+                    {targetMarkerPct != null && (
+                      <div className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white border-2 border-purple-400 z-10" style={{ left: `calc(${targetMarkerPct}% - 5px)` }} />
+                    )}
                   </div>
                   <div className="flex justify-between text-xs text-gray-600">
                     <span>Today</span>
-                    <span>Target</span>
+                    <span style={{ marginLeft: `calc(${targetMarkerPct}% - 24px)` }}>Target</span>
                     <span>Exam</span>
                   </div>
                 </div>
@@ -230,7 +242,8 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* Calendar illustration — positioned bottom-right, properly contained */}
+            {/* Calendar illustration — only show when no target set */}
+            {!targetDate && (
             <div className="absolute bottom-4 right-6 opacity-[0.12] pointer-events-none">
               <svg width="110" height="110" viewBox="0 0 140 140" fill="none">
                 <rect x="10" y="24" width="120" height="106" rx="14" fill="white" />
@@ -246,6 +259,7 @@ export default function DashboardPage() {
                 <rect x="74" y="104" width="14" height="12" rx="3" fill="#777" />
               </svg>
             </div>
+            )}
           </div>
         </div>
 
