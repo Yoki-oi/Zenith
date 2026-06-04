@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore, globalStats } from '@/lib/store';
 import NavBar from './navbar';
 import { SubjectIcon } from './subject-icon';
-import { ArrowRight, ChevronRight, TrendingUp, RotateCcw, Target, BarChart3, Calendar } from 'lucide-react';
+import { ArrowRight, ChevronRight, ChevronLeft, TrendingUp, RotateCcw, Target, BarChart3, Calendar } from 'lucide-react';
 
 function Sparkline({ color = '#8b5cf6' }: { color?: string }) {
   const id = `sg${color.replace('#', '')}`;
@@ -33,9 +33,13 @@ export default function DashboardPage() {
 
   useEffect(() => { recordProgressSnapshot(); }, [recordProgressSnapshot]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const activeEntry = subjects
+  const doingChapters = subjects
     .flatMap((s) => s.chapters.map((c) => ({ ...c, subjectName: s.name, subjectId: s.id, subjectColor: s.color, subjectType: s.type })))
-    .find((c) => c.doing) ?? null;
+    .filter((c) => c.doing);
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const safeIndex = Math.min(activeIndex, Math.max(0, doingChapters.length - 1));
+  const activeEntry = doingChapters[safeIndex] ?? null;
 
   const activeDone = activeEntry?.items?.filter((i) => i.done).length ?? 0;
   const activeTotal = activeEntry?.items?.length ?? 0;
@@ -111,7 +115,24 @@ export default function DashboardPage() {
                     <p className="text-gray-400 text-sm">{activeEntry.subjectName}</p>
                     <h3 className="text-white font-semibold text-lg sm:text-xl leading-tight">{activeEntry.title}</h3>
                   </div>
-                  <span className="text-gray-600 text-lg leading-none mt-1 cursor-default select-none">•••</span>
+                  {/* Nav arrows — cycle through doing chapters */}
+                  {doingChapters.length > 1 && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => setActiveIndex(i => (i - 1 + doingChapters.length) % doingChapters.length)}
+                        className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-gray-600 text-xs w-8 text-center">{safeIndex + 1}/{doingChapters.length}</span>
+                      <button
+                        onClick={() => setActiveIndex(i => (i + 1) % doingChapters.length)}
+                        className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2.5 mb-4">
                   <div>
@@ -123,13 +144,16 @@ export default function DashboardPage() {
                       <div className="h-full rounded-full transition-all" style={{ width: `${activePct}%`, background: activeEntry.subjectColor }} />
                     </div>
                   </div>
-                  <div className="overflow-y-auto max-h-32 space-y-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {activeEntry.items.map((item) => (
+                  <div className="space-y-1.5">
+                    {activeEntry.items.slice(0, 3).map((item) => (
                       <div key={item.id} className="flex items-center justify-between text-sm">
                         <span className="text-gray-400">{item.label}</span>
                         <span className={item.done ? 'text-green-400' : 'text-yellow-400'}>{item.done ? 'Done' : 'Pending'}</span>
                       </div>
                     ))}
+                    {activeEntry.items.length > 3 && (
+                      <p className="text-gray-600 text-xs">+{activeEntry.items.length - 3} more tasks</p>
+                    )}
                   </div>
                 </div>
                 <button

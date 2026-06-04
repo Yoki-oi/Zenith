@@ -42,9 +42,11 @@ export default function AnalyticsPage() {
   const chaptersToRevise = allChapters.filter(
     (c: any) => (c.doing || c.mastered) && (c.revisions || 0) === 0
   );
-  // Need Practice: Lectures task is marked done
+  // Need Practice: Lectures task done but NOT all tasks done (still has pending work)
   const chaptersToPractice = allChapters.filter(
-    (c: any) => c.items?.some((i: any) => i.label === 'Lectures' && i.done)
+    (c: any) => c.items?.some((i: any) => i.label === 'Lectures' && i.done) &&
+                !c.mastered &&
+                c.items?.some((i: any) => !i.done)
   );
   const chaptersMastered = allChapters.filter((c: any) => c.mastered);
 
@@ -428,7 +430,7 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
         <ChapterListCard
           title="Need Revision"
           subtitle="Doing or mastered with 0 revisions"
-          chapters={chaptersToRevise.slice(0, 5)}
+          chapters={chaptersToRevise}
           barColor="#eab308"
           viewLabel="View all to revise"
           openSubject={openSubject}
@@ -439,7 +441,7 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
         <ChapterListCard
           title="Need Practice"
           subtitle="Lectures completed, practice more"
-          chapters={chaptersToPractice.slice(0, 5)}
+          chapters={chaptersToPractice}
           barColor="#3b82f6"
           viewLabel="View all to practice"
           openSubject={openSubject}
@@ -450,7 +452,7 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
         <ChapterListCard
           title="Chapters You've Mastered"
           subtitle="Excellent work! Keep it up."
-          chapters={chaptersMastered.slice(0, 5)}
+          chapters={chaptersMastered}
           barColor="#22c55e"
           viewLabel="View all mastered"
           openSubject={openSubject}
@@ -550,8 +552,8 @@ function ChapterListCard({ title, subtitle, chapters, barColor, viewLabel, openS
         <span>Status</span>
       </div>
 
-      {/* Chapter rows */}
-      <div className="space-y-4 flex-1">
+      {/* Chapter rows — fixed height, invisible scroll */}
+      <div className="overflow-y-auto flex-1 space-y-4 max-h-[280px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {chapters.length === 0 ? (
           <p className="text-gray-600 text-sm py-8 text-center">None yet</p>
         ) : (

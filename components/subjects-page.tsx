@@ -147,7 +147,7 @@ export default function SubjectsPage() {
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-gray-500 shrink-0" />
                     <span className="text-gray-300 text-sm font-medium">{subject.topicsDone} / {subject.topicsTotal}</span>
-                    <span className="text-gray-600 text-sm">Topics Completed</span>
+                    <span className="text-gray-600 text-sm">Tasks Completed</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <ClipboardList className="w-4 h-4 text-gray-500 shrink-0" />
@@ -167,7 +167,7 @@ export default function SubjectsPage() {
                 <div className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-gray-500 shrink-0" />
                   <span className="text-gray-300 text-xs font-medium">{subject.topicsDone} / {subject.topicsTotal}</span>
-                  <span className="text-gray-600 text-xs">Topics</span>
+                  <span className="text-gray-600 text-xs">Tasks</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <ClipboardList className="w-3.5 h-3.5 text-gray-500 shrink-0" />
