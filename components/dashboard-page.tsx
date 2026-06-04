@@ -185,26 +185,26 @@ export default function DashboardPage() {
           </div>
 
           {/* Exam Countdown */}
-          <div className={`${card} p-5 relative overflow-hidden flex flex-col`}>
-            <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
-            <h3 className="text-white font-semibold text-lg mb-2">{examName}</h3>
+          <div className={`${card} p-5 relative flex flex-col`}>
+            <div className="pr-24">
+              <p className="font-label text-gray-500 mb-2">Exam Countdown</p>
+              <h3 className="text-white font-semibold text-lg mb-2">{examName}</h3>
+            </div>
             {isPast ? (
               <div className="flex items-end gap-3 mb-4">
                 <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">Exam Day!</span>
               </div>
             ) : (
-              <>
-                <div className="flex items-end gap-3 mb-4">
-                  <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">{diffDays}</span>
-                  <span className="text-xl sm:text-2xl text-gray-400 mb-2">Days Left</span>
-                </div>
-              </>
+              <div className="flex items-end gap-3 mb-4">
+                <span className="font-display text-[3rem] sm:text-[4.5rem] text-white leading-none">{diffDays}</span>
+                <span className="text-xl sm:text-2xl text-gray-400 mb-2">Days Left</span>
+              </div>
             )}
 
-            <div className="flex items-center gap-2 mb-3">
-              <Calendar className="w-4 h-4 text-gray-500 shrink-0" />
+            <div className="flex items-start gap-2 mb-3">
+              <Calendar className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
               {targetDate
-                ? <span className="text-gray-400 text-sm">Target: <span className="text-white font-semibold text-base">{targetDate}</span> <span className="text-gray-500 text-sm">({targetDiffDays}d left)</span></span>
+                ? <span className="text-gray-400 text-sm leading-snug">Target: <span className="text-white font-semibold text-base">{targetDate}</span> <span className="text-gray-500 text-sm">({targetDiffDays}d left)</span></span>
                 : <span className="text-gray-600 text-sm">Set a target finish date in your profile</span>
               }
             </div>
@@ -219,7 +219,7 @@ export default function DashboardPage() {
               const remaining = totalChapters - mastered;
               const chapsPerDay = (targetDiffDays && targetDiffDays > 0) ? (remaining / targetDiffDays).toFixed(2) : diffDays > 0 ? (remaining / diffDays).toFixed(2) : '0';
               return (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-3 mt-auto">
                   <div className="text-center">
                     <p className="text-white font-bold text-xl">{mastered}</p>
                     <p className="text-gray-500 text-xs mt-0.5">Mastered</p>
@@ -236,9 +236,9 @@ export default function DashboardPage() {
               );
             })()}
 
-            {/* Calendar illustration — bottom right */}
-            <div className="absolute bottom-4 right-5 opacity-[0.13] pointer-events-none">
-              <svg width="130" height="130" viewBox="0 0 140 140" fill="none">
+            {/* Calendar illustration — top right, safely padded */}
+            <div className="absolute top-4 right-4 opacity-[0.13] pointer-events-none">
+              <svg width="80" height="80" viewBox="0 0 140 140" fill="none">
                 <rect x="10" y="24" width="120" height="106" rx="14" fill="white" />
                 <rect x="10" y="24" width="120" height="38" rx="14" fill="white" />
                 <rect x="36" y="10" width="10" height="24" rx="5" fill="white" />
