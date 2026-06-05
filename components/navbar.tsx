@@ -76,7 +76,7 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
             <div className="leading-tight">
               <p className="text-gray-400 text-[11px] font-medium">{examName}</p>
               <p className="text-white font-bold text-sm tracking-wide">
-                {isPast ? 'Exam Day!' : `${diffDays}D ${String(hours).padStart(2, '0')}H ${String(mins).padStart(2, '0')}M`}
+                {isPast ? 'Exam Day!' : `${diffDays}D ${String(hours).padStart(2, '0')}H`}
               </p>
             </div>
           </div>
@@ -143,7 +143,7 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
             <div className="leading-tight">
               <p className="text-gray-400 text-[11px] font-medium">{examName}</p>
               <p className="text-white font-bold text-sm tracking-wide">
-                {isPast ? 'Exam Day!' : `${diffDays}D ${String(hours).padStart(2, '0')}H ${String(mins).padStart(2, '0')}M`}
+                {isPast ? 'Exam Day!' : `${diffDays}D ${String(hours).padStart(2, '0')}H`}
               </p>
             </div>
             {syncPending && (

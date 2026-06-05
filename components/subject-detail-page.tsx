@@ -144,30 +144,43 @@ export default function SubjectDetailPage() {
         </div>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Mobile sidebar overlay backdrop */}
+          {/* Mobile bottom-sheet backdrop */}
           {mobileSidebarOpen && (
             <div
-              className="sm:hidden fixed inset-0 z-30 bg-black/60"
+              className="sm:hidden fixed inset-0 z-30 bg-black/70 backdrop-blur-sm"
               onClick={() => setMobileSidebarOpen(false)}
             />
           )}
 
-          {/* Sidebar */}
+          {/* Sidebar — bottom sheet on mobile, left panel on sm+ */}
           <aside className={`
-            fixed sm:relative z-40 sm:z-auto top-0 sm:top-auto left-0 sm:left-auto h-full sm:h-auto
-            w-72 shrink-0 px-6 border-r border-white/5 overflow-y-auto
-            bg-[#0a0d14] sm:bg-transparent
-            transition-transform duration-200
-            ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'}
+            sm:relative sm:translate-x-0 sm:translate-y-0 sm:top-auto sm:left-auto sm:h-auto sm:z-auto sm:bg-transparent
+            fixed z-40 left-0 right-0 bottom-0
+            w-full sm:w-72 shrink-0 sm:border-r sm:border-white/5 sm:overflow-y-auto
+            bg-[#0d1018] rounded-t-2xl sm:rounded-none border-t border-white/10 sm:border-t-0
+            transition-transform duration-300 ease-out
+            ${mobileSidebarOpen ? 'translate-y-0' : 'translate-y-full sm:translate-y-0'}
+            max-h-[75vh] sm:max-h-none overflow-y-auto sm:overflow-y-auto
+            [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
           `}>
-            <div className="flex items-start gap-4 mb-6 mt-20 sm:mt-0">
-              {/* Mobile close button */}
+            {/* Mobile drag handle */}
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-white/20" />
+            </div>
+
+            <div className="px-6 pb-6 sm:px-6">
+            {/* Close button mobile */}
+            <div className="sm:hidden flex items-center justify-between mb-4 pt-2">
+              <h3 className="text-white font-semibold text-base">Overview</h3>
               <button
                 onClick={() => setMobileSidebarOpen(false)}
-                className="sm:hidden absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
+            </div>
+
+            <div className="hidden sm:flex items-start gap-4 mb-6">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: `${subject.color}15` }}>
                 <SubjectIcon name={subject.name} className="w-8 h-8" style={{ color: subject.color }} />
               </div>
@@ -255,6 +268,7 @@ export default function SubjectDetailPage() {
                 </div>
               </div>
             </div>
+            </div> {/* end px-6 pb-6 wrapper */}
           </aside>
 
           {/* Main */}

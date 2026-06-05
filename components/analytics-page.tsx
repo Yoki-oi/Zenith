@@ -248,7 +248,7 @@ export default function AnalyticsPage() {
 
             <div className="flex flex-col items-center flex-1 justify-between">
               {/* Donut */}
-              <div className="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto">
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto overflow-hidden">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
