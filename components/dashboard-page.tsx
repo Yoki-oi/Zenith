@@ -31,6 +31,11 @@ export default function DashboardPage() {
   const { subjects, setPage, openSubject, recordProgressSnapshot, user } = useStore();
   const gs = globalStats(subjects);
 
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(id);
+  }, []);
   useEffect(() => { recordProgressSnapshot(); }, [recordProgressSnapshot]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const doingChapters = subjects
@@ -232,7 +237,7 @@ export default function DashboardPage() {
               const totalChapters = subjects.reduce((a, s) => a + s.chapters.length, 0);
               const mastered = subjects.reduce((a, s) => a + s.chapters.filter(c => c.mastered).length, 0);
               const remaining = totalChapters - mastered;
-              const chapsPerDay = (targetDiffDays && targetDiffDays > 0) ? (remaining / targetDiffDays).toFixed(2) : diffDays > 0 ? (remaining / diffDays).toFixed(2) : '0';
+              const chapsPerDay = parseFloat((targetDiffDays && targetDiffDays > 0) ? (remaining / targetDiffDays).toFixed(1) : diffDays > 0 ? (remaining / diffDays).toFixed(1) : '0');
               return (
                 <div className="grid grid-cols-3 gap-3 mt-auto">
                   <div>

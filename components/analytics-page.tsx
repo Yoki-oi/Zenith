@@ -248,26 +248,33 @@ export default function AnalyticsPage() {
 
             <div className="flex flex-col items-center flex-1 justify-between">
               {/* Donut */}
-              <div className="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto overflow-hidden">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={donutData.length > 0 ? donutData : [{ name: 'None', value: 1, color: '#1a1f2e' }]}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={62}
-                      outerRadius={96}
-                      paddingAngle={2}
-                      dataKey="value"
-                      startAngle={90}
-                      endAngle={-270}
-                    >
-                      {donutData.map((entry, i) => (
-                        <Cell key={i} fill={entry.color} stroke="transparent" />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto">
+                <PieChart width={176} height={176} className="sm:hidden">
+                  <Pie
+                    data={donutData.length > 0 ? donutData : [{ name: 'None', value: 1, color: '#1a1f2e' }]}
+                    cx={88} cy={88}
+                    innerRadius={55} outerRadius={84}
+                    paddingAngle={2} dataKey="value"
+                    startAngle={90} endAngle={-270}
+                  >
+                    {donutData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} stroke="transparent" />
+                    ))}
+                  </Pie>
+                </PieChart>
+                <PieChart width={208} height={208} className="hidden sm:block">
+                  <Pie
+                    data={donutData.length > 0 ? donutData : [{ name: 'None', value: 1, color: '#1a1f2e' }]}
+                    cx={104} cy={104}
+                    innerRadius={62} outerRadius={96}
+                    paddingAngle={2} dataKey="value"
+                    startAngle={90} endAngle={-270}
+                  >
+                    {donutData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} stroke="transparent" />
+                    ))}
+                  </Pie>
+                </PieChart>
                 {/* Center label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="text-4xl font-bold text-white leading-none">{totalTasksDone}</span>

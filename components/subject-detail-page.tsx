@@ -49,7 +49,7 @@ export default function SubjectDetailPage() {
     const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.desc?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRevision = !needRevisionMode || ((c.doing || c.mastered) && c.revisions === 0);
-    const matchesPractice = !needPracticeMode || c.items.some((i: any) => i.label === 'Lectures' && i.done);
+    const matchesPractice = !needPracticeMode || (!c.mastered && c.items.some((i: any) => i.label === 'Lectures' && i.done));
     return matchesSearch && matchesRevision && matchesPractice;
   });
 
@@ -682,6 +682,21 @@ function ChapterRow({
                 <span className={`text-sm flex-1 select-none ${item.done ? 'text-gray-500 line-through' : 'text-gray-300'}`}>
                   {item.label}
                 </span>
+                {/* ⋯ button — visible on mobile (touch), hover on desktop */}
+                <button
+                  onClick={e => { e.stopPropagation(); onTaskContextMenu(e, item.id, item.label, item.done); }}
+                  className="sm:hidden w-6 h-6 flex items-center justify-center rounded-md text-gray-500 hover:text-white hover:bg-white/10 transition-colors"
+                  title="More options"
+                >
+                  <span className="text-base leading-none tracking-tighter">···</span>
+                </button>
+                <button
+                  onClick={e => { e.stopPropagation(); onTaskContextMenu(e, item.id, item.label, item.done); }}
+                  className="hidden sm:flex opacity-0 group-hover:opacity-100 w-6 h-6 items-center justify-center rounded-md text-gray-500 hover:text-white hover:bg-white/10 transition-all"
+                  title="More options"
+                >
+                  <span className="text-base leading-none tracking-tighter">···</span>
+                </button>
                 <button
                   onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}
                   className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${['Lectures', 'DPPs'].includes(item.label) ? 'invisible' : 'opacity-0 group-hover:opacity-100'}`}
