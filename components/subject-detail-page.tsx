@@ -127,7 +127,7 @@ export default function SubjectDetailPage() {
       </div>
       <NavBar activeTab="Subjects" />
 
-      <main className="relative pt-20 flex flex-col min-h-screen sm:h-screen sm:overflow-hidden">
+      <main className="relative pt-20 flex flex-col min-h-screen lg:h-screen lg:overflow-hidden">
         <div className="px-4 sm:px-6 xl:px-10 mb-4 shrink-0 flex items-center justify-between">
           <button onClick={() => setPage('subjects')} className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -136,41 +136,41 @@ export default function SubjectDetailPage() {
           {/* Mobile: toggle sidebar */}
           <button
             onClick={() => setMobileSidebarOpen(o => !o)}
-            className="sm:hidden flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-400 hover:text-white text-xs transition-colors"
+            className="lg:hidden flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-400 hover:text-white text-xs transition-colors"
           >
             <BookOpen className="w-3.5 h-3.5" />
             Overview
           </button>
         </div>
 
-        <div className="flex flex-col sm:flex-row flex-1 sm:overflow-hidden">
+        <div className="flex flex-col lg:flex-row flex-1 lg:overflow-hidden">
           {/* Mobile bottom-sheet backdrop */}
           {mobileSidebarOpen && (
             <div
-              className="sm:hidden fixed inset-0 z-30 bg-black/70 backdrop-blur-sm"
+              className="lg:hidden fixed inset-0 z-30 bg-black/70 backdrop-blur-sm"
               onClick={() => setMobileSidebarOpen(false)}
             />
           )}
 
           {/* Sidebar — bottom sheet on mobile, left panel on sm+ */}
           <aside className={`
-            sm:relative sm:translate-x-0 sm:translate-y-0 sm:top-auto sm:left-auto sm:h-auto sm:z-auto sm:bg-transparent
+            lg:relative lg:translate-x-0 lg:translate-y-0 lg:top-auto lg:left-auto lg:h-auto lg:z-auto lg:bg-transparent
             fixed z-40 left-0 right-0 bottom-0
-            w-full sm:w-72 shrink-0 sm:border-r sm:border-white/5 sm:overflow-y-auto
-            bg-[#0d1018] rounded-t-2xl sm:rounded-none border-t border-white/10 sm:border-t-0
+            w-full lg:w-72 shrink-0 lg:border-r lg:border-white/5 lg:overflow-y-auto
+            bg-[#0d1018] rounded-t-2xl lg:rounded-none border-t border-white/10 lg:border-t-0
             transition-transform duration-300 ease-out
-            ${mobileSidebarOpen ? 'translate-y-0' : 'translate-y-full sm:translate-y-0'}
-            max-h-[75vh] sm:max-h-none overflow-y-auto sm:overflow-y-auto
+            ${mobileSidebarOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}
+            max-h-[75vh] lg:max-h-none overflow-y-auto lg:overflow-y-auto
             [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
           `}>
             {/* Mobile drag handle */}
-            <div className="sm:hidden flex justify-center pt-3 pb-1">
+            <div className="lg:hidden flex justify-center pt-3 pb-1">
               <div className="w-10 h-1 rounded-full bg-white/20" />
             </div>
 
             <div className="px-6 pb-6 sm:px-6">
             {/* Close button mobile */}
-            <div className="sm:hidden flex items-center justify-between mb-4 pt-2">
+            <div className="lg:hidden flex items-center justify-between mb-4 pt-2">
               <h3 className="text-white font-semibold text-base">Overview</h3>
               <button
                 onClick={() => setMobileSidebarOpen(false)}
@@ -180,7 +180,7 @@ export default function SubjectDetailPage() {
               </button>
             </div>
 
-            <div className="hidden sm:flex items-start gap-4 mb-6">
+            <div className="hidden lg:flex items-start gap-4 mb-6">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: `${subject.color}15` }}>
                 <SubjectIcon name={subject.name} className="w-8 h-8" style={{ color: subject.color }} />
               </div>
@@ -272,17 +272,17 @@ export default function SubjectDetailPage() {
           </aside>
 
           {/* Main */}
-          <div className="flex-1 flex flex-col sm:overflow-hidden px-4 sm:px-6 xl:px-10">
+          <div className="flex-1 flex flex-col lg:overflow-hidden px-4 lg:px-6 xl:px-10">
             {/* Sticky top section */}
             <div className="shrink-0 pt-0 pb-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
                 <StatCard label="Doing" value={st.doing} dot="bg-blue-500" iconBig={<BookOpen className="w-4 h-4 text-blue-400" />} />
                 <StatCard label="Mastered" value={st.mastered} dot="bg-green-500" iconBig={<CheckCircle2 className="w-4 h-4 text-green-400" />} />
                 <StatCard label="Revisions" value={st.revTotal} dot="bg-yellow-500" iconBig={<RotateCcw className="w-4 h-4 text-yellow-400" />} />
                 <StatCard label="Tasks" value={`${st.topicsDone}/${st.topicsTotal}`} dot="bg-purple-500" iconBig={<ClipboardList className="w-4 h-4 text-purple-400" />} />
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
                 <h3 className="text-lg font-semibold text-white flex items-center gap-2 flex-wrap">
                   Chapters (Class {subject.classNum}){isChem && activeSec ? ` · ${CHEM_LABELS[activeSec]}` : ''}
                   {needRevisionMode && (
@@ -297,11 +297,11 @@ export default function SubjectDetailPage() {
                   )}
                 </h3>
                 <div className="flex items-center gap-2">
-                  <div className="relative flex-1 sm:flex-none">
+                  <div className="relative flex-1 lg:flex-none">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                       placeholder="Search chapters..."
-                      className="pl-10 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-purple-500/50 w-full sm:w-56"
+                      className="pl-10 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-purple-500/50 w-full lg:w-56"
                     />
                   </div>
                   <button
@@ -315,7 +315,7 @@ export default function SubjectDetailPage() {
             </div>
 
             {/* Scrollable chapter list only */}
-            <div className="flex-1 sm:overflow-y-auto pb-4 sm:pb-12">
+            <div className="flex-1 lg:overflow-y-auto pb-4 lg:pb-12">
               {filteredChapters.length === 0 && (needRevisionMode || needPracticeMode) && (
                 <div className="flex flex-col items-center justify-center py-12 text-center gap-2">
                   {needRevisionMode && !needPracticeMode && <RotateCcw className="w-8 h-8 text-yellow-400/40 mb-1" />}
@@ -357,7 +357,7 @@ export default function SubjectDetailPage() {
           </div>
         </div>
 
-        <footer className="mt-4 sm:mt-auto pt-4 pb-6 border-t border-white/5 px-4 sm:px-6 xl:px-10 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left sm:shrink-0">
+        <footer className="mt-4 lg:mt-auto pt-4 pb-6 border-t border-white/5 px-4 lg:px-6 xl:px-10 flex flex-col lg:flex-row items-center lg:justify-between gap-1 text-sm text-gray-500 text-center lg:text-left lg:shrink-0">
           <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>
@@ -599,13 +599,13 @@ function ChapterRow({
 
   return (
     <div className="bg-[#0f1219] border border-white/5 rounded-xl overflow-hidden">
-      <div className="flex items-start sm:items-center gap-3 sm:gap-4 px-4 py-4 cursor-pointer hover:bg-white/[0.02] transition-colors" onClick={onToggle}>
-        <span className="text-gray-500 text-sm font-mono w-6 shrink-0 mt-0.5 sm:mt-0">{String(index + 1).padStart(2, '0')}</span>
+      <div className="flex items-start lg:items-center gap-3 lg:gap-4 px-4 py-4 cursor-pointer hover:bg-white/[0.02] transition-colors" onClick={onToggle}>
+        <span className="text-gray-500 text-sm font-mono w-6 shrink-0 mt-0.5 lg:mt-0">{String(index + 1).padStart(2, '0')}</span>
         <div className="flex-1 min-w-0">
           <h4 className="text-white font-medium">{chapter.title}</h4>
           {chapter.desc && <p className="text-gray-500 text-sm truncate">{chapter.desc}</p>}
           {/* Pills — shown below title on mobile, inline on sm+ */}
-          <div className="flex flex-wrap items-center gap-1.5 mt-2 sm:hidden" onClick={e => e.stopPropagation()}>
+          <div className="flex flex-wrap items-center gap-1.5 mt-2 lg:hidden" onClick={e => e.stopPropagation()}>
             <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${chapter.doing ? 'bg-blue-400' : 'bg-gray-500'}`} /> Doing
             </button>
@@ -629,7 +629,7 @@ function ChapterRow({
           </div>
         </div>
         {/* Pills — desktop only, shown inline */}
-        <div className="hidden sm:flex items-center gap-2" onClick={e => e.stopPropagation()}>
+        <div className="hidden lg:flex items-center gap-2" onClick={e => e.stopPropagation()}>
           <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${chapter.doing ? 'bg-blue-400' : 'bg-gray-500'}`} />
             Doing
@@ -682,20 +682,13 @@ function ChapterRow({
                 <span className={`text-sm flex-1 select-none ${item.done ? 'text-gray-500 line-through' : 'text-gray-300'}`}>
                   {item.label}
                 </span>
-                {/* ⋯ button — visible on mobile (touch), hover on desktop */}
+                {/* ··· button — right-most, always on touch, hover on desktop */}
                 <button
                   onClick={e => { e.stopPropagation(); onTaskContextMenu(e, item.id, item.label, item.done); }}
-                  className="sm:hidden w-6 h-6 flex items-center justify-center rounded-md text-gray-500 hover:text-white hover:bg-white/10 transition-colors"
+                  className="ml-auto w-7 h-7 flex items-center justify-center rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/8 transition-colors lg:opacity-0 lg:group-hover:opacity-100"
                   title="More options"
                 >
-                  <span className="text-base leading-none tracking-tighter">···</span>
-                </button>
-                <button
-                  onClick={e => { e.stopPropagation(); onTaskContextMenu(e, item.id, item.label, item.done); }}
-                  className="hidden sm:flex opacity-0 group-hover:opacity-100 w-6 h-6 items-center justify-center rounded-md text-gray-500 hover:text-white hover:bg-white/10 transition-all"
-                  title="More options"
-                >
-                  <span className="text-base leading-none tracking-tighter">···</span>
+                  <span className="text-sm leading-none select-none tracking-widest">···</span>
                 </button>
                 <button
                   onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}
