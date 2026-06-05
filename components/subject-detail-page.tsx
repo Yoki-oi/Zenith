@@ -127,7 +127,7 @@ export default function SubjectDetailPage() {
       </div>
       <NavBar activeTab="Subjects" />
 
-      <main className="relative pt-20 flex flex-col h-screen overflow-hidden">
+      <main className="relative pt-20 flex flex-col min-h-screen sm:h-screen sm:overflow-hidden">
         <div className="px-4 sm:px-6 xl:px-10 mb-4 shrink-0 flex items-center justify-between">
           <button onClick={() => setPage('subjects')} className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -143,7 +143,7 @@ export default function SubjectDetailPage() {
           </button>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-col sm:flex-row flex-1 sm:overflow-hidden">
           {/* Mobile bottom-sheet backdrop */}
           {mobileSidebarOpen && (
             <div
@@ -272,7 +272,7 @@ export default function SubjectDetailPage() {
           </aside>
 
           {/* Main */}
-          <div className="flex-1 flex flex-col overflow-hidden px-4 sm:px-6 xl:px-10">
+          <div className="flex-1 flex flex-col sm:overflow-hidden px-4 sm:px-6 xl:px-10">
             {/* Sticky top section */}
             <div className="shrink-0 pt-0 pb-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
@@ -315,7 +315,7 @@ export default function SubjectDetailPage() {
             </div>
 
             {/* Scrollable chapter list only */}
-            <div className="flex-1 overflow-y-auto pb-12">
+            <div className="flex-1 sm:overflow-y-auto pb-4 sm:pb-12">
               {filteredChapters.length === 0 && (needRevisionMode || needPracticeMode) && (
                 <div className="flex flex-col items-center justify-center py-12 text-center gap-2">
                   {needRevisionMode && !needPracticeMode && <RotateCcw className="w-8 h-8 text-yellow-400/40 mb-1" />}
@@ -357,7 +357,7 @@ export default function SubjectDetailPage() {
           </div>
         </div>
 
-        <footer className="mt-auto pt-4 pb-4 border-t border-white/5 px-4 sm:px-6 xl:px-10 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left shrink-0">
+        <footer className="mt-4 sm:mt-auto pt-4 pb-6 border-t border-white/5 px-4 sm:px-6 xl:px-10 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left sm:shrink-0">
           <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>
