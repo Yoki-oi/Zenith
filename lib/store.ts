@@ -179,11 +179,46 @@ export const useStore = create<Store>()(
       },
 
       importData: async (data) => {
-        set({
-          subjects: data.subjects,
-          progressHistory: data.progressHistory || [],
-          user: data.user,
-        });
+        // If the export is a diff-format (v2), merge onto fresh seed data
+        // If it's a full subjects array (v1 legacy), deduplicate chapters by id before setting
+        let subjects: Subject[];
+        if (data.subjects && Array.isArray(data.subjects)) {
+          if ((data as any).version === 2 && (data as any).chapterChanges) {
+            // v2 format: merge changes onto fresh seed
+            const seed = buildSeedData();
+            const changes = (data as any).chapterChanges as Record<string, {
+              doing?: boolean; mastered?: boolean; revisions?: number; items?: Record<string, boolean>;
+            }>;
+            subjects = seed.map(s => ({
+              ...s,
+              chapters: s.chapters.map(c => {
+                const ch = changes[c.id];
+                if (!ch) return c;
+                return {
+                  ...c,
+                  doing: ch.doing ?? c.doing,
+                  mastered: ch.mastered ?? c.mastered,
+                  revisions: ch.revisions ?? c.revisions,
+                  items: c.items.map(i => ({
+                    ...i,
+                    done: ch.items?.[i.id] ?? i.done,
+                  })),
+                };
+              }),
+            }));
+          } else {
+            // v1 legacy: deduplicate chapters by id within each subject
+            subjects = data.subjects.map((s: Subject) => ({
+              ...s,
+              chapters: Array.from(
+                new Map(s.chapters.map((c: Chapter) => [c.id, c])).values()
+              ),
+            }));
+          }
+        } else {
+          subjects = buildSeedData();
+        }
+        set({ subjects, progressHistory: data.progressHistory || [], user: data.user });
         setTimeout(() => get().saveToCloud(), 0);
       },
 

@@ -224,10 +224,35 @@ function ProfileModal({
 
   const handleExport = () => {
     const state = useStore.getState();
+
+    // Build a diff — only export chapters that have user changes
+    const chapterChanges: Record<string, {
+      doing?: boolean; mastered?: boolean; revisions?: number; items?: Record<string, boolean>;
+    }> = {};
+    state.subjects.forEach((s: any) => {
+      s.chapters.forEach((c: any) => {
+        const itemChanges: Record<string, boolean> = {};
+        let hasItemChange = false;
+        c.items.forEach((i: any) => {
+          if (i.done) { itemChanges[i.id] = true; hasItemChange = true; }
+        });
+        const hasChange = c.doing || c.mastered || (c.revisions ?? 0) > 0 || hasItemChange;
+        if (hasChange) {
+          chapterChanges[c.id] = {
+            ...(c.doing && { doing: true }),
+            ...(c.mastered && { mastered: true }),
+            ...((c.revisions ?? 0) > 0 && { revisions: c.revisions }),
+            ...(hasItemChange && { items: itemChanges }),
+          };
+        }
+      });
+    });
+
     const data = {
       exportedAt: new Date().toISOString(),
-      version: 1,
+      version: 2,
       user: state.user,
+      chapterChanges,
       subjects: state.subjects,
       progressHistory: state.progressHistory,
     };
