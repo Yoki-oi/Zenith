@@ -19,6 +19,7 @@ export default function AnalyticsPage() {
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
+  const [classFilter, setClassFilter] = useState<'all' | 11 | 12>('all');
 
   // Lock body scroll when any modal is open
   useEffect(() => {
@@ -27,8 +28,11 @@ export default function AnalyticsPage() {
     return () => { document.body.style.overflow = ''; };
   }, [showResetConfirm, showResetSuccess]);
 
+  // ── Class filter ─────────────────────────────────────────────────────────
+  const filteredSubjects = classFilter === 'all' ? subjects : subjects.filter(s => s.classNum === classFilter);
+
   // ── Stat card values ──────────────────────────────────────────────────────
-  const allChapters = subjects.flatMap(s =>
+  const allChapters = filteredSubjects.flatMap(s =>
     s.chapters.map(c => ({
       ...c,
       subjectName: s.name,
@@ -83,7 +87,7 @@ export default function AnalyticsPage() {
   };
 
   const donutData = subjectNames.map(name => {
-    const matching = subjects.filter((s: any) => s.name === name);
+    const matching = filteredSubjects.filter((s: any) => s.name === name);
     const tasksDone = matching.flatMap((s: any) => s.chapters).reduce(
       (a: number, c: any) => a + (c.mastered ? c.items.length : c.items.filter((i: any) => i.done).length), 0
     );
@@ -135,15 +139,31 @@ export default function AnalyticsPage() {
             <p className="text-gray-400 text-sm leading-snug">
               Track your preparation<br />and focus on what matters.
             </p>
-            <button
-              onClick={() => setShowResetConfirm(true)}
-              className="mt-4 flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-500 text-xs font-medium rounded-xl transition-colors w-fit"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Reset Progress Data
-            </button>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              {/* Class filter */}
+              <div className="flex items-center gap-1 bg-white/[0.04] border border-white/[0.07] rounded-xl p-1">
+                {(['all', 11, 12] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setClassFilter(f)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      classFilter === f ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                  >
+                    {f === 'all' ? 'Both' : `Class ${f}`}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowResetConfirm(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-500 text-xs font-medium rounded-xl transition-colors w-fit"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Reset Progress Data
+              </button>
+            </div>
           </div>
 
           {/* Tasks Completed */}
@@ -313,7 +333,7 @@ export default function AnalyticsPage() {
           chaptersToPractice={chaptersToPractice}
           chaptersMastered={chaptersMastered}
           openSubject={openSubject}
-          subjects={subjects}
+          subjects={filteredSubjects}
           setPage={setPage}
         />
 
