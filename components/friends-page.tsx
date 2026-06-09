@@ -75,7 +75,7 @@ function YourCodeCard() {
 
   const handleEditSave = async () => {
     const val = editVal.toUpperCase().trim();
-    if (val.length !== 6) return setEditError('Must be exactly 6 characters');
+    if (val.length !== 5) return setEditError('Must be exactly 5 characters');
     if (!/^[A-Z0-9]+$/.test(val)) return setEditError('Letters and numbers only');
     if (!user?.uid) return;
     setEditLoading(true);
@@ -113,9 +113,9 @@ function YourCodeCard() {
         <div className="space-y-2">
           <input
             value={editVal}
-            onChange={e => { setEditVal(e.target.value.toUpperCase().slice(0, 6)); setEditError(''); }}
+            onChange={e => { setEditVal(e.target.value.toUpperCase().slice(0, 5)); setEditError(''); }}
             className="w-full font-mono text-3xl font-bold text-white bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500/50 tracking-widest uppercase"
-            maxLength={6}
+            maxLength={5}
             autoFocus
           />
           {editError && <p className="text-red-400 text-xs">{editError}</p>}
@@ -175,7 +175,7 @@ function AddFriendCard({ onRequestSent }: { onRequestSent: () => void }) {
   const handleSend = async () => {
     if (!user?.uid || !user.friendCode) return;
     const val = code.toUpperCase().trim();
-    if (val.length !== 6) return setError('Enter a valid 6-character code');
+    if (val.length !== 5) return setError('Enter a valid 6-character code');
     if (val === user.friendCode) return setError("That's your own code!");
     setLoading(true); setError(''); setSuccess('');
     const profile = await getPublicProfileByCode(val);
@@ -206,7 +206,7 @@ function AddFriendCard({ onRequestSent }: { onRequestSent: () => void }) {
 
       <input
         value={code}
-        onChange={e => { setCode(e.target.value.toUpperCase().slice(0, 6)); setError(''); setSuccess(''); }}
+        onChange={e => { setCode(e.target.value.toUpperCase().slice(0, 5)); setError(''); setSuccess(''); }}
         placeholder="ENTER FRIEND'S CODE"
         className="w-full font-mono text-lg text-white bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500/50 tracking-widest uppercase placeholder:text-gray-600 placeholder:text-base placeholder:tracking-widest"
         onKeyDown={e => e.key === 'Enter' && handleSend()}
@@ -217,7 +217,7 @@ function AddFriendCard({ onRequestSent }: { onRequestSent: () => void }) {
 
       <button
         onClick={handleSend}
-        disabled={loading || code.length !== 6}
+        disabled={loading || code.length !== 5}
         className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', boxShadow: code.length === 6 ? '0 4px 16px rgba(99,102,241,0.3)' : 'none' }}
       >
