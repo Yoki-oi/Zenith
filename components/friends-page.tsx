@@ -607,7 +607,7 @@ export default function FriendsPage() {
         </p>
       </main>
 
-      <footer className="px-4 sm:px-6 xl:px-10 py-5 border-t border-white/5 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left">
+      <footer className="mt-auto px-4 sm:px-6 xl:px-10 py-5 border-t border-white/5 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left">
         <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
         <span>Designed &amp; Developed by Yoki</span>
       </footer>

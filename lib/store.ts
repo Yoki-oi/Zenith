@@ -134,8 +134,9 @@ export const useStore = create<Store>()(
       loadFromCloud: async (userUid: string) => {
         const cloud = await loadUserData(userUid);
         if (cloud) {
-          // Generate friend code if user doesn't have one yet
-          const friendCode = cloud.user?.friendCode || generateFriendCode();
+          // Only generate friend code if user genuinely doesn't have one
+          const existingCode = cloud.user?.friendCode || get().user?.friendCode;
+          const friendCode = existingCode || generateFriendCode();
           set({
             subjects: cloud.subjects,
             progressHistory: cloud.progressHistory || [],
