@@ -78,6 +78,7 @@ function toCloudData(state: Store): CloudData {
       examName: state.user?.examName,
       examDate: state.user?.examDate,
       targetDate: state.user?.targetDate,
+      friendCode: state.user?.friendCode,
     },
     updatedAt: Date.now(),
   };
