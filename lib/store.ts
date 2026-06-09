@@ -106,7 +106,10 @@ export const useStore = create<Store>()(
 
       setCurrentChemSection: (currentChemSection) => set({ currentChemSection }),
 
-      setUser: (user) => set({ user, page: user ? 'home' : 'login' }),
+      setUser: (user) => set((st) => ({
+        user: user ? { ...user, friendCode: st.user?.friendCode || user.friendCode } : null,
+        page: user ? 'home' : 'login',
+      })),
 
       updateUser: (patch) => {
         set((st) => ({ user: st.user ? { ...st.user, ...patch } : st.user }));
@@ -163,8 +166,11 @@ export const useStore = create<Store>()(
             },
             syncReady: true,
           });
-          // Always ensure public profile is up to date on login
-          setTimeout(() => get().saveToCloud(), 0);
+          // Update public profile — delay to ensure state is settled
+          setTimeout(() => {
+            const s = get();
+            if (s.user?.friendCode) get().saveToCloud();
+          }, 500);
         } else {
           const state = get();
           const friendCode = state.user?.friendCode || generateFriendCode();
