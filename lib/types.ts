@@ -28,7 +28,7 @@ export interface Subject {
   chapters: Chapter[];
 }
 
-export type Page = 'login' | 'home' | 'subjects' | 'subject' | 'analytics';
+export type Page = 'login' | 'home' | 'subjects' | 'subject' | 'analytics' | 'friends';
 
 export interface User {
   uid?: string;
@@ -36,6 +36,7 @@ export interface User {
   email: string;
   photo?: string;
   examName?: string;
-  examDate?: string; // ISO date string e.g. "2026-01-22"
+  examDate?: string;
   targetDate?: string;
+  friendCode?: string;
 }

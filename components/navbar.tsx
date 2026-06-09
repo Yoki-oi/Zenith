@@ -6,7 +6,7 @@ import { useStore } from '@/lib/store';
 import { Pencil, Download, Upload, X, LogOut as LogOutIcon, Menu } from 'lucide-react';
 
 interface NavBarProps {
-  activeTab?: 'Dashboard' | 'Subjects' | 'Analytics';
+  activeTab?: 'Dashboard' | 'Subjects' | 'Analytics' | 'Friends';
 }
 
 export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
@@ -30,10 +30,11 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
   const hours = isPast ? 0 : Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const mins = isPast ? 0 : Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-  const tabs: { label: 'Dashboard' | 'Subjects' | 'Analytics'; page: 'home' | 'subjects' | 'analytics' }[] = [
+  const tabs: { label: 'Dashboard' | 'Subjects' | 'Analytics' | 'Friends'; page: 'home' | 'subjects' | 'analytics' | 'friends' }[] = [
     { label: 'Dashboard', page: 'home' },
     { label: 'Subjects', page: 'subjects' },
     { label: 'Analytics', page: 'analytics' },
+    { label: 'Friends', page: 'friends' },
   ];
 
   return (

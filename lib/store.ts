@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Subject, Chapter, SubTopic, Page, ChemSection, User } from './types';
 import { buildSeedData } from './seed-data';
-import { loadUserData, saveUserData, CloudData } from './firestore';
+import { loadUserData, saveUserData, CloudData, updatePublicProfile, generateFriendCode } from './firestore';
 import { auth } from './firebase';
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -134,6 +134,8 @@ export const useStore = create<Store>()(
       loadFromCloud: async (userUid: string) => {
         const cloud = await loadUserData(userUid);
         if (cloud) {
+          // Generate friend code if user doesn't have one yet
+          const friendCode = cloud.user?.friendCode || generateFriendCode();
           set({
             subjects: cloud.subjects,
             progressHistory: cloud.progressHistory || [],
@@ -145,11 +147,15 @@ export const useStore = create<Store>()(
               examName: cloud.user?.examName,
               examDate: cloud.user?.examDate,
               targetDate: cloud.user?.targetDate,
+              friendCode,
             },
             syncReady: true,
           });
+          // Always ensure public profile is up to date on login
+          setTimeout(() => get().saveToCloud(), 0);
         } else {
           const state = get();
+          const friendCode = state.user?.friendCode || generateFriendCode();
           const cloudData: CloudData = {
             subjects: state.subjects,
             progressHistory: state.progressHistory,
@@ -162,11 +168,17 @@ export const useStore = create<Store>()(
               examName: state.user?.examName,
               examDate: state.user?.examDate,
               targetDate: state.user?.targetDate,
+              friendCode,
             },
             updatedAt: Date.now(),
           };
           await saveUserData(userUid, cloudData);
-          set({ syncReady: true });
+          set({
+            syncReady: true,
+            user: { ...get().user!, friendCode },
+          });
+          // Create public profile for new user immediately
+          setTimeout(() => get().saveToCloud(), 0);
         }
       },
 
@@ -175,6 +187,35 @@ export const useStore = create<Store>()(
         if (!state.syncReady || !state.user?.uid) return;
         set({ syncPending: true });
         await saveUserData(state.user.uid, toCloudData(state));
+
+        // Also update public profile so friends can see latest progress
+        const uid = state.user.uid;
+        const subjects = state.subjects;
+        const gs = globalStats(subjects);
+        const class11 = classStats(subjects, 11);
+        const class12 = classStats(subjects, 12);
+        const doingChapter = subjects
+          .flatMap(s => s.chapters.map(c => ({ ...c, subjectName: s.name })))
+          .find(c => c.doing && !c.mastered) ?? null;
+        const recentMastered = subjects
+          .flatMap(s => s.chapters.filter(c => c.mastered).map(c => c.title))
+          .slice(-5).reverse();
+
+        await updatePublicProfile(uid, {
+          name: state.user.name,
+          friendCode: state.user.friendCode || '',
+          examName: state.user.examName,
+          examDate: state.user.examDate,
+          class11Pct: class11.pct,
+          class12Pct: class12.pct,
+          overallPct: gs.pct,
+          masteredCount: gs.mastered,
+          totalChapters: gs.total,
+          currentChapter: doingChapter ? { title: doingChapter.title, subjectName: doingChapter.subjectName } : null,
+          recentMastered,
+          updatedAt: Date.now(),
+        });
+
         set({ syncPending: false });
       },
 

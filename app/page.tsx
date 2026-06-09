@@ -9,6 +9,7 @@ import DashboardPage from '@/components/dashboard-page';
 import SubjectsPage from '@/components/subjects-page';
 import SubjectDetailPage from '@/components/subject-detail-page';
 import AnalyticsPage from '@/components/analytics-page';
+import FriendsPage from '@/components/friends-page';
 
 // ─── Page fade wrapper ────────────────────────────────────────────────────────
 
@@ -100,6 +101,7 @@ export default function Home() {
       <PageWrapper isActive={page === 'subjects'}><SubjectsPage /></PageWrapper>
       <PageWrapper isActive={page === 'subject'}><SubjectDetailPage /></PageWrapper>
       <PageWrapper isActive={page === 'analytics'}><AnalyticsPage /></PageWrapper>
+      <PageWrapper isActive={page === 'friends'}><FriendsPage /></PageWrapper>
     </>
   );
 }
