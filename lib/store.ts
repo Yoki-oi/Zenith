@@ -137,6 +137,16 @@ export const useStore = create<Store>()(
           // Only generate friend code if user genuinely doesn't have one
           const existingCode = cloud.user?.friendCode || get().user?.friendCode;
           const friendCode = existingCode || generateFriendCode();
+
+          // If we just generated a new code, persist it to Firestore immediately
+          // so it doesn't change on the next refresh
+          if (!existingCode) {
+            await saveUserData(userUid, {
+              ...cloud,
+              user: { ...cloud.user, friendCode },
+            });
+          }
+
           set({
             subjects: cloud.subjects,
             progressHistory: cloud.progressHistory || [],
