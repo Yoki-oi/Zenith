@@ -59,6 +59,7 @@ export interface PublicProfile {
   masteredCount: number;
   totalChapters: number;
   currentChapter: { title: string; subjectName: string } | null;
+  doingChapters: { title: string; subjectName: string }[];
   recentMastered: string[]; // last 5 chapter titles
   updatedAt: number;
 }

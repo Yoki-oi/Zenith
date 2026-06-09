@@ -219,6 +219,13 @@ export const useStore = create<Store>()(
           .flatMap(s => s.chapters.filter(c => c.mastered).map(c => c.title))
           .slice(-5).reverse();
 
+        const doingChapters = subjects
+          .flatMap(s => s.chapters
+            .filter(c => c.doing && !c.mastered)
+            .map(c => ({ title: c.title, subjectName: s.name }))
+          )
+          .slice(0, 5); // cap at 5
+
         await updatePublicProfile(uid, {
           name: state.user.name,
           friendCode: state.user.friendCode || '',
@@ -230,6 +237,7 @@ export const useStore = create<Store>()(
           masteredCount: gs.mastered,
           totalChapters: gs.total,
           currentChapter: doingChapter ? { title: doingChapter.title, subjectName: doingChapter.subjectName } : null,
+          doingChapters,
           recentMastered,
           updatedAt: Date.now(),
         });

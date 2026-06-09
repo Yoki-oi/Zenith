@@ -389,11 +389,13 @@ function FriendCard({ profile, myUid, onRemoved }: { profile: PublicProfile; myU
           )}
         </div>
       </div>
-      {profile.currentChapter && (
-        <div className="lg:hidden mb-3">
-          <span className="inline-block px-2.5 py-1 bg-purple-500/10 border border-purple-500/15 text-purple-300 text-xs rounded-lg font-medium">
-            {profile.currentChapter.subjectName} · {profile.currentChapter.title}
-          </span>
+      {profile.doingChapters?.length > 0 && (
+        <div className="lg:hidden mb-3 flex flex-wrap gap-1">
+          {profile.doingChapters.slice(0, 2).map((c, i) => (
+            <span key={i} className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/15 text-blue-300 text-xs rounded-lg truncate max-w-[160px]">
+              {c.subjectName} · {c.title}
+            </span>
+          ))}
         </div>
       )}
       <div className="hidden lg:flex items-center gap-5">
@@ -407,16 +409,23 @@ function FriendCard({ profile, myUid, onRemoved }: { profile: PublicProfile; myU
           </div>
         </div>
 
-        {/* Col 2: Current chapter */}
-        <div className="w-44 shrink-0">
-          <p className="text-gray-500 text-xs mb-1.5">Current Chapter</p>
-          {profile.currentChapter ? (
-            <span className="inline-block px-2.5 py-1 bg-purple-500/10 border border-purple-500/15 text-purple-300 text-xs rounded-lg font-medium leading-tight">
-              {profile.currentChapter.subjectName}<br />
-              <span className="text-purple-400/80">{profile.currentChapter.title}</span>
-            </span>
+        {/* Col 2: Doing chapters */}
+        <div className="w-52 shrink-0">
+          <p className="text-gray-500 text-xs mb-1.5">Currently Doing</p>
+          {profile.doingChapters?.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              {profile.doingChapters.slice(0, 3).map((c, i) => (
+                <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 border border-blue-500/15 text-blue-300 text-xs rounded-lg font-medium leading-tight truncate">
+                  <span className="text-blue-500/60 shrink-0">●</span>
+                  <span className="truncate">{c.subjectName} · {c.title}</span>
+                </span>
+              ))}
+              {profile.doingChapters.length > 3 && (
+                <span className="text-gray-600 text-xs pl-1">+{profile.doingChapters.length - 3} more</span>
+              )}
+            </div>
           ) : (
-            <span className="text-gray-600 text-xs italic">No active chapter</span>
+            <span className="text-gray-600 text-xs italic">No active chapters</span>
           )}
         </div>
 
@@ -529,7 +538,7 @@ export default function FriendsPage() {
           <rect width="100%" height="100%" fill="url(#dotgrid-friends)" />
         </svg>
       </div>
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col flex-1">
       <NavBar activeTab="Friends" />
       <main className="flex-1 pt-20 pb-6 px-4 sm:px-6 xl:px-10 space-y-5">
 
