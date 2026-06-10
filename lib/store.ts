@@ -44,7 +44,8 @@ interface Store {
 
   loadFromCloud: (uid: string) => Promise<void>;
   saveToCloud: () => Promise<void>;
-  importData: (data: { subjects: Subject[]; progressHistory: ProgressSnapshot[]; user: User }) => Promise<void>;
+  analyticsClassFilter: 'all' | 11 | 12;
+  setAnalyticsClassFilter: (f: 'all' | 11 | 12) => void;
 
   addSubject: (s: Omit<Subject, 'id' | 'chapters'>) => void;
   deleteSubject: (id: string) => void;
@@ -245,7 +246,8 @@ export const useStore = create<Store>()(
         set({ syncPending: false });
       },
 
-      importData: async (data) => {
+      analyticsClassFilter: 'all' as 'all' | 11 | 12,
+      setAnalyticsClassFilter: (f) => set({ analyticsClassFilter: f }),
         // If the export is a diff-format (v2), merge onto fresh seed data
         // If it's a full subjects array (v1 legacy), deduplicate chapters by id before setting
         let subjects: Subject[];

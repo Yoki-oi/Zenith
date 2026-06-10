@@ -77,7 +77,7 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
             <div className="leading-tight">
               <p className="text-gray-400 text-[11px] font-medium">{examName}</p>
               <p className="text-white font-bold text-sm tracking-wide">
-                {isPast ? 'Exam Day!' : `${diffDays}D ${String(hours).padStart(2, '0')}H`}
+                {isPast ? 'Exam Day!' : `${diffDays}D`}
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
             <div className="leading-tight">
               <p className="text-gray-400 text-[11px] font-medium">{examName}</p>
               <p className="text-white font-bold text-sm tracking-wide">
-                {isPast ? 'Exam Day!' : `${diffDays}D ${String(hours).padStart(2, '0')}H`}
+                {isPast ? 'Exam Day!' : `${diffDays}D`}
               </p>
             </div>
             {syncPending && (
@@ -213,13 +213,29 @@ function ProfileModal({
     setEditingExamName(false);
   };
 
+  const [dateError, setDateError] = useState('');
+
   const saveExamDate = (val: string) => {
     setExamDateVal(val);
+    setDateError('');
+    if (targetDateVal && val && new Date(targetDateVal) >= new Date(val)) {
+      setDateError('Target finish must be before exam date');
+      return;
+    }
     onUpdate({ examDate: val });
   };
 
   const saveTargetDate = (val: string) => {
     setTargetDateVal(val);
+    setDateError('');
+    if (val && examDateVal && new Date(val) >= new Date(examDateVal)) {
+      setDateError('Target finish must be before exam date');
+      return;
+    }
+    if (val && new Date(val) < new Date()) {
+      setDateError('Target finish date cannot be in the past');
+      return;
+    }
     onUpdate({ targetDate: val });
   };
 
@@ -474,7 +490,7 @@ function ProfileModal({
           {/* Target Finish Date */}
           <div>
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Target Finish Date</p>
-            <div className="flex items-center gap-3 px-4 py-3 bg-[#1a1f2e] border border-white/8 rounded-xl">
+            <div className={`flex items-center gap-3 px-4 py-3 bg-[#1a1f2e] border rounded-xl ${dateError ? 'border-red-500/50' : 'border-white/8'}`}>
               <input
                 type="date"
                 value={targetDateVal}
@@ -482,7 +498,10 @@ function ProfileModal({
                 className="flex-1 bg-transparent text-white text-sm focus:outline-none [color-scheme:dark] cursor-pointer"
               />
             </div>
-            <p className="text-gray-600 text-xs mt-1.5 pl-1">Your goal date to finish the syllabus.</p>
+            {dateError
+              ? <p className="text-red-400 text-xs mt-1.5 pl-1">{dateError}</p>
+              : <p className="text-gray-600 text-xs mt-1.5 pl-1">Your goal date to finish the syllabus.</p>
+            }
           </div>
 
           {/* Import / Export */}

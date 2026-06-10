@@ -14,12 +14,13 @@ import {
 const card = "bg-[#0f1219]/80 backdrop-blur-sm border border-white/[0.07] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]";
 
 export default function AnalyticsPage() {
-  const { subjects, openSubject, progressHistory, setPage, resetProgressData } = useStore();
+  const { subjects, openSubject, progressHistory, setPage, resetProgressData, analyticsClassFilter, setAnalyticsClassFilter } = useStore();
+  const classFilter = analyticsClassFilter;
+  const setClassFilter = setAnalyticsClassFilter;
   const gs = globalStats(subjects);
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
-  const [classFilter, setClassFilter] = useState<'all' | 11 | 12>('all');
 
   // Lock body scroll when any modal is open
   useEffect(() => {

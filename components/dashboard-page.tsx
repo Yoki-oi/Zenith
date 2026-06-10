@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useStore, globalStats } from '@/lib/store';
 import NavBar from './navbar';
 import { SubjectIcon } from './subject-icon';
-import { ArrowRight, ChevronRight, ChevronLeft, TrendingUp, RotateCcw, Target, BarChart3, Calendar } from 'lucide-react';
+import { ArrowRight, ChevronRight, ChevronLeft, TrendingUp, RotateCcw, Target, BarChart3, Calendar, BookOpen } from 'lucide-react';
 
 function Sparkline({ color = '#8b5cf6' }: { color?: string }) {
   const id = `sg${color.replace('#', '')}`;
@@ -178,13 +178,27 @@ export default function DashboardPage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-5 text-center gap-2">
                 <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center">
-                  <SubjectIcon name="Physics" className="w-7 h-7 text-purple-400" />
+                  <BookOpen className="w-7 h-7 text-purple-400/60" />
                 </div>
-                <p className="text-gray-400 text-sm mt-1">No active chapter yet</p>
-                <p className="text-gray-600 text-xs">Mark a chapter as "Doing" to track it here</p>
-                <button onClick={() => setPage('subjects')} className="mt-2 flex items-center gap-2 px-5 py-2.5 bg-purple-500/20 text-purple-400 text-sm font-medium rounded-xl hover:bg-purple-500/30 transition-colors">
-                  Browse Subjects <ArrowRight className="w-4 h-4" />
-                </button>
+                <p className="text-gray-400 text-sm mt-1">No chapter in progress</p>
+                {(() => {
+                  const next = subjects.flatMap(s => s.chapters.map(c => ({ ...c, subjectName: s.name, subjectId: s.id, subjectColor: s.color, subjectType: s.type }))).find(c => !c.doing && !c.mastered);
+                  return next ? (
+                    <>
+                      <p className="text-gray-600 text-xs">Next up: <span className="text-gray-400">{next.subjectName} · {next.title}</span></p>
+                      <button onClick={() => openSubject(next.subjectId, next.chemSection ?? null)} className="mt-2 flex items-center gap-2 px-5 py-2.5 bg-purple-500/15 text-purple-400 text-sm font-medium rounded-xl hover:bg-purple-500/25 transition-colors">
+                        Start Chapter <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-600 text-xs">Mark a chapter as "Doing" to track it here</p>
+                      <button onClick={() => setPage('subjects')} className="mt-2 flex items-center gap-2 px-5 py-2.5 bg-purple-500/15 text-purple-400 text-sm font-medium rounded-xl hover:bg-purple-500/25 transition-colors">
+                        Browse Subjects <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>

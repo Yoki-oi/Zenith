@@ -214,7 +214,23 @@ export default function SubjectDetailPage() {
               </div>
             </div>
 
-            {/* Filters */}
+            {isChem && (
+              <div className="mb-6">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Section</p>
+                <div className="space-y-1">
+                  {CHEM_SECTIONS.map(sec => (
+                    <button key={sec} onClick={() => { openSubject(subject.id, sec); setExpandedChapter(null); setSearchQuery(''); }}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm ${activeSec === sec ? 'bg-purple-500/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                    >
+                      {CHEM_LABELS[sec]}
+                      {activeSec === sec && <span className="w-1.5 h-1.5 rounded-full bg-purple-500 ml-auto" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Filters — below section */}
             <div className="mb-6">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Filters</p>
               <div className="space-y-1">
@@ -236,22 +252,6 @@ export default function SubjectDetailPage() {
                 </button>
               </div>
             </div>
-
-            {isChem && (
-              <div className="mb-6">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Section</p>
-                <div className="space-y-1">
-                  {CHEM_SECTIONS.map(sec => (
-                    <button key={sec} onClick={() => { openSubject(subject.id, sec); setExpandedChapter(null); setSearchQuery(''); }}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm ${activeSec === sec ? 'bg-purple-500/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-                    >
-                      {CHEM_LABELS[sec]}
-                      {activeSec === sec && <span className="w-1.5 h-1.5 rounded-full bg-purple-500 ml-auto" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Subject Overview</p>
