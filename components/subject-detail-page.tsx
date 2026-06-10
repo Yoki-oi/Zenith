@@ -607,10 +607,10 @@ function ChapterRow({
           {/* Pills — shown below title on mobile, inline on sm+ */}
           <div className="flex flex-wrap items-center gap-1.5 mt-2 lg:hidden" onClick={e => e.stopPropagation()}>
             <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${chapter.doing ? 'bg-blue-400' : 'bg-gray-500'}`} /> Doing
+              Doing
             </button>
             <button onClick={onToggleMastered} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${chapter.mastered ? 'bg-green-400' : 'bg-gray-500'}`} /> Mastered
+              Mastered
             </button>
             {chapter.revisions > 0 ? (
               <div className="flex items-center rounded-full text-xs font-medium bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
@@ -620,7 +620,7 @@ function ChapterRow({
               </div>
             ) : (
               <button onClick={() => onChangeRevisions(1)} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-transparent hover:border-yellow-500/20 transition-all">
-                <span className="w-1.5 h-1.5 rounded-full bg-gray-600" /> Rev +
+                 Rev +
               </button>
             )}
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${tasksDone > 0 ? 'bg-purple-500/15 text-purple-400 border border-purple-500/20' : 'bg-white/5 text-gray-400'}`}>
@@ -631,25 +631,23 @@ function ChapterRow({
         {/* Pills — desktop only, shown inline */}
         <div className="hidden lg:flex items-center gap-2" onClick={e => e.stopPropagation()}>
           <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${chapter.doing ? 'bg-blue-400' : 'bg-gray-500'}`} />
             Doing
           </button>
           <button onClick={onToggleMastered} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${chapter.mastered ? 'bg-green-400' : 'bg-gray-500'}`} />
             Mastered
           </button>
           {chapter.revisions > 0 ? (
           <div className="flex items-center rounded-full text-xs font-medium transition-all bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
             <button onClick={() => onChangeRevisions(-1)} className="px-2 py-1.5 hover:bg-white/10 rounded-l-full transition-colors" title="Decrease revisions">−</button>
             <span className="flex items-center gap-1.5 px-1 py-1.5 select-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+              
               Rev. {chapter.revisions}
             </span>
             <button onClick={() => onChangeRevisions(1)} className="px-2 py-1.5 hover:bg-white/10 rounded-r-full transition-colors" title="Increase revisions">+</button>
           </div>
           ) : (
           <button onClick={() => onChangeRevisions(1)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium bg-white/5 text-gray-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-transparent hover:border-yellow-500/20 transition-all" title="Add revision">
-            <span className="w-1.5 h-1.5 rounded-full bg-gray-600" />
+            
             Rev +
           </button>
           )}
