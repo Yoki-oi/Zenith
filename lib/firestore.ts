@@ -1,6 +1,6 @@
 import {
   doc, getDoc, setDoc, collection, query, where,
-  getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp
+  getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, onSnapshot
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { Subject, User } from './types';
@@ -238,7 +238,32 @@ export async function getFriends(uid: string): Promise<PublicProfile[]> {
   }
 }
 
-// ── Friend code generator ─────────────────────────────────────────────────────
+export function subscribeToRequests(
+  uid: string,
+  callback: (requests: { incoming: FriendRequest[]; outgoing: FriendRequest[] }) => void
+): () => void {
+  let incoming: FriendRequest[] = [];
+  let outgoing: FriendRequest[] = [];
+  const notify = () => callback({ incoming, outgoing });
+
+  const unsubIn = onSnapshot(
+    query(collection(db, 'friendRequests'), where('toUid', '==', uid), where('status', '==', 'pending')),
+    (snap) => {
+      incoming = snap.docs.map(d => ({ id: d.id, ...d.data() } as FriendRequest));
+      notify();
+    }
+  );
+
+  const unsubOut = onSnapshot(
+    query(collection(db, 'friendRequests'), where('fromUid', '==', uid), where('status', '==', 'pending')),
+    (snap) => {
+      outgoing = snap.docs.map(d => ({ id: d.id, ...d.data() } as FriendRequest));
+      notify();
+    }
+  );
+
+  return () => { unsubIn(); unsubOut(); };
+}
 
 export function generateFriendCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I to avoid confusion

@@ -11,7 +11,7 @@ import {
   getPublicProfileByCode, sendFriendRequest, getPendingRequests,
   acceptFriendRequest, rejectFriendRequest, cancelFriendRequest,
   getFriends, removeFriend, isFriendCodeTaken, updatePublicProfile,
-  PublicProfile, FriendRequest,
+  PublicProfile, FriendRequest, subscribeToRequests,
 } from '@/lib/firestore';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -175,7 +175,7 @@ function AddFriendCard({ onRequestSent }: { onRequestSent: () => void }) {
   const handleSend = async () => {
     if (!user?.uid || !user.friendCode) return;
     const val = code.toUpperCase().trim();
-    if (val.length !== 5) return setError('Enter a valid 6-character code');
+    if (val.length < 5 || val.length > 6) return setError('Enter a valid 5-character code');
     if (val === user.friendCode) return setError("That's your own code!");
     setLoading(true); setError(''); setSuccess('');
     const profile = await getPublicProfileByCode(val);
@@ -217,9 +217,9 @@ function AddFriendCard({ onRequestSent }: { onRequestSent: () => void }) {
 
       <button
         onClick={handleSend}
-        disabled={loading || code.length !== 5}
+        disabled={loading || code.length < 5 || code.length > 6}
         className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', boxShadow: code.length === 6 ? '0 4px 16px rgba(99,102,241,0.3)' : 'none' }}
+        style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', boxShadow: code.length >= 5 ? '0 4px 16px rgba(99,102,241,0.3)' : 'none' }}
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         Send Request
@@ -389,7 +389,7 @@ function FriendCard({ profile, myUid, onRemoved }: { profile: PublicProfile; myU
           )}
         </div>
       </div>
-      {profile.doingChapters?.length > 0 && (
+      {(profile.doingChapters?.length ?? 0) > 0 && (
         <div className="lg:hidden mb-3 flex flex-wrap gap-1">
           {profile.doingChapters.slice(0, 2).map((c, i) => (
             <span key={i} className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/15 text-blue-300 text-xs rounded-lg truncate max-w-[160px]">
@@ -412,7 +412,7 @@ function FriendCard({ profile, myUid, onRemoved }: { profile: PublicProfile; myU
         {/* Col 2: Doing chapters */}
         <div className="w-52 shrink-0">
           <p className="text-gray-500 text-xs mb-1.5">Currently Doing</p>
-          {profile.doingChapters?.length > 0 ? (
+          {(profile.doingChapters?.length ?? 0) > 0 ? (
             <div className="flex flex-col gap-1">
               {profile.doingChapters.slice(0, 3).map((c, i) => (
                 <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 border border-blue-500/15 text-blue-300 text-xs rounded-lg font-medium leading-tight truncate">
@@ -502,20 +502,33 @@ export default function FriendsPage() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'progress' | 'name'>('progress');
 
-  const loadData = useCallback(async () => {
+  const loadFriends = useCallback(async () => {
     if (!user?.uid) return;
-    setLoading(true);
-    const [friendList, requests] = await Promise.all([
-      getFriends(user.uid),
-      getPendingRequests(user.uid),
-    ]);
+    const friendList = await getFriends(user.uid);
     setFriends(friendList);
-    setIncoming(requests.incoming);
-    setOutgoing(requests.outgoing);
     setLoading(false);
   }, [user?.uid]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    if (!user?.uid) return;
+    setLoading(true);
+    loadFriends();
+
+    // Real-time listener for pending requests
+    const unsub = subscribeToRequests(user.uid, ({ incoming, outgoing }) => {
+      setIncoming(incoming);
+      setOutgoing(outgoing);
+      // Reload friends when a request is accepted
+      loadFriends();
+    });
+
+    return () => unsub();
+  }, [user?.uid, loadFriends]);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    await loadFriends();
+  }, [loadFriends]);
 
   const sortedFriends = [...friends].sort((a, b) =>
     sortBy === 'progress'
