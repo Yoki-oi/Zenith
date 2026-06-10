@@ -46,6 +46,7 @@ interface Store {
   saveToCloud: () => Promise<void>;
   analyticsClassFilter: 'all' | 11 | 12;
   setAnalyticsClassFilter: (f: 'all' | 11 | 12) => void;
+  importData: (data: { subjects: Subject[]; progressHistory: ProgressSnapshot[]; user: User }) => Promise<void>;
 
   addSubject: (s: Omit<Subject, 'id' | 'chapters'>) => void;
   deleteSubject: (id: string) => void;
@@ -248,9 +249,11 @@ export const useStore = create<Store>()(
 
       analyticsClassFilter: 'all' as 'all' | 11 | 12,
       setAnalyticsClassFilter: (f) => set({ analyticsClassFilter: f }),
+
+      importData: async (data) => {
         // If the export is a diff-format (v2), merge onto fresh seed data
         // If it's a full subjects array (v1 legacy), deduplicate chapters by id before setting
-        let subjects: Subject[];
+        let importedSubjects: Subject[];
         if (data.subjects && Array.isArray(data.subjects)) {
           if ((data as any).version === 2 && (data as any).chapterChanges) {
             // v2 format: merge changes onto fresh seed
@@ -258,7 +261,7 @@ export const useStore = create<Store>()(
             const changes = (data as any).chapterChanges as Record<string, {
               doing?: boolean; mastered?: boolean; revisions?: number; items?: Record<string, boolean>;
             }>;
-            subjects = seed.map(s => ({
+            importedSubjects = seed.map(s => ({
               ...s,
               chapters: s.chapters.map(c => {
                 const ch = changes[c.id];
@@ -277,7 +280,7 @@ export const useStore = create<Store>()(
             }));
           } else {
             // v1 legacy: deduplicate chapters by id within each subject
-            subjects = data.subjects.map((s: Subject) => ({
+            importedSubjects = data.subjects.map((s: Subject) => ({
               ...s,
               chapters: Array.from(
                 new Map(s.chapters.map((c: Chapter) => [c.id, c])).values()
@@ -285,9 +288,9 @@ export const useStore = create<Store>()(
             }));
           }
         } else {
-          subjects = buildSeedData();
+          importedSubjects = buildSeedData();
         }
-        set({ subjects, progressHistory: data.progressHistory || [], user: data.user });
+        set({ subjects: importedSubjects, progressHistory: data.progressHistory || [], user: data.user });
         setTimeout(() => get().saveToCloud(), 0);
       },
 
