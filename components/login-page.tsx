@@ -124,21 +124,31 @@ export default function LoginPage() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-4 py-8 bg-[#0a0c13]">
-      <div className="w-full max-w-4xl flex rounded-2xl overflow-hidden border border-white/8 shadow-2xl">
+    <div className="min-h-screen min-h-[100dvh] flex flex-col items-center justify-center p-4 py-8 relative overflow-hidden" style={{ background: '#07090f' }}>
+      {/* Ambient glow — very subtle, just lifts the card off the background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 65%)', filter: 'blur(60px)' }} />
+
+      <div
+        className="w-full max-w-4xl flex rounded-2xl overflow-hidden relative"
+        style={{ border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.6), 0 0 40px rgba(99,102,241,0.06), inset 0 1px 0 rgba(255,255,255,0.05)' }}
+      >
+        {/* Vertical divider between panels */}
+        <div className="hidden md:block absolute left-[41.666%] top-0 bottom-0 w-px pointer-events-none z-10" style={{ background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.07), transparent)' }} />
 
         {/* ── Left Panel ── */}
-        <div className="hidden md:flex flex-col w-5/12 p-8 lg:p-10 relative overflow-hidden bg-[#0d1018]">
+        <div className="hidden md:flex flex-col w-5/12 p-8 lg:p-10 relative overflow-hidden" style={{ background: "#07090e" }}>
+          {/* Inner glow at bottom of left panel */}
+          <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none z-0" style={{ background: "linear-gradient(to top, rgba(88,28,235,0.10), transparent)" }} />
           <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none">
             <svg viewBox="0 0 400 220" className="w-full h-full" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="wg1" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.25" />
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.35" />
                 </linearGradient>
                 <linearGradient id="wg2" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.1" />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.1" />
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.18" />
                 </linearGradient>
               </defs>
               <path d="M0,80 C60,40 120,120 180,80 C240,40 300,120 360,80 C390,60 400,70 400,70 L400,220 L0,220 Z" fill="url(#wg1)" />
@@ -161,7 +171,9 @@ export default function LoginPage() {
         </div>
 
         {/* ── Right Panel ── */}
-        <div className="w-full md:w-7/12 bg-[#0f1219] flex flex-col justify-center p-6 sm:p-8 md:p-10">
+        <div className="w-full md:w-7/12 flex flex-col justify-center p-6 sm:p-8 md:p-10 relative" style={{ background: "#0b0d16" }}>
+          {/* Subtle top border glow on right panel */}
+          <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent)" }} />
           <div className="max-w-sm mx-auto w-full">
 
             {/* Back button for signup / forgot */}
@@ -215,6 +227,7 @@ export default function LoginPage() {
                       onChange={e => { setEmail(e.target.value); reset(); }}
                       placeholder="you@example.com"
                       className={inputCls}
+                      style={{ background: 'rgba(15,21,40,0.8)', border: '1px solid rgba(255,255,255,0.09)' }}
                     />
                   </Field>
                   <Field label="Password" icon={<Lock className="w-4 h-4" />}>
@@ -234,7 +247,7 @@ export default function LoginPage() {
                       Forgot Password?
                     </button>
                   </div>
-                  <button type="submit" disabled={loading} className={submitCls}>
+                  <button type="submit" disabled={loading} className={submitCls} style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)", boxShadow: "0 4px 16px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.08) inset" }}>
                     {loading ? 'Logging in...' : 'Login'}
                   </button>
                 </form>
@@ -271,6 +284,7 @@ export default function LoginPage() {
                       onChange={e => { setEmail(e.target.value); reset(); }}
                       placeholder="you@example.com"
                       className={inputCls}
+                      style={{ background: 'rgba(15,21,40,0.8)', border: '1px solid rgba(255,255,255,0.09)' }}
                     />
                   </Field>
                   <Field label="Password" icon={<Lock className="w-4 h-4" />}>
@@ -297,7 +311,7 @@ export default function LoginPage() {
                       {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </Field>
-                  <button type="submit" disabled={loading} className={submitCls}>
+                  <button type="submit" disabled={loading} className={submitCls} style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)", boxShadow: "0 4px 16px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.08) inset" }}>
                     {loading ? 'Creating account...' : 'Create Account'}
                   </button>
                 </form>
@@ -326,8 +340,11 @@ export default function LoginPage() {
                     className={inputCls}
                   />
                 </Field>
-                <button type="submit" disabled={loading || !!success} className={submitCls}>
-                  {loading ? 'Sending...' : success ? 'Email Sent ✓' : 'Send Reset Link'}
+                <button type="submit" disabled={loading || !!success} className={submitCls} style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)", boxShadow: "0 4px 16px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.08) inset" }}>
+                  <span className="flex items-center justify-center gap-2">
+                    {loading && <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>}
+                    {loading ? 'Sending...' : success ? 'Email Sent ✓' : 'Send Reset Link'}
+                  </span>
                 </button>
               </form>
             )}
@@ -342,8 +359,8 @@ export default function LoginPage() {
 
 // ── Shared sub-components ─────────────────────────────────────────────────────
 
-const inputCls = "w-full pl-11 pr-4 py-3 sm:py-3 bg-[#1a1f2e] border border-white/8 rounded-xl text-white text-base sm:text-sm placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all";
-const submitCls = "w-full py-3.5 sm:py-3.5 bg-[#3730a3] hover:bg-[#4338ca] text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-1";
+const inputCls = "w-full pl-11 pr-4 py-3 sm:py-3 rounded-xl text-white text-base sm:text-sm placeholder-gray-600 focus:outline-none transition-all";
+const submitCls = "w-full py-3.5 sm:py-3.5 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-1";
 
 function Field({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -372,7 +389,8 @@ function GoogleButton({ onClick, loading }: { onClick: () => void; loading: bool
     <button
       onClick={onClick}
       disabled={loading}
-      className="w-full flex items-center justify-center gap-3 py-3 bg-[#1a1f2e] hover:bg-[#1f2640] border border-white/8 rounded-xl transition-all disabled:opacity-50 text-sm"
+      className="w-full flex items-center justify-center gap-3 py-3 rounded-xl transition-all disabled:opacity-50 text-sm"
+      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -388,7 +406,7 @@ function GoogleButton({ onClick, loading }: { onClick: () => void; loading: bool
 function FeatureItem({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
     <div className="flex items-start gap-3.5">
-      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">{icon}</div>
+      <div className="w-10 h-10 rounded-lg bg-white/[0.06] border border-white/8 flex items-center justify-center shrink-0 backdrop-blur-sm">{icon}</div>
       <div>
         <p className="text-white font-medium text-sm mb-0.5">{title}</p>
         <p className="text-gray-500 text-xs leading-relaxed">{desc}</p>
