@@ -194,7 +194,7 @@ export default function SubjectsPage() {
         {/* Footer */}
         <div className="flex-1" />
 
-        <footer className="mt-auto pt-6 pb-6 pb-[env(safe-area-inset-bottom)] border-t border-white/5 flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-500 text-center sm:text-left">
+        <footer className="mt-auto pt-6 pb-6 pb-[env(safe-area-inset-bottom)] border-t border-white/[0.04] flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-700 text-center sm:text-left">
           <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>

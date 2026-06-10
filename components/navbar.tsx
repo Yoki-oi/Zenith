@@ -84,12 +84,6 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
 
           {/* Sync + avatar — desktop only */}
           <div className="hidden sm:flex items-center gap-2">
-            {syncPending && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 rounded-full">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-                <span className="text-gray-500 text-[11px]">Saving</span>
-              </div>
-            )}
             <button
               onClick={() => setShowProfile(true)}
               className="flex items-center gap-2.5 pl-1 pr-3 py-1.5 rounded-xl hover:bg-white/5 transition-colors"
@@ -147,12 +141,6 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
                 {isPast ? 'Exam Day!' : `${diffDays}D`}
               </p>
             </div>
-            {syncPending && (
-              <div className="ml-auto flex items-center gap-1.5 px-2 py-0.5 bg-white/5 rounded-full">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-                <span className="text-gray-500 text-[10px]">Saving</span>
-              </div>
-            )}
           </div>
 
           {/* Profile button */}
@@ -165,6 +153,13 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
             </div>
             <span className="text-white text-sm font-medium">{user?.name || 'Yoki'}</span>
           </button>
+        </div>
+      )}
+
+      {syncPending && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3 py-2 bg-[#13161f]/95 backdrop-blur-sm border border-white/8 rounded-full shadow-lg">
+          <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+          <span className="text-gray-400 text-xs font-medium">Saving</span>
         </div>
       )}
 
