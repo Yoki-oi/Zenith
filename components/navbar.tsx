@@ -10,7 +10,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
-  const { setPage, user, logout, updateUser, resetAllProgress, syncPending } = useStore();
+  const { setPage, user, logout, updateUser, resetAllProgress, syncPending, pendingRequestCount } = useStore();
   const [showProfile, setShowProfile] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [tick, setTick] = useState(0);
@@ -58,6 +58,9 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
                 }`}
               >
                 {tab.label}
+                {tab.label === 'Friends' && pendingRequestCount > 0 && (
+                  <span className="absolute top-1.5 right-1 w-2 h-2 rounded-full bg-red-500" />
+                )}
                 {activeTab === tab.label && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-px bg-white/70 rounded-full shadow-[0_0_12px_4px_rgba(255,255,255,0.2)]" />
                 )}
@@ -124,6 +127,9 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
               }`}
             >
               {tab.label}
+              {tab.label === 'Friends' && pendingRequestCount > 0 && (
+                <span className="ml-1.5 w-2 h-2 rounded-full bg-red-500 shrink-0" />
+              )}
               {activeTab === tab.label && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/70" />}
             </button>
           ))}

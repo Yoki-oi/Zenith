@@ -44,8 +44,8 @@ interface Store {
 
   loadFromCloud: (uid: string) => Promise<void>;
   saveToCloud: () => Promise<void>;
-  analyticsClassFilter: 'all' | 11 | 12;
-  setAnalyticsClassFilter: (f: 'all' | 11 | 12) => void;
+  pendingRequestCount: number;
+  setPendingRequestCount: (n: number) => void;
   importData: (data: { subjects: Subject[]; progressHistory: ProgressSnapshot[]; user: User }) => Promise<void>;
 
   addSubject: (s: Omit<Subject, 'id' | 'chapters'>) => void;
@@ -247,6 +247,8 @@ export const useStore = create<Store>()(
         set({ syncPending: false });
       },
 
+      pendingRequestCount: 0,
+      setPendingRequestCount: (n) => set({ pendingRequestCount: n }),
       analyticsClassFilter: 'all' as 'all' | 11 | 12,
       setAnalyticsClassFilter: (f) => set({ analyticsClassFilter: f }),
 

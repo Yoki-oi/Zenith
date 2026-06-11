@@ -495,7 +495,7 @@ function FriendCard({ profile, myUid, onRemoved }: { profile: PublicProfile; myU
 // ── Main Friends Page ─────────────────────────────────────────────────────────
 
 export default function FriendsPage() {
-  const { user } = useStore();
+  const { user, setPendingRequestCount } = useStore();
   const [friends, setFriends] = useState<PublicProfile[]>([]);
   const [incoming, setIncoming] = useState<FriendRequest[]>([]);
   const [outgoing, setOutgoing] = useState<FriendRequest[]>([]);
@@ -518,7 +518,7 @@ export default function FriendsPage() {
     const unsub = subscribeToRequests(user.uid, ({ incoming, outgoing }) => {
       setIncoming(incoming);
       setOutgoing(outgoing);
-      // Reload friends when a request is accepted
+      setPendingRequestCount(incoming.length);
       loadFriends();
     });
 

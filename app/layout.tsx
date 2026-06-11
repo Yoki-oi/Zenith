@@ -24,7 +24,29 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'Nexus - JEE Syllabus Tracker',
-  description: 'Syllabus Tracking Platform for JEE Aspirants',
+  description: 'Track your JEE syllabus, monitor progress across Physics, Chemistry and Maths, and stay ahead with your friends.',
+  metadataBase: new URL('https://nexus-jee.vercel.app'),
+  openGraph: {
+    title: 'Nexus - JEE Syllabus Tracker',
+    description: 'Track your JEE syllabus, monitor progress across Physics, Chemistry and Maths, and stay ahead with your friends.',
+    url: 'https://nexus-jee.vercel.app',
+    siteName: 'Nexus',
+    images: [{ url: '/og', width: 1200, height: 630, alt: 'Nexus - JEE Syllabus Tracker' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nexus - JEE Syllabus Tracker',
+    description: 'Track your JEE syllabus, monitor progress and stay ahead with your friends.',
+    images: ['/og'],
+  },
+  manifest: '/manifest.json',
+  themeColor: '#0a0d14',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Nexus',
+  },
 }
 
 export default function RootLayout({
