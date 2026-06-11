@@ -20,56 +20,53 @@ export async function GET() {
           fontFamily: 'sans-serif',
         }}
       >
-        {/* Background glow */}
+        {/* Purple glow */}
         <div style={{
           position: 'absolute', top: '-100px', left: '200px',
           width: '600px', height: '600px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(109,40,217,0.25) 0%, transparent 70%)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-100px', right: '100px',
-          width: '400px', height: '400px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)',
+          background: 'rgba(109,40,217,0.2)',
+          filter: 'blur(80px)',
         }} />
 
         {/* Logo */}
-        <div style={{ fontSize: '48px', fontWeight: 800, color: 'white', marginBottom: '16px', letterSpacing: '-2px' }}>
+        <div style={{ fontSize: '52px', fontWeight: 800, color: 'white', marginBottom: '12px', letterSpacing: '-2px' }}>
           Nexus
         </div>
-        <div style={{ width: '60px', height: '3px', background: 'linear-gradient(to right, #7c3aed, #4f46e5)', borderRadius: '2px', marginBottom: '40px' }} />
+
+        {/* Purple underline */}
+        <div style={{ width: '64px', height: '4px', background: '#7c3aed', borderRadius: '2px', marginBottom: '44px' }} />
 
         {/* Headline */}
-        <div style={{ fontSize: '56px', fontWeight: 700, color: 'white', lineHeight: 1.1, marginBottom: '20px', letterSpacing: '-1px' }}>
+        <div style={{ fontSize: '60px', fontWeight: 700, color: 'white', lineHeight: '1.1', marginBottom: '8px', letterSpacing: '-1px' }}>
           Track Your JEE
-          <br />
-          <span style={{ color: '#8b5cf6' }}>Syllabus.</span>
+        </div>
+        <div style={{ fontSize: '60px', fontWeight: 700, color: '#8b5cf6', lineHeight: '1.1', marginBottom: '28px', letterSpacing: '-1px' }}>
+          Syllabus.
         </div>
 
         {/* Subtitle */}
-        <div style={{ fontSize: '22px', color: '#6b7280', maxWidth: '600px', lineHeight: 1.5 }}>
-          Monitor progress across Physics, Chemistry & Maths. Stay ahead with friends.
+        <div style={{ fontSize: '24px', color: '#6b7280', maxWidth: '640px', lineHeight: '1.5' }}>
+          Monitor progress across Physics, Chemistry and Maths. Stay ahead with friends.
         </div>
 
-        {/* Stats row */}
-        <div style={{ display: 'flex', gap: '32px', marginTop: '48px' }}>
-          {[
-            { label: 'Chapters', value: '250+' },
-            { label: 'Subjects', value: '3' },
-            { label: 'Friends', value: '∞' },
-          ].map(({ label, value }) => (
-            <div key={label} style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              padding: '16px 28px', background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px',
-            }}>
-              <div style={{ fontSize: '32px', fontWeight: 700, color: 'white' }}>{value}</div>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>{label}</div>
-            </div>
-          ))}
+        {/* Stat cards */}
+        <div style={{ display: 'flex', gap: '24px', marginTop: '52px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 32px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+            <div style={{ fontSize: '34px', fontWeight: 700, color: 'white' }}>250+</div>
+            <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>Chapters</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 32px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+            <div style={{ fontSize: '34px', fontWeight: 700, color: 'white' }}>3</div>
+            <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>Subjects</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 32px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+            <div style={{ fontSize: '34px', fontWeight: 700, color: 'white' }}>Live</div>
+            <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>Progress</div>
+          </div>
         </div>
 
-        {/* URL */}
-        <div style={{ position: 'absolute', bottom: '40px', right: '80px', fontSize: '16px', color: '#374151' }}>
+        {/* URL bottom right */}
+        <div style={{ position: 'absolute', bottom: '44px', right: '80px', fontSize: '18px', color: '#374151' }}>
           nexus-jee.vercel.app
         </div>
       </div>

@@ -667,7 +667,7 @@ function ChapterRow({
               <div
                 key={item.id}
                 onClick={() => onToggleItem(item.id)}
-                className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/[0.05] group transition-colors cursor-pointer"
+                className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/[0.05] group transition-colors cursor-pointer"
                 onContextMenu={e => { e.preventDefault(); onTaskContextMenu(e, item.id, item.label, item.done); }}
               >
                 <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center transition-colors ${item.done ? 'bg-purple-500 border-purple-500' : 'border-gray-600 group-hover:border-purple-400'}`}>
@@ -680,13 +680,13 @@ function ChapterRow({
                 <span className={`text-sm flex-1 select-none ${item.done ? 'text-gray-500 line-through' : 'text-gray-300'}`}>
                   {item.label}
                 </span>
-                {/* ··· button — right-most, always on touch, hover on desktop */}
+                {/* ··· button — always visible on touch, hover-only on desktop */}
                 <button
                   onClick={e => { e.stopPropagation(); onTaskContextMenu(e, item.id, item.label, item.done); }}
-                  className="ml-auto w-7 h-7 flex items-center justify-center rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/8 transition-colors lg:opacity-0 lg:group-hover:opacity-100"
+                  className="w-5 h-5 flex items-center justify-center rounded text-gray-600 hover:text-gray-300 transition-colors lg:opacity-0 lg:group-hover:opacity-100"
                   title="More options"
                 >
-                  <span className="text-sm leading-none select-none tracking-widest">···</span>
+                  <span className="text-xs leading-none select-none">···</span>
                 </button>
                 <button
                   onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}

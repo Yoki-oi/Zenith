@@ -475,11 +475,11 @@ function FriendCard({ profile, myUid, onRemoved }: { profile: PublicProfile; myU
       </div>
 
       {/* Mobile stacked layout — only show below lg */}
-      <div className="hidden max-lg:block mt-3 pt-3 border-t border-white/5 grid grid-cols-2 gap-3">
+      <div className="lg:hidden mt-3 pt-3 border-t border-white/5 space-y-2.5">
         <ProgressBar label="Class 11" pct={profile.class11Pct} color="#6366f1" />
         <ProgressBar label="Class 12" pct={profile.class12Pct} color="#8b5cf6" />
         {profile.recentMastered.length > 0 && (
-          <div className="col-span-2 flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 pt-1">
             {profile.recentMastered.slice(0, 3).map((ch, i) => (
               <span key={i} className="px-2 py-0.5 bg-green-500/10 border border-green-500/15 text-green-400 text-[10px] rounded-full">
                 {ch}

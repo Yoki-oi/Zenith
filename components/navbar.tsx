@@ -72,19 +72,6 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
         {/* Right: desktop elements + mobile hamburger */}
         <div className="flex items-center gap-3">
 
-          {/* Countdown pill — desktop only */}
-          <div className="hidden sm:flex items-center gap-3 px-4 py-1.5 bg-[#13161f] rounded-lg border border-white/5">
-            <svg className="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-            </svg>
-            <div className="leading-tight">
-              <p className="text-gray-400 text-[11px] font-medium">{examName}</p>
-              <p className="text-white font-bold text-sm tracking-wide">
-                {isPast ? 'Exam Day!' : `${diffDays}D`}
-              </p>
-            </div>
-          </div>
-
           {/* Sync + avatar — desktop only */}
           <div className="hidden sm:flex items-center gap-2">
             <button
