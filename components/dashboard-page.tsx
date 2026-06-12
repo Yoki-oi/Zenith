@@ -182,11 +182,11 @@ export default function DashboardPage() {
                 </div>
                 <p className="text-gray-400 text-sm mt-1">No chapter in progress</p>
                 {(() => {
-                  const next = subjects.flatMap(s => s.chapters.map(c => ({ ...c, subjectName: s.name, subjectId: s.id, subjectColor: s.color, subjectType: s.type }))).find(c => !c.doing && !c.mastered);
+                  const next = subjects.flatMap(s => s.chapters.map(c => ({ ...c, subjectName: s.name, subjectId: s.id, subjectType: s.type, chemSec: c.chemSection ?? null }))).find(c => !c.doing && !c.mastered);
                   return next ? (
                     <>
                       <p className="text-gray-600 text-xs">Next up: <span className="text-gray-400">{next.subjectName} · {next.title}</span></p>
-                      <button onClick={() => openSubject(next.subjectId, next.chemSection ?? null)} className="mt-2 flex items-center gap-2 px-5 py-2.5 bg-purple-500/15 text-purple-400 text-sm font-medium rounded-xl hover:bg-purple-500/25 transition-colors">
+                      <button onClick={() => openSubject(next.subjectId, next.chemSec)} className="mt-2 flex items-center gap-2 px-5 py-2.5 bg-purple-500/15 text-purple-400 text-sm font-medium rounded-xl hover:bg-purple-500/25 transition-colors">
                         Start Chapter <ArrowRight className="w-4 h-4" />
                       </button>
                     </>
@@ -381,7 +381,7 @@ export default function DashboardPage() {
 
         {/* Footer */}
         <footer className="pt-5 pb-[env(safe-area-inset-bottom)] border-t border-white/[0.04] flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-700 text-center sm:text-left">
-          <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
+          <span>Zenith — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>
         </footer>

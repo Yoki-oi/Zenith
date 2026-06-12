@@ -31,7 +31,7 @@ export async function loadUserData(uid: string): Promise<CloudData | null> {
     if (!snap.exists()) return null;
     return snap.data() as CloudData;
   } catch (err) {
-    console.error('[Nexus] Firestore load error:', err);
+    console.error('[Zenith] Firestore load error:', err);
     return null;
   }
 }
@@ -41,7 +41,7 @@ export async function saveUserData(uid: string, data: CloudData): Promise<void> 
     const clean = JSON.parse(JSON.stringify(data));
     await setDoc(doc(db, 'users', uid), clean);
   } catch (err) {
-    console.error('[Nexus] Firestore save error:', err);
+    console.error('[Zenith] Firestore save error:', err);
   }
 }
 
@@ -69,7 +69,7 @@ export async function updatePublicProfile(uid: string, profile: Omit<PublicProfi
     const clean = JSON.parse(JSON.stringify({ uid, ...profile }));
     await setDoc(doc(db, 'publicProfiles', uid), clean);
   } catch (err) {
-    console.error('[Nexus] Public profile update error:', err);
+    console.error('[Zenith] Public profile update error:', err);
   }
 }
 
@@ -80,7 +80,7 @@ export async function getPublicProfileByCode(code: string): Promise<PublicProfil
     if (snap.empty) return null;
     return snap.docs[0].data() as PublicProfile;
   } catch (err) {
-    console.error('[Nexus] Profile lookup error:', err);
+    console.error('[Zenith] Profile lookup error:', err);
     return null;
   }
 }
@@ -150,7 +150,7 @@ export async function sendFriendRequest(
     });
     return { success: true };
   } catch (err) {
-    console.error('[Nexus] Friend request error:', err);
+    console.error('[Zenith] Friend request error:', err);
     return { success: false, error: 'Something went wrong' };
   }
 }
@@ -159,7 +159,7 @@ export async function acceptFriendRequest(requestId: string): Promise<void> {
   try {
     await updateDoc(doc(db, 'friendRequests', requestId), { status: 'accepted' });
   } catch (err) {
-    console.error('[Nexus] Accept request error:', err);
+    console.error('[Zenith] Accept request error:', err);
   }
 }
 
@@ -167,7 +167,7 @@ export async function rejectFriendRequest(requestId: string): Promise<void> {
   try {
     await updateDoc(doc(db, 'friendRequests', requestId), { status: 'rejected' });
   } catch (err) {
-    console.error('[Nexus] Reject request error:', err);
+    console.error('[Zenith] Reject request error:', err);
   }
 }
 
@@ -175,7 +175,7 @@ export async function cancelFriendRequest(requestId: string): Promise<void> {
   try {
     await deleteDoc(doc(db, 'friendRequests', requestId));
   } catch (err) {
-    console.error('[Nexus] Cancel request error:', err);
+    console.error('[Zenith] Cancel request error:', err);
   }
 }
 
@@ -196,7 +196,7 @@ export async function removeFriend(myUid: string, friendUid: string): Promise<vo
     ));
     for (const d of [...q1.docs, ...q2.docs]) await deleteDoc(d.ref);
   } catch (err) {
-    console.error('[Nexus] Remove friend error:', err);
+    console.error('[Zenith] Remove friend error:', err);
   }
 }
 
@@ -214,7 +214,7 @@ export async function getPendingRequests(uid: string): Promise<{
       outgoing: outSnap.docs.map(d => ({ id: d.id, ...d.data() } as FriendRequest)),
     };
   } catch (err) {
-    console.error('[Nexus] Get pending requests error:', err);
+    console.error('[Zenith] Get pending requests error:', err);
     return { incoming: [], outgoing: [] };
   }
 }
@@ -233,7 +233,7 @@ export async function getFriends(uid: string): Promise<PublicProfile[]> {
     const profiles = await Promise.all(friendUids.map(fid => getPublicProfileByUid(fid)));
     return profiles.filter(Boolean) as PublicProfile[];
   } catch (err) {
-    console.error('[Nexus] Get friends error:', err);
+    console.error('[Zenith] Get friends error:', err);
     return [];
   }
 }

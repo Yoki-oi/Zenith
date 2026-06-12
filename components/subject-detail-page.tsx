@@ -358,7 +358,7 @@ export default function SubjectDetailPage() {
         </div>
 
         <footer className="mt-4 lg:mt-auto pt-4 pb-6 pb-[env(safe-area-inset-bottom)] border-t border-white/5 px-4 lg:px-6 xl:px-10 flex flex-col lg:flex-row items-center lg:justify-between gap-1 text-sm text-gray-700 text-center lg:text-left lg:shrink-0">
-          <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
+          <span>Zenith — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>
         </footer>

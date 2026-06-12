@@ -223,8 +223,8 @@
   --font-sans: var(--font-dm-sans), var(--font-inter), 'Inter', system-ui, sans-serif;
 }
 
-/* Nexus wordmark — DM Sans bold, wide tracking */
-.font-nexus {
+/* Zenith wordmark — DM Sans bold, wide tracking */
+.font-zenith {
   font-family: var(--font-dm-sans), sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;

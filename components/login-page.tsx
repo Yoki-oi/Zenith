@@ -156,7 +156,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <div className="relative z-10">
-            <h1 className="font-nexus text-3xl lg:text-4xl text-white mb-3">Nexus</h1>
+            <h1 className="font-zenith text-3xl lg:text-4xl text-white mb-3">Zenith</h1>
             <div className="w-10 h-0.5 bg-purple-500 rounded mb-5" />
             <p className="text-gray-400 text-base leading-relaxed">
               Syllabus Tracking Platform<br />for JEE Aspirants

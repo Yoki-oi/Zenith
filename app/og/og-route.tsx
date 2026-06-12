@@ -30,7 +30,7 @@ export async function GET() {
 
         {/* Logo */}
         <div style={{ fontSize: '52px', fontWeight: 800, color: 'white', marginBottom: '12px', letterSpacing: '-2px' }}>
-          Nexus
+          Zenith
         </div>
 
         {/* Purple underline */}

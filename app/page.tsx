@@ -42,9 +42,21 @@ function PageWrapper({ children, isActive }: { children: React.ReactNode; isActi
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0c13] gap-4">
-      <div className="w-10 h-10 rounded-full border-2 border-white/10 border-t-purple-500 animate-spin" />
-      <p className="text-gray-500 text-sm">Loading your data...</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0d14] relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(109,40,217,0.12) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+      {/* Logo */}
+      <div className="relative flex flex-col items-center gap-5">
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.2)' }}>
+          <span className="text-2xl font-bold text-white" style={{ fontFamily: 'serif' }}>N</span>
+        </div>
+        <div className="text-center">
+          <h1 className="text-white font-bold text-2xl tracking-tight mb-1">Zenith</h1>
+          <p className="text-gray-600 text-sm">Loading your data...</p>
+        </div>
+        {/* Spinner */}
+        <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-purple-500 animate-spin mt-2" />
+      </div>
     </div>
   );
 }

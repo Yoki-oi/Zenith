@@ -44,8 +44,8 @@ export default function NavBar({ activeTab = 'Dashboard' }: NavBarProps) {
 
         {/* Left: logo + desktop nav */}
         <div className="flex items-center gap-12">
-          <button onClick={() => { setPage('home'); setMobileOpen(false); }} className="font-nexus text-2xl text-white">
-            Nexus
+          <button onClick={() => { setPage('home'); setMobileOpen(false); }} className="font-zenith text-2xl text-white">
+            Zenith
           </button>
           {/* Desktop nav — hidden on mobile */}
           <nav className="hidden sm:flex items-center gap-1">
@@ -265,7 +265,7 @@ function ProfileModal({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `nexus-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `zenith-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

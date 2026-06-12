@@ -559,7 +559,7 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
 
       {/* Footer */}
       <footer className="pt-5 pb-[env(safe-area-inset-bottom)] border-t border-white/[0.04] flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-700 text-center sm:text-left">
-        <span>Nexus — Syllabus Tracking Platform for JEE Aspirants</span>
+        <span>Zenith — Syllabus Tracking Platform for JEE Aspirants</span>
         
         <span>Designed &amp; Developed by Yoki</span>
       </footer>

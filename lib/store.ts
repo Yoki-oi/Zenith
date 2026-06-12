@@ -134,6 +134,8 @@ export const useStore = create<Store>()(
           currentChemSection: null,
           currentClassNum: 11,
           syncReady: false,
+          pendingRequestCount: 0,
+          analyticsClassFilter: 'all',
         });
       },
 
@@ -144,9 +146,8 @@ export const useStore = create<Store>()(
           const existingCode = cloud.user?.friendCode || get().user?.friendCode;
           const friendCode = existingCode || generateFriendCode();
 
-          // If we just generated a new code, persist it to Firestore immediately
-          // so it doesn't change on the next refresh
-          if (!existingCode) {
+          // If we just generated a new code OR code wasn't in Firestore yet, persist immediately
+          if (!existingCode || !cloud.user?.friendCode) {
             await saveUserData(userUid, {
               ...cloud,
               user: { ...cloud.user, friendCode },
@@ -481,6 +482,7 @@ export const useStore = create<Store>()(
         progressHistory: state.progressHistory,
         currentClassNum: state.currentClassNum,
         user: state.user,
+        analyticsClassFilter: state.analyticsClassFilter,
       }),
     }
   )
