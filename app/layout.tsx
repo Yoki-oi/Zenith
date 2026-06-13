@@ -41,9 +41,9 @@ export const metadata: Metadata = {
     images: ['/og'],
   },
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
   },
   manifest: '/manifest.json',
   themeColor: '#0a0d14',

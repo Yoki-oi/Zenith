@@ -42,20 +42,11 @@ function PageWrapper({ children, isActive }: { children: React.ReactNode; isActi
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0d14] relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(109,40,217,0.12) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-      {/* Logo */}
-      <div className="relative flex flex-col items-center gap-5">
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.2)' }}>
-          <span className="text-2xl font-bold text-white" style={{ fontFamily: 'serif' }}>N</span>
-        </div>
-        <div className="text-center">
-          <h1 className="text-white font-bold text-2xl tracking-tight mb-1">Zenith</h1>
-          <p className="text-gray-600 text-sm">Loading your data...</p>
-        </div>
-        {/* Spinner */}
-        <div className="w-6 h-6 rounded-full border-2 border-white/10 border-t-purple-500 animate-spin mt-2" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0d14]">
+      <div className="flex flex-col items-center gap-5">
+        <img src="/logo.png" alt="Zenith" className="w-16 h-16 rounded-2xl" />
+        <p className="text-white text-xl font-bold tracking-tight">Zenith</p>
+        <div className="w-5 h-5 rounded-full border-2 border-white/10 border-t-purple-500 animate-spin" />
       </div>
     </div>
   );

@@ -156,6 +156,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <div className="relative z-10">
+            <img src="/logo.png" alt="Zenith" className="w-14 h-14 rounded-2xl mb-4" />
             <h1 className="font-zenith text-3xl lg:text-4xl text-white mb-3">Zenith</h1>
             <div className="w-10 h-0.5 bg-purple-500 rounded mb-5" />
             <p className="text-gray-400 text-base leading-relaxed">

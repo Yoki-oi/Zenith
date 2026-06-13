@@ -11,12 +11,7 @@ export default function NotFound() {
 
       <div className="relative flex flex-col items-center gap-6 text-center">
         {/* Logo */}
-        <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-2"
-          style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.2)' }}
-        >
-          <span className="text-2xl font-bold text-white" style={{ fontFamily: 'serif' }}>N</span>
-        </div>
+        <img src="/logo.png" alt="Zenith" className="w-16 h-16 rounded-2xl mb-2" />
 
         {/* 404 */}
         <div>
