@@ -124,9 +124,13 @@ export default function LoginPage() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen min-h-[100dvh] flex flex-col items-center justify-center p-4 py-8 relative overflow-hidden" style={{ background: '#07090f' }}>
-      {/* Ambient glow — very subtle, just lifts the card off the background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 65%)', filter: 'blur(60px)' }} />
+    <div className="min-h-screen min-h-[100dvh] flex flex-col items-center justify-center p-4 py-8 relative overflow-hidden" style={{ background: '#0a0d14' }}>
+      {/* Dashboard-style glow blobs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] rounded-full bg-purple-900/10 blur-[120px]" />
+        <div className="absolute top-[40%] right-[-5%] w-[400px] h-[400px] rounded-full bg-blue-900/8 blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[350px] h-[350px] rounded-full bg-purple-900/8 blur-[100px]" />
+      </div>
 
       <div
         className="w-full max-w-4xl flex rounded-2xl overflow-hidden relative"
@@ -156,7 +160,6 @@ export default function LoginPage() {
             </svg>
           </div>
           <div className="relative z-10">
-            <img src="/logo.png" alt="Zenith" style={{ width: "56px", height: "56px", objectFit: "contain" }} className="w-14 mb-4" />
             <h1 className="font-zenith text-3xl lg:text-4xl text-white mb-3">Zenith</h1>
             <div className="w-10 h-0.5 bg-purple-500 rounded mb-5" />
             <p className="text-gray-400 text-base leading-relaxed">
