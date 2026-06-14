@@ -44,7 +44,7 @@ function LoadingScreen() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0d14]">
       <div className="flex flex-col items-center gap-5">
-        <img src="/logo.png" alt="Zenith" />
+        <img src="/logo.png" alt="Zenith" style={{ width: "56px", height: "56px", objectFit: "contain" }} />
         <p className="text-white text-xl font-bold tracking-tight">Zenith</p>
         <div className="w-5 h-5 rounded-full border-2 border-white/10 border-t-purple-500 animate-spin" />
       </div>

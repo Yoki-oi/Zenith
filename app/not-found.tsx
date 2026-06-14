@@ -11,7 +11,7 @@ export default function NotFound() {
 
       <div className="relative flex flex-col items-center gap-6 text-center">
         {/* Logo */}
-        <img src="/logo.png" alt="Zenith" className="mb-2" />
+        <img src="/logo.png" alt="Zenith" style={{ width: "56px", height: "56px", objectFit: "contain" }} className="mb-2" />
 
         {/* 404 */}
         <div>
