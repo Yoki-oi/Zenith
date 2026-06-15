@@ -140,19 +140,19 @@ export default function LoginPage() {
         <div className="hidden md:block absolute left-[41.666%] top-0 bottom-0 w-px pointer-events-none z-10" style={{ background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.07), transparent)' }} />
 
         {/* ── Left Panel ── */}
-        <div className="hidden md:flex flex-col w-5/12 p-8 lg:p-10 relative overflow-hidden" style={{ background: "#07090e" }}>
+        <div className="hidden md:flex flex-col w-5/12 p-8 lg:p-10 relative overflow-hidden" style={{ background: "#0d1018" }}>
           {/* Inner glow at bottom of left panel */}
-          <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none z-0" style={{ background: "linear-gradient(to top, rgba(88,28,235,0.10), transparent)" }} />
+          <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none z-0" style={{ background: "linear-gradient(to top, rgba(88,28,235,0.08), transparent)" }} />
           <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none">
             <svg viewBox="0 0 400 220" className="w-full h-full" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="wg1" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.45" />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.35" />
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.30" />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.22" />
                 </linearGradient>
                 <linearGradient id="wg2" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.18" />
+                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.10" />
                 </linearGradient>
               </defs>
               <path d="M0,80 C60,40 120,120 180,80 C240,40 300,120 360,80 C390,60 400,70 400,70 L400,220 L0,220 Z" fill="url(#wg1)" />

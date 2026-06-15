@@ -20,7 +20,7 @@ export default function SubjectDetailPage() {
   const {
     subjects, currentSubId, currentChemSection, currentClassNum,
     setPage, setCurrentClassNum, openSubject,
-    toggleDoing, toggleMastered, changeRevisions,
+    toggleDoing, toggleMastered, markAllTasksDone, changeRevisions,
     addItem, toggleItem, deleteItem,
     addChapter, deleteChapter, updateChapter, reorderChapters,
   } = useStore();
@@ -345,6 +345,7 @@ export default function SubjectDetailPage() {
                   expanded={expandedChapter === chapter.id}
                   onToggle={() => setExpandedChapter(expandedChapter === chapter.id ? null : chapter.id)}
                   onToggleDoing={() => toggleDoing(subject.id, chapter.id)}
+                  onMarkAllDone={() => markAllTasksDone(subject.id, chapter.id)}
                   onToggleMastered={() => toggleMastered(subject.id, chapter.id)}
                   onChangeRevisions={delta => changeRevisions(subject.id, chapter.id, delta)}
                   onToggleItem={itemId => toggleItem(subject.id, chapter.id, itemId)}
@@ -582,11 +583,11 @@ function StatCard({ label, value, dot, iconBig }: { label: string; value: number
 
 function ChapterRow({
   chapter, index, expanded, onToggle,
-  onToggleDoing, onToggleMastered, onChangeRevisions,
+  onToggleDoing, onToggleMastered, onMarkAllDone, onChangeRevisions,
   onToggleItem, onAddItem, onTaskContextMenu, onDeleteItem,
 }: {
   chapter: any; index: number; expanded: boolean;
-  onToggle: () => void; onToggleDoing: () => void; onToggleMastered: () => void;
+  onToggle: () => void; onToggleDoing: () => void; onToggleMastered: () => void; onMarkAllDone: () => void;
   onChangeRevisions: (delta: number) => void;
   onToggleItem: (id: string) => void;
   onAddItem: (label: string) => void;
@@ -608,6 +609,9 @@ function ChapterRow({
           <div className="flex flex-wrap items-center gap-1.5 mt-2 lg:hidden" onClick={e => e.stopPropagation()}>
             <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
               Doing
+            </button>
+            <button onClick={onMarkAllDone} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${tasksDone === tasksTotal && tasksTotal > 0 ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+              Done
             </button>
             <button onClick={onToggleMastered} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
               Mastered
@@ -632,6 +636,9 @@ function ChapterRow({
         <div className="hidden lg:flex items-center gap-2" onClick={e => e.stopPropagation()}>
           <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
             Doing
+          </button>
+          <button onClick={onMarkAllDone} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${tasksDone === tasksTotal && tasksTotal > 0 ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+            Done
           </button>
           <button onClick={onToggleMastered} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
             Mastered
@@ -690,7 +697,7 @@ function ChapterRow({
                 </button>
                 <button
                   onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}
-                  className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${['Lectures', 'DPPs'].includes(item.label) ? 'invisible' : 'opacity-0 group-hover:opacity-100'}`}
+                  className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${['Lectures'].includes(item.label) ? 'invisible' : 'opacity-0 group-hover:opacity-100'}`}
                   title="Remove task"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

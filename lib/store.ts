@@ -58,6 +58,7 @@ interface Store {
 
   toggleDoing: (subId: string, chId: string) => void;
   toggleMastered: (subId: string, chId: string) => void;
+  markAllTasksDone: (subId: string, chId: string) => void;
   changeRevisions: (subId: string, chId: string, delta: number) => void;
 
   addItem: (subId: string, chId: string, label: string) => void;
@@ -399,6 +400,23 @@ export const useStore = create<Store>()(
               ...s,
               chapters: s.chapters.map((c) =>
                 c.id !== chId ? c : { ...c, mastered: !c.mastered, doing: !c.mastered ? false : c.doing }
+              ),
+            }
+          ),
+        }));
+        setTimeout(() => { get().recordProgressSnapshot(); get().saveToCloud(); }, 0);
+      },
+
+      markAllTasksDone: (subId, chId) => {
+        set((st) => ({
+          subjects: st.subjects.map((s) =>
+            s.id !== subId ? s : {
+              ...s,
+              chapters: s.chapters.map((c) =>
+                c.id !== chId ? c : {
+                  ...c,
+                  items: c.items.map((i) => ({ ...i, done: true })),
+                }
               ),
             }
           ),
