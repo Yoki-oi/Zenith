@@ -8,6 +8,7 @@ import {
   ArrowLeft, ChevronRight, Search, Pencil,
   BookOpen, CheckCircle2, RotateCcw, ClipboardList,
   Check, Copy, CopyCheck, Plus, Trash2, GripVertical, X,
+  HelpCircle, MousePointerClick,
 } from 'lucide-react';
 import { CHEM_SECTIONS, CHEM_LABELS } from '@/lib/seed-data';
 
@@ -30,6 +31,7 @@ export default function SubjectDetailPage() {
   const [ctxMenu, setCtxMenu] = useState<CtxMenu | null>(null);
   const [copyStep, setCopyStep] = useState<'idle' | 'pick'>('idle');
   const [editOpen, setEditOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const [needRevisionMode, setNeedRevisionMode] = useState(false);
   const [needPracticeMode, setNeedPracticeMode] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -133,14 +135,23 @@ export default function SubjectDetailPage() {
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Back to Subjects</span>
           </button>
-          {/* Mobile: toggle sidebar */}
-          <button
-            onClick={() => setMobileSidebarOpen(o => !o)}
-            className="lg:hidden flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-400 hover:text-white text-xs transition-colors"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            Overview
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Mobile: toggle sidebar */}
+            <button
+              onClick={() => setMobileSidebarOpen(o => !o)}
+              className="lg:hidden flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-400 hover:text-white text-xs transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              Overview
+            </button>
+            <button
+              onClick={() => setGuideOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-400 hover:text-white text-xs transition-colors"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              Guide
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row flex-1 lg:overflow-hidden">
@@ -419,6 +430,9 @@ export default function SubjectDetailPage() {
           onReorder={(fromIdx, toIdx) => reorderChapters(subject.id, fromIdx, toIdx, activeSec)}
         />
       )}
+
+      {/* Guide Modal */}
+      {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} />}
     </div>
   );
 }
@@ -560,6 +574,184 @@ function EditChaptersModal({ subject, chapters, activeSec, onClose, onAdd, onDel
   );
 }
 
+// ── Guide Modal ────────────────────────────────────────────────────────────────
+function GuidePill({ className, children }: { className: string; children: React.ReactNode }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap ${className}`}>
+      {children}
+    </span>
+  );
+}
+
+function GuideSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{title}</p>
+      {children}
+    </div>
+  );
+}
+
+function GuideRow({ pill, children }: { pill: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 py-1.5">
+      <div className="shrink-0">{pill}</div>
+      <p className="text-sm text-gray-400 leading-relaxed flex-1">{children}</p>
+    </div>
+  );
+}
+
+function GuideModal({ onClose }: { onClose: () => void }) {
+  const steps: [string, string][] = [
+    ['Start a chapter', 'Tap Doing as soon as you begin studying it.'],
+    ['Work through it', 'Check off Lectures and DPPs (or any custom tasks) as you complete them.'],
+    ['Finish a first pass', 'Tap Done once lectures and practice for that chapter are wrapped up.'],
+    ['Revise later', 'Each time you go back over the chapter, tap + on its revision pill.'],
+    ['Fully confident', 'Tap Mastered — it auto-completes every task and clears Doing/Done for you.'],
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="bg-[#0f1219] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[85vh] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/15 flex items-center justify-center shrink-0">
+              <HelpCircle className="w-5 h-5 text-purple-400" />
+            </div>
+            <div>
+              <h2 className="text-white font-semibold text-lg">How This Page Works</h2>
+              <p className="text-gray-500 text-xs mt-0.5">Pills, tasks &amp; filters — explained</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors shrink-0">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-7">
+
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Every subject is broken into chapters. Each chapter has three status pills, a revision counter,
+            and a checklist of tasks (Lectures, DPPs, and anything else you add). Ticking these off updates
+            your progress bars, stats and analytics automatically — nothing needs to be saved by hand.
+          </p>
+
+          <GuideSection title="Status Pills">
+            <div className="space-y-1">
+              <GuideRow pill={<GuidePill className="bg-blue-500/15 text-blue-400 border border-blue-500/20">Doing</GuidePill>}>
+                You've started this chapter and are actively studying it right now.
+              </GuideRow>
+              <GuideRow pill={<GuidePill className="bg-teal-500/15 text-teal-400 border border-teal-500/20">Done</GuidePill>}>
+                You feel like you've worked through the chapter as a whole — even if a few loose ends
+                remain, or you're not quite confident enough yet to call it Mastered.
+              </GuideRow>
+              <GuideRow pill={<GuidePill className="bg-green-500/15 text-green-400 border border-green-500/20">Mastered</GuidePill>}>
+                You're fully confident on this chapter. Marking it Mastered automatically ticks every task
+                inside it and clears Doing/Done, since it's now considered complete.
+              </GuideRow>
+            </div>
+            <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+              Turning <span className="text-blue-400">Doing</span> or <span className="text-teal-400">Done</span> back
+              on un-marks <span className="text-green-400">Mastered</span> automatically — handy if you need to
+              restudy something you'd previously mastered. Turning a pill off never affects the others.
+            </p>
+          </GuideSection>
+
+          <GuideSection title="Revisions">
+            <div className="flex items-center gap-3">
+              <GuidePill className="bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
+                − Rev. 2 +
+              </GuidePill>
+              <p className="text-sm text-gray-400 leading-relaxed flex-1">
+                A personal counter, not automatic — tap <span className="text-yellow-400">+</span> each time you
+                revise a chapter after first learning it. It's what feeds the "Need Revision" filter below.
+              </p>
+            </div>
+          </GuideSection>
+
+          <GuideSection title="Tasks & Checklist">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <GuidePill className="bg-purple-500/15 text-purple-400 border border-purple-500/20">
+                  <ClipboardList className="w-3 h-3" /> 3/5
+                </GuidePill>
+                <p className="text-sm text-gray-400 leading-relaxed flex-1">
+                  Tasks checked off out of the total inside that chapter. This count drives the subject's overall
+                  % progress — except Mastered chapters, which always count as 100% regardless of individual ticks.
+                </p>
+              </div>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Click a chapter row to expand it and see its tasks. Every chapter starts with two default
+                tasks — <span className="text-gray-300">Lectures</span> and <span className="text-gray-300">DPPs</span>.
+                Lectures is locked — it has no extra menu and can't be deleted. DPPs can be deleted if you don't
+                need it, just like any extra task you add yourself (e.g. "Module Test", "Formula Sheet") using
+                the input at the bottom of an expanded chapter.
+              </p>
+              <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                <MousePointerClick className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Right-click any task other than Lectures (or tap its <span className="text-gray-300">···</span> button
+                  on mobile) to mark it done/pending, copy it to another chapter, copy it to <span className="text-gray-300">every</span> chapter
+                  in the subject at once, or remove it.
+                </p>
+              </div>
+            </div>
+          </GuideSection>
+
+          <GuideSection title="Filters">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-yellow-500/10 text-yellow-400 shrink-0 whitespace-nowrap">
+                  <RotateCcw className="w-3.5 h-3.5" /> Need Revision
+                </span>
+                <p className="text-sm text-gray-400 leading-relaxed flex-1">Chapters that are Doing or Mastered but still have 0 revisions logged.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-500/10 text-blue-400 shrink-0 whitespace-nowrap">
+                  <BookOpen className="w-3.5 h-3.5" /> Need Practice
+                </span>
+                <p className="text-sm text-gray-400 leading-relaxed flex-1">Chapters with Lectures checked off that aren't Mastered yet — good candidates for more DPPs.</p>
+              </div>
+            </div>
+          </GuideSection>
+
+          <GuideSection title="Suggested Workflow">
+            <ol className="space-y-2.5">
+              {steps.map(([t, d], i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="w-5 h-5 rounded-full bg-purple-500/15 text-purple-400 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                  <p className="text-sm text-gray-400 leading-relaxed"><span className="text-gray-200 font-medium">{t}.</span> {d}</p>
+                </li>
+              ))}
+            </ol>
+          </GuideSection>
+
+          <GuideSection title="Everything Else On This Page">
+            <ul className="space-y-2 text-sm text-gray-400 leading-relaxed list-disc list-inside marker:text-gray-600">
+              <li><span className="text-gray-200">Sidebar (Overview on mobile):</span> switch between Class 11/12, jump between Chemistry sections, toggle filters, and see subject-wide stats with a progress bar.</li>
+              <li><span className="text-gray-200">Search:</span> filters the chapter list by title or description as you type.</li>
+              <li><span className="text-gray-200">Edit:</span> add, rename, delete, or drag-to-reorder chapters in this subject/section.</li>
+              <li><span className="text-gray-200">Stat cards</span> at the top (Doing / Mastered / Revisions / Tasks) summarise the Class &amp; section you're currently viewing.</li>
+            </ul>
+          </GuideSection>
+
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-white/5 bg-[#0d1018] flex justify-end shrink-0">
+          <button onClick={onClose} className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/30 transition-colors">
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function OverviewRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-center justify-between">
@@ -671,12 +863,14 @@ function ChapterRow({
         <div className="px-4 pb-4 border-t border-white/5">
           <p className="text-xs text-gray-500 uppercase tracking-wider mt-4 mb-3">Tasks</p>
           <div className="space-y-1 mb-4">
-            {chapter.items.map((item: any) => (
+            {chapter.items.map((item: any) => {
+              const isLectures = item.label === 'Lectures';
+              return (
               <div
                 key={item.id}
                 onClick={() => onToggleItem(item.id)}
                 className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/[0.05] group transition-colors cursor-pointer"
-                onContextMenu={e => { e.preventDefault(); onTaskContextMenu(e, item.id, item.label, item.done); }}
+                onContextMenu={e => { e.preventDefault(); if (!isLectures) onTaskContextMenu(e, item.id, item.label, item.done); }}
               >
                 <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center transition-colors ${item.done ? 'bg-purple-500 border-purple-500' : 'border-gray-600 group-hover:border-purple-400'}`}>
                   {item.done && (
@@ -688,23 +882,24 @@ function ChapterRow({
                 <span className={`text-sm flex-1 select-none ${item.done ? 'text-gray-500 line-through' : 'text-gray-300'}`}>
                   {item.label}
                 </span>
-                {/* ··· button — always visible on touch, hover-only on desktop */}
+                {/* ··· button — always visible on touch, hover-only on desktop. Hidden entirely for Lectures. */}
                 <button
-                  onClick={e => { e.stopPropagation(); onTaskContextMenu(e, item.id, item.label, item.done); }}
-                  className="w-5 h-5 flex items-center justify-center rounded text-gray-600 hover:text-gray-300 transition-colors lg:opacity-0 lg:group-hover:opacity-100"
+                  onClick={e => { e.stopPropagation(); if (!isLectures) onTaskContextMenu(e, item.id, item.label, item.done); }}
+                  className={`w-5 h-5 flex items-center justify-center rounded text-gray-600 hover:text-gray-300 transition-colors ${isLectures ? 'invisible' : 'lg:opacity-0 lg:group-hover:opacity-100'}`}
                   title="More options"
                 >
                   <span className="text-xs leading-none select-none">···</span>
                 </button>
                 <button
                   onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}
-                  className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${['Lectures'].includes(item.label) ? 'invisible' : 'opacity-0 group-hover:opacity-100'}`}
+                  className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${isLectures ? 'invisible' : 'opacity-0 group-hover:opacity-100'}`}
                   title="Remove task"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
           <div className="flex gap-2">
             <input type="text" value={newTask}

@@ -8,6 +8,9 @@ import { auth } from './firebase';
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 const DEFAULT_ITEM_LABELS = ['Lectures', 'DPPs'];
+// Only Lectures can never be deleted. DPPs is a default task too, but unlike
+// Lectures, the user is allowed to remove it from a chapter if they want to.
+const PROTECTED_ITEM_LABELS = ['Lectures'];
 
 function makeDefaultItems(): SubTopic[] {
   return DEFAULT_ITEM_LABELS.map(label => ({ id: uid(), label, done: false }));
@@ -499,7 +502,7 @@ export const useStore = create<Store>()(
             s.id !== subId ? s : {
               ...s,
               chapters: s.chapters.map((c) =>
-                c.id !== chId ? c : { ...c, items: c.items.filter((i) => i.id !== itemId || DEFAULT_ITEM_LABELS.includes(i.label)) }
+                c.id !== chId ? c : { ...c, items: c.items.filter((i) => i.id !== itemId || PROTECTED_ITEM_LABELS.includes(i.label)) }
               ),
             }
           ),
