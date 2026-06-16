@@ -655,9 +655,9 @@ function GuideModal({ onClose }: { onClose: () => void }) {
               </GuideRow>
             </div>
             <p className="text-xs text-gray-600 mt-3 leading-relaxed">
-              Turning <span className="text-blue-400">Doing</span> or <span className="text-teal-400">Done</span> back
-              on un-marks <span className="text-green-400">Mastered</span> automatically — handy if you need to
-              restudy something you'd previously mastered. Turning a pill off never affects the others.
+              <span className="text-blue-400">Doing</span>, <span className="text-teal-400">Done</span> and <span className="text-green-400">Mastered</span> are
+              mutually exclusive — a chapter is only ever in one stage at a time, so turning one on automatically
+              turns the other two off. Turning a pill off on its own doesn't restore whichever one came before.
             </p>
           </GuideSection>
 

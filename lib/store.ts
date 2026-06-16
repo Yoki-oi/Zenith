@@ -389,7 +389,13 @@ export const useStore = create<Store>()(
             s.id !== subId ? s : {
               ...s,
               chapters: s.chapters.map((c) =>
-                c.id !== chId ? c : { ...c, doing: !c.doing, mastered: !c.doing ? false : c.mastered }
+                c.id !== chId ? c : {
+                  ...c,
+                  doing: !c.doing,
+                  // Starting Doing means this chapter isn't Done or Mastered yet; turning Doing off touches nothing else
+                  done: !c.doing ? false : c.done,
+                  mastered: !c.doing ? false : c.mastered,
+                }
               ),
             }
           ),
@@ -406,7 +412,8 @@ export const useStore = create<Store>()(
                 c.id !== chId ? c : {
                   ...c,
                   done: !c.done,
-                  // Marking done clears mastered; unmarking done clears nothing
+                  // Marking Done means this chapter is no longer actively Doing, and clears Mastered; unmarking Done touches nothing else
+                  doing: c.done ? c.doing : false,
                   mastered: c.done ? c.mastered : false,
                 }
               ),
