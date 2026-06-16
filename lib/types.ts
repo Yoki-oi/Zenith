@@ -11,6 +11,7 @@ export interface Chapter {
   title: string;
   desc?: string;
   doing: boolean;
+  done: boolean;
   mastered: boolean;
   revisions: number;
   items: SubTopic[];

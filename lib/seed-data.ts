@@ -8,6 +8,7 @@ function ch(title: string, desc = '', chemSection?: 'Physical' | 'Organic' | 'In
     title,
     desc,
     doing: false,
+    done: false,
     mastered: false,
     revisions: 0,
     items: [

@@ -57,6 +57,7 @@ interface Store {
   reorderChapters: (subId: string, fromIdx: number, toIdx: number, chemSection?: ChemSection | null) => void;
 
   toggleDoing: (subId: string, chId: string) => void;
+  toggleDone: (subId: string, chId: string) => void;
   toggleMastered: (subId: string, chId: string) => void;
   markAllTasksDone: (subId: string, chId: string) => void;
   changeRevisions: (subId: string, chId: string, delta: number) => void;
@@ -393,13 +394,38 @@ export const useStore = create<Store>()(
         setTimeout(() => { get().recordProgressSnapshot(); get().saveToCloud(); }, 0);
       },
 
+      toggleDone: (subId, chId) => {
+        set((st) => ({
+          subjects: st.subjects.map((s) =>
+            s.id !== subId ? s : {
+              ...s,
+              chapters: s.chapters.map((c) =>
+                c.id !== chId ? c : {
+                  ...c,
+                  done: !c.done,
+                  // Marking done clears mastered; unmarking done clears nothing
+                  mastered: c.done ? c.mastered : false,
+                }
+              ),
+            }
+          ),
+        }));
+        setTimeout(() => { get().recordProgressSnapshot(); get().saveToCloud(); }, 0);
+      },
+
       toggleMastered: (subId, chId) => {
         set((st) => ({
           subjects: st.subjects.map((s) =>
             s.id !== subId ? s : {
               ...s,
               chapters: s.chapters.map((c) =>
-                c.id !== chId ? c : { ...c, mastered: !c.mastered, doing: !c.mastered ? false : c.doing }
+                c.id !== chId ? c : {
+                  ...c,
+                  mastered: !c.mastered,
+                  // Mastering clears doing and done; unmastering clears nothing
+                  doing: !c.mastered ? false : c.doing,
+                  done: !c.mastered ? false : c.done,
+                }
               ),
             }
           ),
@@ -416,6 +442,7 @@ export const useStore = create<Store>()(
                 c.id !== chId ? c : {
                   ...c,
                   items: c.items.map((i) => ({ ...i, done: true })),
+                  done: true,
                 }
               ),
             }
@@ -515,8 +542,9 @@ export function subjectStats(s: Subject, chemSection?: ChemSection | null) {
   return {
     total: chs.length,
     doing: chs.filter((c) => c.doing).length,
+    done: chs.filter((c) => c.done && !c.mastered).length,
     mastered: chs.filter((c) => c.mastered).length,
-    notStarted: chs.filter((c) => !c.doing && !c.mastered).length,
+    notStarted: chs.filter((c) => !c.doing && !c.done && !c.mastered).length,
     revTotal, topicsTotal, topicsDone,
     pct: topicsTotal ? Math.round((topicsDone / topicsTotal) * 100) : 0,
   };
