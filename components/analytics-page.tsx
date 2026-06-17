@@ -374,7 +374,7 @@ export default function AnalyticsPage() {
             {/* Single list */}
             <div className="mx-5 mb-5 bg-white/[0.03] border border-white/[0.07] rounded-xl divide-y divide-white/[0.05]">
               {[
-                { label: 'Doing / mastered statuses', cleared: true },
+                { label: 'Doing / done / mastered statuses', cleared: true },
                 { label: 'Revision counts', cleared: true },
                 { label: 'Task completions (Lectures, DPPs)', cleared: true },
                 { label: 'Progress history chart', cleared: true },

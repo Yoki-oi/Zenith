@@ -49,6 +49,8 @@ interface Store {
   saveToCloud: () => Promise<void>;
   pendingRequestCount: number;
   setPendingRequestCount: (n: number) => void;
+  analyticsClassFilter: 'all' | 11 | 12;
+  setAnalyticsClassFilter: (f: 'all' | 11 | 12) => void;
   importData: (data: { subjects: Subject[]; progressHistory: ProgressSnapshot[]; user: User }) => Promise<void>;
 
   addSubject: (s: Omit<Subject, 'id' | 'chapters'>) => void;
@@ -267,7 +269,7 @@ export const useStore = create<Store>()(
             // v2 format: merge changes onto fresh seed
             const seed = buildSeedData();
             const changes = (data as any).chapterChanges as Record<string, {
-              doing?: boolean; mastered?: boolean; revisions?: number; items?: Record<string, boolean>;
+              doing?: boolean; done?: boolean; mastered?: boolean; revisions?: number; items?: Record<string, boolean>;
             }>;
             importedSubjects = seed.map(s => ({
               ...s,
@@ -277,6 +279,7 @@ export const useStore = create<Store>()(
                 return {
                   ...c,
                   doing: ch.doing ?? c.doing,
+                  done: ch.done ?? c.done,
                   mastered: ch.mastered ?? c.mastered,
                   revisions: ch.revisions ?? c.revisions,
                   items: c.items.map(i => ({
@@ -315,6 +318,7 @@ export const useStore = create<Store>()(
             chapters: subj.chapters.map(ch => ({
               ...ch,
               doing: false,
+              done: false,
               mastered: false,
               revisions: 0,
               items: ch.items.map(i => ({ ...i, done: false })),
@@ -339,7 +343,7 @@ export const useStore = create<Store>()(
           subjects: st.subjects.map((s) =>
             s.id !== subId ? s : {
               ...s,
-              chapters: [...s.chapters, { id: uid(), title, desc, doing: false, mastered: false, revisions: 0, items: makeDefaultItems(), chemSection, open: false }],
+              chapters: [...s.chapters, { id: uid(), title, desc, doing: false, done: false, mastered: false, revisions: 0, items: makeDefaultItems(), chemSection, open: false }],
             }
           ),
         }));
@@ -453,6 +457,8 @@ export const useStore = create<Store>()(
                   ...c,
                   items: c.items.map((i) => ({ ...i, done: true })),
                   done: true,
+                  doing: false,
+                  mastered: false,
                 }
               ),
             }

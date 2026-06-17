@@ -232,7 +232,7 @@ function ProfileModal({
 
     // Build a diff — only export chapters that have user changes
     const chapterChanges: Record<string, {
-      doing?: boolean; mastered?: boolean; revisions?: number; items?: Record<string, boolean>;
+      doing?: boolean; done?: boolean; mastered?: boolean; revisions?: number; items?: Record<string, boolean>;
     }> = {};
     state.subjects.forEach((s: any) => {
       s.chapters.forEach((c: any) => {
@@ -241,10 +241,11 @@ function ProfileModal({
         c.items.forEach((i: any) => {
           if (i.done) { itemChanges[i.id] = true; hasItemChange = true; }
         });
-        const hasChange = c.doing || c.mastered || (c.revisions ?? 0) > 0 || hasItemChange;
+        const hasChange = c.doing || c.done || c.mastered || (c.revisions ?? 0) > 0 || hasItemChange;
         if (hasChange) {
           chapterChanges[c.id] = {
             ...(c.doing && { doing: true }),
+            ...(c.done && { done: true }),
             ...(c.mastered && { mastered: true }),
             ...((c.revisions ?? 0) > 0 && { revisions: c.revisions }),
             ...(hasItemChange && { items: itemChanges }),
