@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useStore, globalStats, subjectStats } from '@/lib/store';import NavBar from './navbar';
 import { SubjectIcon } from './subject-icon';
-import { BookOpen, CheckCircle2, RotateCcw, Target, ArrowRight } from 'lucide-react';
+import { BookOpen, CheckCircle2, RotateCcw, Target, ArrowRight, ListChecks } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell,
@@ -54,6 +54,7 @@ export default function AnalyticsPage() {
                 c.items?.some((i: any) => !i.done)
   );
   const chaptersMastered = allChapters.filter((c: any) => c.mastered);
+  const chaptersDone = allChapters.filter((c: any) => c.done && !c.mastered);
 
   // Topics to revise = topics not done in doing chapters
   const topicsToRevise = chaptersToRevise.reduce(
@@ -132,8 +133,8 @@ export default function AnalyticsPage() {
 
       <main className="relative pt-20 pb-10 px-4 sm:px-6 xl:px-10 space-y-5">
 
-        {/* ── Header + 4 Stat Cards ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-4 items-stretch">
+        {/* ── Header + 5 Stat Cards ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[auto_1fr_1fr_1fr_1fr_1fr] gap-4 items-stretch">
           {/* Title block */}
           <div className="flex flex-col justify-center sm:col-span-2 lg:col-span-1 pr-0 lg:pr-4">
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Analytics</h1>
@@ -182,6 +183,14 @@ export default function AnalyticsPage() {
             label="Chapters Mastered"
             value={gs.mastered}
             subtext="Keep up the great work!"
+          />
+          {/* Chapters Done */}
+          <StatCard
+            icon={<ListChecks className="w-6 h-6 text-purple-300" />}
+            iconBg="bg-purple-500/15"
+            label="Chapters Done"
+            value={chaptersDone.length}
+            subtext="One step from Mastered"
           />
           {/* Chapters To Revise */}
           <StatCard
@@ -333,6 +342,7 @@ export default function AnalyticsPage() {
           chaptersToRevise={chaptersToRevise}
           chaptersToPractice={chaptersToPractice}
           chaptersMastered={chaptersMastered}
+          chaptersDone={chaptersDone}
           openSubject={openSubject}
           subjects={filteredSubjects}
           setPage={setPage}
@@ -440,21 +450,22 @@ export default function AnalyticsPage() {
   );
 }
 
-function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPractice, chaptersMastered, openSubject, subjects, setPage }: any) {
+function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPractice, chaptersMastered, chaptersDone, openSubject, subjects, setPage }: any) {
   const totalChapters = allChapters.length;
   const masteredCount = chaptersMastered.length;
+  const doneCount = chaptersDone.length;
   const inProgressCount = allChapters.filter((c: any) => c.doing && !c.mastered).length;
   // Need Practice = chapters where Lectures are done but not mastered yet
   const needPracticeCount = chaptersToPractice.filter((c: any) => !c.mastered).length;
   // Not Started = none of the above
-  const notStartedCount = Math.max(0, totalChapters - masteredCount - inProgressCount - needPracticeCount);
+  const notStartedCount = Math.max(0, totalChapters - masteredCount - doneCount - inProgressCount - needPracticeCount);
 
   const pct = (n: number) => totalChapters ? Math.round((n / totalChapters) * 100) : 0;
 
   return (
     <>
-      {/* ── 3 Chapter Lists ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* ── 4 Chapter Lists ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <ChapterListCard
           title="Need Revision"
           subtitle="Doing or mastered with 0 revisions"
@@ -478,6 +489,17 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
           filterMode="needPractice"
         />
         <ChapterListCard
+          title="Chapters You've Completed"
+          subtitle="Marked done, not mastered yet"
+          chapters={chaptersDone}
+          barColor="#14b8a6"
+          viewLabel="View all completed"
+          openSubject={openSubject}
+          subjects={subjects}
+          setPage={setPage}
+          filterMode="done"
+        />
+        <ChapterListCard
           title="Chapters You've Mastered"
           subtitle="Excellent work! Keep it up."
           chapters={chaptersMastered}
@@ -495,16 +517,17 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
         <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Chapter Progress Summary</p>
         <p className="text-gray-500 text-sm mb-5">Overview of your preparation across all chapters</p>
 
-        {/* Segmented bar — 4 real segments, all width-based */}
+        {/* Segmented bar — 5 real segments, all width-based */}
         <div className="h-5 flex rounded-lg overflow-hidden mb-6 gap-px bg-white/5">
           <div className="bg-green-500 transition-all"  style={{ width: `${pct(masteredCount)}%` }} />
+          <div className="bg-teal-500 transition-all"   style={{ width: `${pct(doneCount)}%` }} />
           <div className="bg-purple-500 transition-all" style={{ width: `${pct(inProgressCount)}%` }} />
           <div className="bg-blue-500 transition-all"   style={{ width: `${pct(needPracticeCount)}%` }} />
           <div className="bg-gray-600 transition-all"   style={{ width: `${pct(notStartedCount)}%` }} />
         </div>
 
-        {/* 5 stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        {/* 6 stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
           {/* Total */}
           <div className="text-center">
             <p className="text-gray-500 text-sm mb-2">Total</p>
@@ -519,6 +542,17 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
             <p className="text-xl sm:text-2xl font-bold text-white">
               {masteredCount}{' '}
               <span className="text-gray-500 text-xs sm:text-base font-normal">({pct(masteredCount)}%)</span>
+            </p>
+          </div>
+          {/* Done */}
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1.5 mb-2">
+              <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0" />
+              <p className="text-gray-500 text-sm">Done</p>
+            </div>
+            <p className="text-xl sm:text-2xl font-bold text-white">
+              {doneCount}{' '}
+              <span className="text-gray-500 text-xs sm:text-base font-normal">({pct(doneCount)}%)</span>
             </p>
           </div>
           {/* In Progress */}
@@ -544,7 +578,7 @@ function ChapterListsAndSummary({ allChapters, chaptersToRevise, chaptersToPract
             </p>
           </div>
           {/* Not Started */}
-          <div className="text-center col-span-2 sm:col-span-1">
+          <div className="text-center">
             <div className="flex items-center justify-center gap-1.5 mb-2">
               <span className="w-2 h-2 rounded-full bg-gray-600 shrink-0" />
               <p className="text-gray-500 text-sm">Not Started</p>

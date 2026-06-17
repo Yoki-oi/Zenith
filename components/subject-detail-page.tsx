@@ -8,7 +8,7 @@ import {
   ArrowLeft, ChevronRight, Search, Pencil,
   BookOpen, CheckCircle2, RotateCcw, ClipboardList,
   Check, Copy, CopyCheck, Plus, Trash2, GripVertical, X,
-  HelpCircle, MousePointerClick,
+  HelpCircle, MousePointerClick, ListChecks,
 } from 'lucide-react';
 import { CHEM_SECTIONS, CHEM_LABELS } from '@/lib/seed-data';
 
@@ -268,6 +268,7 @@ export default function SubjectDetailPage() {
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Subject Overview</p>
               <div className="space-y-3">
                 <OverviewRow icon={<BookOpen className="w-4 h-4" />} label="Chapters Completed" value={`${st.mastered} / ${st.total}`} />
+                <OverviewRow icon={<ListChecks className="w-4 h-4" />} label="Chapters Done" value={`${st.done} / ${st.total}`} />
                 <OverviewRow icon={<CheckCircle2 className="w-4 h-4" />} label="Tasks Completed" value={`${st.topicsDone} / ${st.topicsTotal}`} />
                 <OverviewRow icon={<ClipboardList className="w-4 h-4" />} label="Pending Revisions" value={st.revTotal.toString()} />
                 <OverviewRow
@@ -286,8 +287,9 @@ export default function SubjectDetailPage() {
           <div className="flex-1 flex flex-col lg:overflow-hidden px-4 lg:px-6 xl:px-10">
             {/* Sticky top section */}
             <div className="shrink-0 pt-0 pb-4">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4 mb-6">
                 <StatCard label="Doing" value={st.doing} dot="bg-blue-500" iconBig={<BookOpen className="w-4 h-4 text-blue-400" />} />
+                <StatCard label="Done" value={st.done} dot="bg-teal-500" iconBig={<ListChecks className="w-4 h-4 text-teal-400" />} />
                 <StatCard label="Mastered" value={st.mastered} dot="bg-green-500" iconBig={<CheckCircle2 className="w-4 h-4 text-green-400" />} />
                 <StatCard label="Revisions" value={st.revTotal} dot="bg-yellow-500" iconBig={<RotateCcw className="w-4 h-4 text-yellow-400" />} />
                 <StatCard label="Tasks" value={`${st.topicsDone}/${st.topicsTotal}`} dot="bg-purple-500" iconBig={<ClipboardList className="w-4 h-4 text-purple-400" />} />
