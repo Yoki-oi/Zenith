@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useStore, subjectStats } from '@/lib/store';
 import NavBar from './navbar';
 import { SubjectIcon } from './subject-icon';
@@ -8,7 +8,7 @@ import {
   ArrowLeft, ChevronRight, Search, Pencil,
   BookOpen, CheckCircle2, RotateCcw, ClipboardList,
   Check, Copy, CopyCheck, Plus, Trash2, GripVertical, X,
-  HelpCircle, MousePointerClick, ListChecks,
+  HelpCircle, MousePointerClick, ListChecks, Play,
 } from 'lucide-react';
 import { CHEM_SECTIONS, CHEM_LABELS } from '@/lib/seed-data';
 
@@ -35,7 +35,11 @@ export default function SubjectDetailPage() {
   const [needRevisionMode, setNeedRevisionMode] = useState(false);
   const [needPracticeMode, setNeedPracticeMode] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [tourStep, setTourStep] = useState<number | null>(null);
+  const [highlightRect, setHighlightRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
   const ctxRef = useRef<HTMLDivElement>(null);
+  const tourRefs = useRef<Record<string, HTMLElement | null>>({});
+  const registerTourRef = (key: string) => (el: HTMLElement | null) => { tourRefs.current[key] = el; };
 
   const subject = subjects.find(s => s.id === currentSubId);
   if (!subject) return null;
@@ -54,6 +58,117 @@ export default function SubjectDetailPage() {
     const matchesPractice = !needPracticeMode || (!c.mastered && c.items.some((i: any) => i.label === 'Lectures' && i.done));
     return matchesSearch && matchesRevision && matchesPractice;
   });
+
+  // ── Interactive tour ──────────────────────────────────────────────────────
+  const TOUR_STEPS = [
+    { key: 'search', title: 'Search', body: 'Type here to filter the chapter list below by title or description — handy once a subject has a lot of chapters.', targets: ['search'] },
+    { key: 'edit', title: 'Edit', body: 'Add new chapters, rename or delete existing ones, and drag to reorder them — all from this one button.', targets: ['edit-btn'] },
+    { key: 'class', title: 'Switch Class', body: 'This subject has Class 11 and Class 12 content. Tap either to jump between them.', targets: ['class-tabs'] },
+    ...(isChem ? [{ key: 'chem', title: 'Chemistry Sections', body: 'Chemistry is split into Physical, Organic and Inorganic. Switch between them here.', targets: ['chem-tabs'] }] : []),
+    { key: 'filters', title: 'Filters', body: '"Need Revision" shows chapters that are Doing or Mastered with 0 revisions logged. "Need Practice" shows chapters with Lectures done that still need more DPPs.', targets: ['filters'] },
+    { key: 'overview', title: 'Subject Overview', body: 'A running summary of this Class & section — chapters mastered, chapters done, tasks completed, pending revisions, and overall progress.', targets: ['overview-panel'] },
+    { key: 'row', title: 'A Chapter Row', body: 'Tap anywhere on a chapter to expand it and reveal its task checklist underneath.', targets: ['chapter-row'] },
+    { key: 'doing', title: 'Doing', body: "Tap this when you start actively studying a chapter. It clears Mastered if that chapter was previously mastered.", targets: ['pill-doing-desktop', 'pill-doing-mobile'] },
+    { key: 'done', title: 'Done', body: "Tap this once you feel you've worked through the chapter as a whole — even with a few loose ends, or before you're confident enough to call it Mastered.", targets: ['pill-done-desktop', 'pill-done-mobile'] },
+    { key: 'mastered', title: 'Mastered', body: "The final stage — fully confident, no more revision needed. Marking this auto-completes every task in the chapter and clears Doing/Done.", targets: ['pill-mastered-desktop', 'pill-mastered-mobile'] },
+    { key: 'rev', title: 'Revisions', body: "A personal counter — tap + every time you revise this chapter after first learning it. It's what the \"Need Revision\" filter checks.", targets: ['pill-rev-desktop', 'pill-rev-mobile'] },
+    { key: 'tasks', title: 'Tasks', body: 'Shows tasks checked off out of the total in this chapter. This count drives the overall progress bar, except for Mastered chapters which always count as complete.', targets: ['pill-tasks-desktop', 'pill-tasks-mobile'] },
+    { key: 'tasklist', title: 'Task Checklist', body: 'Every chapter starts with Lectures and DPPs. Tap a task to mark it done or pending.', targets: ['task-list'] },
+    { key: 'menu', title: 'More Options', body: 'On any task other than Lectures, tap the ··· button (or right-click on desktop) to mark it done, copy it to another chapter, copy it to every chapter at once, or remove it.', targets: ['task-menu-btn'] },
+    { key: 'delete', title: 'Remove a Task', body: "This trash icon removes the task. Lectures is the one task that's permanent and never shows this option.", targets: ['task-delete-btn'] },
+    { key: 'add', title: 'Add a Task', body: 'Type a custom task — like "Module Test" or "Formula Sheet" — and hit Enter or Add to attach it to this chapter.', targets: ['add-task-input'] },
+    { key: 'guide', title: "That's Everything", body: 'You can reopen this guide, or replay this tour, anytime from this button.', targets: ['guide-btn'] },
+  ];
+
+  function runTourStepSideEffects(i: number) {
+    const step = TOUR_STEPS[i];
+    if (!step) return;
+    if (i === 0) { setSearchQuery(''); setNeedRevisionMode(false); setNeedPracticeMode(false); }
+    const sidebarSteps = ['class', 'chem', 'filters', 'overview'];
+    if (sidebarSteps.includes(step.key)) {
+      setMobileSidebarOpen(true);
+      setExpandedChapter(null);
+    } else {
+      setMobileSidebarOpen(false);
+    }
+    if (step.key === 'row') {
+      setExpandedChapter(null);
+    } else if (['tasklist', 'menu', 'delete', 'add'].includes(step.key)) {
+      const first = filteredChapters[0];
+      if (first) setExpandedChapter(first.id);
+    }
+  }
+
+  function goToTourStep(i: number) {
+    if (i < 0 || i >= TOUR_STEPS.length) return;
+    runTourStepSideEffects(i);
+    setTourStep(i);
+  }
+  function startTour() {
+    setGuideOpen(false);
+    runTourStepSideEffects(0);
+    setTourStep(0);
+  }
+  function endTour() {
+    setTourStep(null);
+    setHighlightRect(null);
+    setExpandedChapter(null);
+    setMobileSidebarOpen(false);
+  }
+
+  useLayoutEffect(() => {
+    if (tourStep === null) return;
+    const step = TOUR_STEPS[tourStep];
+    if (!step) return;
+    const findTarget = (): HTMLElement | null => {
+      for (const key of step.targets) {
+        const el = tourRefs.current[key];
+        if (el) {
+          const r = el.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) return el;
+        }
+      }
+      return null;
+    };
+    const updateRect = () => {
+      const found = findTarget();
+      if (found) {
+        const r = found.getBoundingClientRect();
+        setHighlightRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+      } else {
+        setHighlightRect(null);
+      }
+    };
+    const scrollAndMeasure = () => {
+      const found = findTarget();
+      if (found) found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      updateRect();
+    };
+    // Scroll into view once, then re-measure position after the sidebar/scroll transition settles —
+    // resize/scroll listeners only reposition the highlight, they never re-trigger scrollIntoView.
+    const t1 = setTimeout(scrollAndMeasure, 50);
+    const t2 = setTimeout(updateRect, 350);
+    window.addEventListener('resize', updateRect);
+    window.addEventListener('scroll', updateRect, true);
+    return () => {
+      clearTimeout(t1); clearTimeout(t2);
+      window.removeEventListener('resize', updateRect);
+      window.removeEventListener('scroll', updateRect, true);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tourStep]);
+
+  useEffect(() => {
+    if (tourStep === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') endTour();
+      else if (e.key === 'ArrowRight') goToTourStep(tourStep + 1 >= TOUR_STEPS.length ? tourStep : tourStep + 1);
+      else if (e.key === 'ArrowLeft') goToTourStep(Math.max(0, tourStep - 1));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tourStep]);
 
   useEffect(() => {
     if (!ctxMenu) return;
@@ -145,6 +260,7 @@ export default function SubjectDetailPage() {
               Overview
             </button>
             <button
+              ref={registerTourRef('guide-btn')}
               onClick={() => setGuideOpen(true)}
               className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-400 hover:text-white text-xs transition-colors"
             >
@@ -203,7 +319,7 @@ export default function SubjectDetailPage() {
 
             <p className="text-gray-500 text-sm mb-6">{descriptions[subject.name]}</p>
 
-            <div className="mb-6">
+            <div className="mb-6" ref={registerTourRef('class-tabs')}>
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Classes</p>
               <div className="space-y-1">
                 {([11, 12] as const).map(cn => (
@@ -226,7 +342,7 @@ export default function SubjectDetailPage() {
             </div>
 
             {isChem && (
-              <div className="mb-6">
+              <div className="mb-6" ref={registerTourRef('chem-tabs')}>
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Section</p>
                 <div className="space-y-1">
                   {CHEM_SECTIONS.map(sec => (
@@ -242,7 +358,7 @@ export default function SubjectDetailPage() {
             )}
 
             {/* Filters — below section */}
-            <div className="mb-6">
+            <div className="mb-6" ref={registerTourRef('filters')}>
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Filters</p>
               <div className="space-y-1">
                 <button
@@ -264,7 +380,7 @@ export default function SubjectDetailPage() {
               </div>
             </div>
 
-            <div>
+            <div ref={registerTourRef('overview-panel')}>
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Subject Overview</p>
               <div className="space-y-3">
                 <OverviewRow icon={<BookOpen className="w-4 h-4" />} label="Chapters Completed" value={`${st.mastered} / ${st.total}`} />
@@ -312,12 +428,13 @@ export default function SubjectDetailPage() {
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1 lg:flex-none">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                    <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                    <input ref={registerTourRef('search')} type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                       placeholder="Search chapters..."
                       className="pl-10 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-purple-500/50 w-full lg:w-56"
                     />
                   </div>
                   <button
+                    ref={registerTourRef('edit-btn')}
                     onClick={() => setEditOpen(true)}
                     className="flex items-center gap-2 px-3 py-2 bg-[#1a1f2e] border border-white/10 rounded-lg text-gray-400 hover:text-white transition-colors text-sm shrink-0"
                   >
@@ -366,6 +483,7 @@ export default function SubjectDetailPage() {
                   onAddItem={label => addItem(subject.id, chapter.id, label)}
                   onTaskContextMenu={(e, itemId, itemLabel, itemDone) => openCtx(e, itemId, itemLabel, itemDone, chapter.id)}
                   onDeleteItem={itemId => deleteItem(subject.id, chapter.id, itemId)}
+                  tourRef={idx === 0 ? registerTourRef : undefined}
                 />
               ))}
             </div>
@@ -434,7 +552,88 @@ export default function SubjectDetailPage() {
       )}
 
       {/* Guide Modal */}
-      {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} />}
+      {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onStartTour={startTour} />}
+
+      {/* Interactive Tour */}
+      {tourStep !== null && TOUR_STEPS[tourStep] && (() => {
+        const step = TOUR_STEPS[tourStep];
+        const tooltipWidth = 320;
+        const estHeight = 190;
+        const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
+        const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
+        let top: number, left: number;
+        if (highlightRect) {
+          const margin = 14;
+          const spaceBelow = vh - (highlightRect.top + highlightRect.height);
+          const placeBelow = spaceBelow > estHeight || highlightRect.top < vh / 2;
+          top = placeBelow ? highlightRect.top + highlightRect.height + margin : highlightRect.top - estHeight - margin;
+          top = Math.max(12, Math.min(top, vh - estHeight - 12));
+          const centerX = highlightRect.left + highlightRect.width / 2;
+          left = Math.max(12, Math.min(centerX - tooltipWidth / 2, vw - tooltipWidth - 12));
+        } else {
+          top = vh / 2 - estHeight / 2;
+          left = vw / 2 - tooltipWidth / 2;
+        }
+        return (
+          <div className="fixed inset-0 z-[200]">
+            {/* Click-blocking scrim */}
+            <div className="absolute inset-0" onClick={() => {}} />
+            {/* Spotlight cutout */}
+            {highlightRect ? (
+              <div
+                className="absolute rounded-xl border-2 border-purple-400 transition-all duration-300 pointer-events-none"
+                style={{
+                  top: highlightRect.top - 6,
+                  left: highlightRect.left - 6,
+                  width: highlightRect.width + 12,
+                  height: highlightRect.height + 12,
+                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.78), 0 0 24px 4px rgba(168,85,247,0.5)',
+                }}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-black/78" />
+            )}
+            {/* Tooltip card */}
+            <div
+              className="absolute bg-[#0f1219] border border-white/10 rounded-2xl shadow-2xl p-5 transition-all duration-300"
+              style={{ top, left, width: tooltipWidth, maxWidth: 'calc(100vw - 24px)' }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-purple-400 text-xs font-semibold uppercase tracking-wider">
+                  Step {tourStep + 1} / {TOUR_STEPS.length}
+                </span>
+                <button onClick={endTour} className="text-gray-500 hover:text-white transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <h4 className="text-white font-semibold text-base mb-1.5">{step.title}</h4>
+              <p className="text-gray-400 text-sm leading-relaxed mb-4">{step.body}</p>
+              <div className="flex items-center justify-between gap-2">
+                <button onClick={endTour} className="text-gray-500 hover:text-gray-300 text-xs transition-colors">
+                  Skip tour
+                </button>
+                <div className="flex gap-2">
+                  {tourStep > 0 && (
+                    <button
+                      onClick={() => goToTourStep(tourStep - 1)}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-sm rounded-lg transition-colors"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" /> Back
+                    </button>
+                  )}
+                  <button
+                    onClick={() => tourStep === TOUR_STEPS.length - 1 ? endTour() : goToTourStep(tourStep + 1)}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium rounded-lg transition-colors"
+                  >
+                    {tourStep === TOUR_STEPS.length - 1 ? 'Finish' : 'Next'}
+                    {tourStep !== TOUR_STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -603,7 +802,7 @@ function GuideRow({ pill, children }: { pill: React.ReactNode; children: React.R
   );
 }
 
-function GuideModal({ onClose }: { onClose: () => void }) {
+function GuideModal({ onClose, onStartTour }: { onClose: () => void; onStartTour: () => void }) {
   const steps: [string, string][] = [
     ['Start a chapter', 'Tap Doing as soon as you begin studying it.'],
     ['Work through it', 'Check off Lectures and DPPs (or any custom tasks) as you complete them.'],
@@ -641,6 +840,14 @@ function GuideModal({ onClose }: { onClose: () => void }) {
             and a checklist of tasks (Lectures, DPPs, and anything else you add). Ticking these off updates
             your progress bars, stats and analytics automatically — nothing needs to be saved by hand.
           </p>
+
+          <button
+            onClick={onStartTour}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 rounded-xl text-purple-300 font-medium text-sm transition-colors"
+          >
+            <Play className="w-4 h-4" />
+            Take the Interactive Tour
+          </button>
 
           <GuideSection title="Status Pills">
             <div className="space-y-1">
@@ -779,7 +986,7 @@ function StatCard({ label, value, dot, iconBig }: { label: string; value: number
 function ChapterRow({
   chapter, index, expanded, onToggle,
   onToggleDoing, onToggleDone, onToggleMastered, onMarkAllDone, onChangeRevisions,
-  onToggleItem, onAddItem, onTaskContextMenu, onDeleteItem,
+  onToggleItem, onAddItem, onTaskContextMenu, onDeleteItem, tourRef,
 }: {
   chapter: any; index: number; expanded: boolean;
   onToggle: () => void; onToggleDoing: () => void; onToggleDone: () => void; onToggleMastered: () => void; onMarkAllDone: () => void;
@@ -788,58 +995,60 @@ function ChapterRow({
   onAddItem: (label: string) => void;
   onTaskContextMenu: (e: React.MouseEvent, itemId: string, itemLabel: string, itemDone: boolean) => void;
   onDeleteItem: (id: string) => void;
+  tourRef?: (key: string) => (el: HTMLElement | null) => void;
 }) {
   const [newTask, setNewTask] = useState('');
   const tasksDone = chapter.items.filter((i: any) => i.done).length;
   const tasksTotal = chapter.items.length;
+  const firstNonLecturesId = chapter.items.find((i: any) => i.label !== 'Lectures')?.id;
 
   return (
     <div className="bg-[#0f1219] border border-white/5 rounded-xl overflow-hidden">
-      <div className="flex items-start lg:items-center gap-3 lg:gap-4 px-4 py-4 cursor-pointer hover:bg-white/[0.02] transition-colors" onClick={onToggle}>
+      <div ref={tourRef?.('chapter-row')} className="flex items-start lg:items-center gap-3 lg:gap-4 px-4 py-4 cursor-pointer hover:bg-white/[0.02] transition-colors" onClick={onToggle}>
         <span className="text-gray-500 text-sm font-mono w-6 shrink-0 mt-0.5 lg:mt-0">{String(index + 1).padStart(2, '0')}</span>
         <div className="flex-1 min-w-0">
           <h4 className="text-white font-medium">{chapter.title}</h4>
           {chapter.desc && <p className="text-gray-500 text-sm truncate">{chapter.desc}</p>}
           {/* Pills — shown below title on mobile, inline on sm+ */}
           <div className="flex flex-wrap items-center gap-1.5 mt-2 lg:hidden" onClick={e => e.stopPropagation()}>
-            <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+            <button ref={tourRef?.('pill-doing-mobile')} onClick={onToggleDoing} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
               Doing
             </button>
-            <button onClick={onToggleDone} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.done ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+            <button ref={tourRef?.('pill-done-mobile')} onClick={onToggleDone} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.done ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
               Done
             </button>
-            <button onClick={onToggleMastered} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+            <button ref={tourRef?.('pill-mastered-mobile')} onClick={onToggleMastered} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
               Mastered
             </button>
             {chapter.revisions > 0 ? (
-              <div className="flex items-center rounded-full text-xs font-medium bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
+              <div ref={tourRef?.('pill-rev-mobile')} className="flex items-center rounded-full text-xs font-medium bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
                 <button onClick={() => onChangeRevisions(-1)} className="px-2 py-1 hover:bg-white/10 rounded-l-full transition-colors">−</button>
                 <span className="px-1">Rev. {chapter.revisions}</span>
                 <button onClick={() => onChangeRevisions(1)} className="px-2 py-1 hover:bg-white/10 rounded-r-full transition-colors">+</button>
               </div>
             ) : (
-              <button onClick={() => onChangeRevisions(1)} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-transparent hover:border-yellow-500/20 transition-all">
+              <button ref={tourRef?.('pill-rev-mobile')} onClick={() => onChangeRevisions(1)} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-transparent hover:border-yellow-500/20 transition-all">
                  Rev +
               </button>
             )}
-            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${tasksDone > 0 ? 'bg-purple-500/15 text-purple-400 border border-purple-500/20' : 'bg-white/5 text-gray-400'}`}>
+            <div ref={tourRef?.('pill-tasks-mobile')} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${tasksDone > 0 ? 'bg-purple-500/15 text-purple-400 border border-purple-500/20' : 'bg-white/5 text-gray-400'}`}>
               <ClipboardList className="w-3 h-3" /> {tasksDone}/{tasksTotal}
             </div>
           </div>
         </div>
         {/* Pills — desktop only, shown inline */}
         <div className="hidden lg:flex items-center gap-2" onClick={e => e.stopPropagation()}>
-          <button onClick={onToggleDoing} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+          <button ref={tourRef?.('pill-doing-desktop')} onClick={onToggleDoing} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.doing ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
             Doing
           </button>
-          <button onClick={onToggleDone} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.done ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+          <button ref={tourRef?.('pill-done-desktop')} onClick={onToggleDone} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.done ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
             Done
           </button>
-          <button onClick={onToggleMastered} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
+          <button ref={tourRef?.('pill-mastered-desktop')} onClick={onToggleMastered} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${chapter.mastered ? 'bg-green-500/15 text-green-400 border border-green-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
             Mastered
           </button>
           {chapter.revisions > 0 ? (
-          <div className="flex items-center rounded-full text-xs font-medium transition-all bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
+          <div ref={tourRef?.('pill-rev-desktop')} className="flex items-center rounded-full text-xs font-medium transition-all bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
             <button onClick={() => onChangeRevisions(-1)} className="px-2 py-1.5 hover:bg-white/10 rounded-l-full transition-colors" title="Decrease revisions">−</button>
             <span className="flex items-center gap-1.5 px-1 py-1.5 select-none">
               
@@ -848,12 +1057,12 @@ function ChapterRow({
             <button onClick={() => onChangeRevisions(1)} className="px-2 py-1.5 hover:bg-white/10 rounded-r-full transition-colors" title="Increase revisions">+</button>
           </div>
           ) : (
-          <button onClick={() => onChangeRevisions(1)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium bg-white/5 text-gray-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-transparent hover:border-yellow-500/20 transition-all" title="Add revision">
+          <button ref={tourRef?.('pill-rev-desktop')} onClick={() => onChangeRevisions(1)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium bg-white/5 text-gray-500 hover:text-yellow-400 hover:bg-yellow-500/10 border border-transparent hover:border-yellow-500/20 transition-all" title="Add revision">
             
             Rev +
           </button>
           )}
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${tasksDone > 0 ? 'bg-purple-500/15 text-purple-400 border border-purple-500/20' : 'bg-white/5 text-gray-400'}`}>
+          <div ref={tourRef?.('pill-tasks-desktop')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${tasksDone > 0 ? 'bg-purple-500/15 text-purple-400 border border-purple-500/20' : 'bg-white/5 text-gray-400'}`}>
             <ClipboardList className="w-3 h-3" />
             Tasks {tasksDone}/{tasksTotal}
           </div>
@@ -864,9 +1073,10 @@ function ChapterRow({
       {expanded && (
         <div className="px-4 pb-4 border-t border-white/5">
           <p className="text-xs text-gray-500 uppercase tracking-wider mt-4 mb-3">Tasks</p>
-          <div className="space-y-1 mb-4">
+          <div className="space-y-1 mb-4" ref={tourRef?.('task-list')}>
             {chapter.items.map((item: any) => {
               const isLectures = item.label === 'Lectures';
+              const isFirstNonLectures = item.id === firstNonLecturesId;
               return (
               <div
                 key={item.id}
@@ -886,6 +1096,7 @@ function ChapterRow({
                 </span>
                 {/* ··· button — always visible on touch, hover-only on desktop. Hidden entirely for Lectures. */}
                 <button
+                  ref={isFirstNonLectures ? tourRef?.('task-menu-btn') : undefined}
                   onClick={e => { e.stopPropagation(); if (!isLectures) onTaskContextMenu(e, item.id, item.label, item.done); }}
                   className={`w-5 h-5 flex items-center justify-center rounded text-gray-600 hover:text-gray-300 transition-colors ${isLectures ? 'invisible' : 'lg:opacity-0 lg:group-hover:opacity-100'}`}
                   title="More options"
@@ -893,6 +1104,7 @@ function ChapterRow({
                   <span className="text-xs leading-none select-none">···</span>
                 </button>
                 <button
+                  ref={isFirstNonLectures ? tourRef?.('task-delete-btn') : undefined}
                   onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}
                   className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${isLectures ? 'invisible' : 'opacity-0 group-hover:opacity-100'}`}
                   title="Remove task"
@@ -904,7 +1116,7 @@ function ChapterRow({
             })}
           </div>
           <div className="flex gap-2">
-            <input type="text" value={newTask}
+            <input ref={tourRef?.('add-task-input')} type="text" value={newTask}
               onChange={e => setNewTask(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && newTask.trim()) { onAddItem(newTask.trim()); setNewTask(''); } }}
               placeholder="Add new task..."
