@@ -37,6 +37,8 @@ export default function SubjectDetailPage() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [tourStep, setTourStep] = useState<number | null>(null);
   const [highlightRect, setHighlightRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
+  const [tourVisible, setTourVisible] = useState(false); // controls fade-in of the whole overlay
   const ctxRef = useRef<HTMLDivElement>(null);
   const tourRefs = useRef<Record<string, HTMLElement | null>>({});
   const registerTourRef = (key: string) => (el: HTMLElement | null) => { tourRefs.current[key] = el; };
@@ -108,18 +110,47 @@ export default function SubjectDetailPage() {
     setGuideOpen(false);
     runTourStepSideEffects(0);
     setTourStep(0);
+    setTourVisible(false);
+    // Fade in after a frame so the initial opacity-0 state is painted first
+    requestAnimationFrame(() => setTimeout(() => setTourVisible(true), 16));
   }
   function endTour() {
-    setTourStep(null);
-    setHighlightRect(null);
-    setExpandedChapter(null);
-    setMobileSidebarOpen(false);
+    setTourVisible(false);
+    // Wait for fade-out before clearing state
+    setTimeout(() => {
+      setTourStep(null);
+      setHighlightRect(null);
+      setTooltipPos(null);
+      setExpandedChapter(null);
+      setMobileSidebarOpen(false);
+    }, 300);
+  }
+
+  const TOOLTIP_W = 320;
+  const TOOLTIP_H = 190;
+
+  function computeTooltipPos(rect: { top: number; left: number; width: number; height: number } | null) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (!rect) return { top: vh / 2 - TOOLTIP_H / 2, left: vw / 2 - TOOLTIP_W / 2 };
+    const pad = 6; // spotlight padding
+    const margin = 14;
+    const spaceBelow = vh - (rect.top + rect.height + pad);
+    const spaceAbove = rect.top - pad;
+    const placeBelow = spaceBelow >= TOOLTIP_H + margin || spaceBelow >= spaceAbove;
+    const top = placeBelow
+      ? Math.min(rect.top + rect.height + pad + margin, vh - TOOLTIP_H - 12)
+      : Math.max(rect.top - pad - TOOLTIP_H - margin, 12);
+    const centerX = rect.left + rect.width / 2;
+    const left = Math.max(12, Math.min(centerX - TOOLTIP_W / 2, vw - TOOLTIP_W - 12));
+    return { top, left };
   }
 
   useLayoutEffect(() => {
     if (tourStep === null) return;
     const step = TOUR_STEPS[tourStep];
     if (!step) return;
+
     const findTarget = (): HTMLElement | null => {
       for (const key of step.targets) {
         const el = tourRefs.current[key];
@@ -130,30 +161,45 @@ export default function SubjectDetailPage() {
       }
       return null;
     };
-    const updateRect = () => {
+
+    const measure = () => {
       const found = findTarget();
       if (found) {
         const r = found.getBoundingClientRect();
-        setHighlightRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+        const rect = { top: r.top, left: r.left, width: r.width, height: r.height };
+        setHighlightRect(rect);
+        setTooltipPos(computeTooltipPos(rect));
       } else {
         setHighlightRect(null);
+        setTooltipPos(computeTooltipPos(null));
       }
     };
+
     const scrollAndMeasure = () => {
       const found = findTarget();
-      if (found) found.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      updateRect();
+      // Scroll first, then measure after the scroll settles
+      if (found) {
+        found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Re-measure after scroll animation (~400ms) and after CSS transition (~300ms)
+        setTimeout(measure, 420);
+      }
+      measure();
     };
-    // Scroll into view once, then re-measure position after the sidebar/scroll transition settles —
-    // resize/scroll listeners only reposition the highlight, they never re-trigger scrollIntoView.
-    const t1 = setTimeout(scrollAndMeasure, 50);
-    const t2 = setTimeout(updateRect, 350);
-    window.addEventListener('resize', updateRect);
-    window.addEventListener('scroll', updateRect, true);
+
+    // Wait for sidebar slide-in / chapter expand animations to settle before first measurement
+    const sidebarSteps = ['class', 'chem', 'filters', 'overview'];
+    const expandSteps = ['tasklist', 'menu', 'delete', 'add'];
+    const needsAnimDelay = sidebarSteps.includes(step.key) || expandSteps.includes(step.key);
+    const t1 = setTimeout(scrollAndMeasure, needsAnimDelay ? 320 : 60);
+
+    const onResize = () => measure();
+    const onScroll = () => measure();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('scroll', onScroll, true);
     return () => {
-      clearTimeout(t1); clearTimeout(t2);
-      window.removeEventListener('resize', updateRect);
-      window.removeEventListener('scroll', updateRect, true);
+      clearTimeout(t1);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onScroll, true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tourStep]);
@@ -383,10 +429,9 @@ export default function SubjectDetailPage() {
             <div ref={registerTourRef('overview-panel')}>
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Subject Overview</p>
               <div className="space-y-3">
-                <OverviewRow icon={<BookOpen className="w-4 h-4" />} label="Chapters Completed" value={`${st.mastered} / ${st.total}`} />
+                <OverviewRow icon={<BookOpen className="w-4 h-4" />} label="Chapters Mastered" value={`${st.mastered} / ${st.total}`} />
                 <OverviewRow icon={<ListChecks className="w-4 h-4" />} label="Chapters Done" value={`${st.done} / ${st.total}`} />
                 <OverviewRow icon={<CheckCircle2 className="w-4 h-4" />} label="Tasks Completed" value={`${st.topicsDone} / ${st.topicsTotal}`} />
-                <OverviewRow icon={<ClipboardList className="w-4 h-4" />} label="Pending Revisions" value={st.revTotal.toString()} />
                 <OverviewRow
                   icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}
                   label="Overall Progress" value={`${st.pct}%`}
@@ -409,6 +454,41 @@ export default function SubjectDetailPage() {
                 <StatCard label="Mastered" value={st.mastered} dot="bg-green-500" iconBig={<CheckCircle2 className="w-4 h-4 text-green-400" />} />
                 <StatCard label="Revisions" value={st.revTotal} dot="bg-yellow-500" iconBig={<RotateCcw className="w-4 h-4 text-yellow-400" />} />
                 <StatCard label="Tasks" value={`${st.topicsDone}/${st.topicsTotal}`} dot="bg-purple-500" iconBig={<ClipboardList className="w-4 h-4 text-purple-400" />} />
+              </div>
+
+              {/* Mobile-only: class + chem section switcher */}
+              <div className="lg:hidden mb-4 flex flex-col gap-2">
+                {/* Class 11 / 12 tabs */}
+                <div className="flex gap-2">
+                  {([11, 12] as const).map(cn => (
+                    <button key={cn}
+                      onClick={() => {
+                        setCurrentClassNum(cn);
+                        setExpandedChapter(null);
+                        setSearchQuery('');
+                        const s = subjects.find(s => s.name === subject.name && s.classNum === cn);
+                        if (s) openSubject(s.id, isChem ? (currentChemSection || 'Physical') : null);
+                      }}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${subject.classNum === cn ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10'}`}
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      Class {cn}
+                    </button>
+                  ))}
+                </div>
+                {/* Chemistry section tabs — only shown for Chem subjects */}
+                {isChem && (
+                  <div className="flex gap-2">
+                    {CHEM_SECTIONS.map(sec => (
+                      <button key={sec}
+                        onClick={() => { openSubject(subject.id, sec); setExpandedChapter(null); setSearchQuery(''); }}
+                        className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${activeSec === sec ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10'}`}
+                      >
+                        {CHEM_LABELS[sec]}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
@@ -557,78 +637,95 @@ export default function SubjectDetailPage() {
       {/* Interactive Tour */}
       {tourStep !== null && TOUR_STEPS[tourStep] && (() => {
         const step = TOUR_STEPS[tourStep];
-        const tooltipWidth = 320;
-        const estHeight = 190;
-        const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
-        const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
-        let top: number, left: number;
-        if (highlightRect) {
-          const margin = 14;
-          const spaceBelow = vh - (highlightRect.top + highlightRect.height);
-          const placeBelow = spaceBelow > estHeight || highlightRect.top < vh / 2;
-          top = placeBelow ? highlightRect.top + highlightRect.height + margin : highlightRect.top - estHeight - margin;
-          top = Math.max(12, Math.min(top, vh - estHeight - 12));
-          const centerX = highlightRect.left + highlightRect.width / 2;
-          left = Math.max(12, Math.min(centerX - tooltipWidth / 2, vw - tooltipWidth - 12));
-        } else {
-          top = vh / 2 - estHeight / 2;
-          left = vw / 2 - tooltipWidth / 2;
-        }
+        const pad = 6;
+        const tp = tooltipPos ?? { top: (typeof window !== 'undefined' ? window.innerHeight : 600) / 2 - TOOLTIP_H / 2, left: (typeof window !== 'undefined' ? window.innerWidth : 400) / 2 - TOOLTIP_W / 2 };
         return (
-          <div className="fixed inset-0 z-[200]">
-            {/* Click-blocking scrim */}
-            <div className="absolute inset-0" onClick={() => {}} />
-            {/* Spotlight cutout */}
-            {highlightRect ? (
+          <div
+            className="fixed inset-0 z-[200] pointer-events-none"
+            style={{ opacity: tourVisible ? 1 : 0, transition: 'opacity 280ms ease' }}
+          >
+            {/* Dark scrim — always full screen, click-through blocked via pointer-events below */}
+            <div className="absolute inset-0 bg-black/75 pointer-events-auto" onClick={e => e.stopPropagation()} />
+
+            {/* Spotlight — single persistent div that transitions between targets */}
+            {highlightRect && (
               <div
-                className="absolute rounded-xl border-2 border-purple-400 transition-all duration-300 pointer-events-none"
+                className="absolute rounded-xl pointer-events-none"
                 style={{
-                  top: highlightRect.top - 6,
-                  left: highlightRect.left - 6,
-                  width: highlightRect.width + 12,
-                  height: highlightRect.height + 12,
-                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.78), 0 0 24px 4px rgba(168,85,247,0.5)',
+                  top: highlightRect.top - pad,
+                  left: highlightRect.left - pad,
+                  width: highlightRect.width + pad * 2,
+                  height: highlightRect.height + pad * 2,
+                  transition: 'top 350ms cubic-bezier(.4,0,.2,1), left 350ms cubic-bezier(.4,0,.2,1), width 350ms cubic-bezier(.4,0,.2,1), height 350ms cubic-bezier(.4,0,.2,1)',
+                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.75), 0 0 0 2px rgba(168,85,247,0.9), 0 0 24px 6px rgba(168,85,247,0.35)',
                 }}
               />
-            ) : (
-              <div className="absolute inset-0 bg-black/78" />
             )}
-            {/* Tooltip card */}
+
+            {/* Tooltip card — slides to new position smoothly */}
             <div
-              className="absolute bg-[#0f1219] border border-white/10 rounded-2xl shadow-2xl p-5 transition-all duration-300"
-              style={{ top, left, width: tooltipWidth, maxWidth: 'calc(100vw - 24px)' }}
+              className="absolute pointer-events-auto"
+              style={{
+                top: tp.top,
+                left: tp.left,
+                width: TOOLTIP_W,
+                maxWidth: 'calc(100vw - 24px)',
+                transition: 'top 350ms cubic-bezier(.4,0,.2,1), left 350ms cubic-bezier(.4,0,.2,1)',
+              }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-purple-400 text-xs font-semibold uppercase tracking-wider">
-                  Step {tourStep + 1} / {TOUR_STEPS.length}
-                </span>
-                <button onClick={endTour} className="text-gray-500 hover:text-white transition-colors">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <h4 className="text-white font-semibold text-base mb-1.5">{step.title}</h4>
-              <p className="text-gray-400 text-sm leading-relaxed mb-4">{step.body}</p>
-              <div className="flex items-center justify-between gap-2">
-                <button onClick={endTour} className="text-gray-500 hover:text-gray-300 text-xs transition-colors">
-                  Skip tour
-                </button>
-                <div className="flex gap-2">
-                  {tourStep > 0 && (
-                    <button
-                      onClick={() => goToTourStep(tourStep - 1)}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-sm rounded-lg transition-colors"
-                    >
-                      <ArrowLeft className="w-3.5 h-3.5" /> Back
-                    </button>
-                  )}
-                  <button
-                    onClick={() => tourStep === TOUR_STEPS.length - 1 ? endTour() : goToTourStep(tourStep + 1)}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium rounded-lg transition-colors"
-                  >
-                    {tourStep === TOUR_STEPS.length - 1 ? 'Finish' : 'Next'}
-                    {tourStep !== TOUR_STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5" />}
-                  </button>
+              <div className="bg-[#0d1018] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+                {/* Progress bar */}
+                <div className="h-0.5 bg-white/5">
+                  <div
+                    className="h-full bg-purple-500 transition-all duration-500"
+                    style={{ width: `${((tourStep + 1) / TOUR_STEPS.length) * 100}%` }}
+                  />
                 </div>
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-purple-400 text-xs font-semibold uppercase tracking-wider">
+                      {tourStep + 1} / {TOUR_STEPS.length}
+                    </span>
+                    <button onClick={endTour} className="text-gray-500 hover:text-white transition-colors p-0.5">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <h4 className="text-white font-semibold text-base mb-1.5">{step.title}</h4>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-4">{step.body}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <button onClick={endTour} className="text-gray-500 hover:text-gray-300 text-xs transition-colors px-1">
+                      End tour
+                    </button>
+                    <div className="flex gap-2">
+                      {tourStep > 0 && (
+                        <button
+                          onClick={() => goToTourStep(tourStep - 1)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-sm rounded-lg transition-colors"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5" /> Back
+                        </button>
+                      )}
+                      <button
+                        onClick={() => tourStep === TOUR_STEPS.length - 1 ? endTour() : goToTourStep(tourStep + 1)}
+                        className="flex items-center gap-1.5 px-4 py-1.5 bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 text-purple-300 text-sm font-medium rounded-lg transition-colors"
+                      >
+                        {tourStep === TOUR_STEPS.length - 1 ? 'Finish' : 'Next'}
+                        {tourStep !== TOUR_STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dot indicators */}
+              <div className="flex justify-center gap-1 mt-3">
+                {TOUR_STEPS.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => goToTourStep(i)}
+                    className={`rounded-full transition-all duration-300 ${i === tourStep ? 'w-4 h-1.5 bg-purple-400' : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'}`}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -1106,7 +1203,7 @@ function ChapterRow({
                 <button
                   ref={isFirstNonLectures ? tourRef?.('task-delete-btn') : undefined}
                   onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}
-                  className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${isLectures ? 'invisible' : 'opacity-0 group-hover:opacity-100'}`}
+                  className={`transition-opacity w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-500/15 text-gray-600 hover:text-red-400 ${isLectures ? 'invisible' : 'lg:opacity-0 lg:group-hover:opacity-100'}`}
                   title="Remove task"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

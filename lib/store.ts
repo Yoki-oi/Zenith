@@ -436,7 +436,8 @@ export const useStore = create<Store>()(
                 c.id !== chId ? c : {
                   ...c,
                   mastered: !c.mastered,
-                  // Mastering clears doing and done; unmastering clears nothing
+                  // Mastering clears doing/done; tasks are untouched —
+                  // analytics already counts mastered chapters as 100% regardless
                   doing: !c.mastered ? false : c.doing,
                   done: !c.mastered ? false : c.done,
                 }
