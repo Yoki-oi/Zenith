@@ -380,7 +380,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Footer */}
-        <footer className="pt-5 pb-[env(safe-area-inset-bottom)] border-t border-white/[0.04] flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-700 text-center sm:text-left">
+        <footer className="px-4 sm:px-6 xl:px-10 pt-5 pb-[env(safe-area-inset-bottom,24px)] border-t border-white/[0.04] flex flex-col sm:flex-row items-center sm:justify-between gap-1 text-sm text-gray-700 text-center sm:text-left">
           <span>Zenith — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>

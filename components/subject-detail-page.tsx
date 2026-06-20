@@ -570,7 +570,7 @@ export default function SubjectDetailPage() {
           </div>
         </div>
 
-        <footer className="mt-4 lg:mt-auto pt-4 pb-6 pb-[env(safe-area-inset-bottom)] border-t border-white/5 px-4 lg:px-6 xl:px-10 flex flex-col lg:flex-row items-center lg:justify-between gap-1 text-sm text-gray-700 text-center lg:text-left lg:shrink-0">
+        <footer className="mt-4 lg:mt-auto pt-4 pb-[env(safe-area-inset-bottom,24px)] border-t border-white/5 px-4 lg:px-6 xl:px-10 flex flex-col lg:flex-row items-center lg:justify-between gap-1 text-sm text-gray-700 text-center lg:text-left lg:shrink-0">
           <span>Zenith — Syllabus Tracking Platform for JEE Aspirants</span>
           
           <span>Designed &amp; Developed by Yoki</span>
@@ -644,10 +644,19 @@ export default function SubjectDetailPage() {
             className="fixed inset-0 z-[200] pointer-events-none"
             style={{ opacity: tourVisible ? 1 : 0, transition: 'opacity 280ms ease' }}
           >
-            {/* Dark scrim — always full screen, click-through blocked via pointer-events below */}
-            <div className="absolute inset-0 bg-black/75 pointer-events-auto" onClick={e => e.stopPropagation()} />
+            {/* Fallback dark scrim — only used when no element is being spotlighted.
+                When a spotlight IS active, its own box-shadow handles 100% of the
+                darkening, so we must NOT also lay a flat scrim over the screen —
+                doing both was stacking two dark layers and dimming the highlighted
+                element itself, which is what made the whole tour look washed out. */}
+            {!highlightRect && (
+              <div className="absolute inset-0 bg-black/75 transition-opacity duration-300" />
+            )}
 
-            {/* Spotlight — single persistent div that transitions between targets */}
+            {/* Spotlight — single persistent div that transitions between targets.
+                Its giant box-shadow IS the scrim: everything outside this rect gets
+                darkened, everything inside (the real button/input underneath) stays
+                fully bright since nothing is drawn over it. */}
             {highlightRect && (
               <div
                 className="absolute rounded-xl pointer-events-none"
@@ -657,10 +666,15 @@ export default function SubjectDetailPage() {
                   width: highlightRect.width + pad * 2,
                   height: highlightRect.height + pad * 2,
                   transition: 'top 350ms cubic-bezier(.4,0,.2,1), left 350ms cubic-bezier(.4,0,.2,1), width 350ms cubic-bezier(.4,0,.2,1), height 350ms cubic-bezier(.4,0,.2,1)',
-                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.75), 0 0 0 2px rgba(168,85,247,0.9), 0 0 24px 6px rgba(168,85,247,0.35)',
+                  boxShadow: '0 0 0 9999px rgba(0,0,0,0.78), 0 0 0 2px rgba(168,85,247,0.95), 0 0 28px 6px rgba(168,85,247,0.45)',
                 }}
               />
             )}
+
+            {/* Invisible click-blocker — sits above everything, has no background of
+                its own (the spotlight/scrim above already provide the visuals), just
+                stops the person interacting with the real page mid-tour. */}
+            <div className="absolute inset-0 pointer-events-auto" onClick={e => e.stopPropagation()} />
 
             {/* Tooltip card — slides to new position smoothly */}
             <div
